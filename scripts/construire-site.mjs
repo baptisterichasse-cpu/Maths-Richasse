@@ -13,6 +13,31 @@ const SORTIE = path.join(RACINE, '_site');
 const AUJOURDHUI = process.env.DATE_DU_JOUR ||
   new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 
+// Répare les accents abîmés par certaines décompressions sous Windows (« corrig├® » → « corrigé »).
+const TABLES = [
+  // CP850 (Windows en français)
+  'ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»░▒▓│┤ÁÂÀ©╣║╗╝¢¥┐└┴┬├─┼ãÃ╚╔╩╦╠═╬¤ðÐÊËÈıÍÎÏ┘┌█▄¦Ì▀ÓßÔÒõÕµþÞÚÛÙýÝ¯´­±‗¾¶§÷¸°¨·¹³²■ ',
+  // CP437
+  'ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑªº¿⌐¬½¼¡«»░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀αßΓπΣσµτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²■ ',
+];
+function reparer(s) {
+  if (!/[─-◿]/.test(s)) return s; // seuls les noms abîmés contiennent ces caractères de dessin
+  for (const table of TABLES) {
+    const octets = [];
+    let ok = true;
+    for (const ch of s) {
+      const c = ch.codePointAt(0);
+      if (c < 128) { octets.push(c); continue; }
+      const i = table.indexOf(ch);
+      if (i === -1) { ok = false; break; }
+      octets.push(128 + i);
+    }
+    if (!ok) continue;
+    try { return new TextDecoder('utf-8', { fatal: true }).decode(Uint8Array.from(octets)); } catch { /* table suivante */ }
+  }
+  return s;
+}
+
 const norm = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 const slug = (s) => norm(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'chapitre';
 const trierNoms = (a, b) => a.localeCompare(b, 'fr', { numeric: true, sensitivity: 'base' });
@@ -29,7 +54,7 @@ const LIBELLES = { cours: 'Cours', methode: 'Fiche méthode', exercices: 'Exerci
 
 function analyserNom(fichier) {
   const ext = path.extname(fichier).slice(1).toLowerCase();
-  let base = path.basename(fichier, path.extname(fichier)).trim();
+  let base = reparer(path.basename(fichier, path.extname(fichier)).trim());
   let date = null;
   const m = base.match(/\s*@\s*(\d{4}-\d{2}-\d{2})\s*/);
   if (m) { date = m[1]; base = base.replace(m[0], ' ').trim(); }
@@ -104,10 +129,10 @@ async function main() {
     };
     const ids = new Set();
     for (const nomChap of await sousDossiers(dossierClasse)) {
-      const m = nomChap.match(/^(\d+)\s*[-–._)]?\s*(.*)$/);
+      const m = reparer(nomChap).match(/^(\d+)\s*[-–._)]?\s*(.*)$/);
       const numero = m ? Number(m[1]) : null;
-      const titre = (m && m[2]) ? m[2].trim() : nomChap;
-      let id = slug(nomChap);
+      const titre = (m && m[2]) ? m[2].trim() : reparer(nomChap);
+      let id = slug(reparer(nomChap));
       while (ids.has(id)) id += '-2';
       ids.add(id);
       const ch = { id, numero, titre, documents: [], paquets: [] };
@@ -119,7 +144,7 @@ async function main() {
 
         if (norm(f).startsWith('flash') && (info.ext === 'csv' || info.ext === 'txt')) {
           const cartes = lireFlashcards(await readFile(source, 'utf8'));
-          const base = path.basename(f, path.extname(f));
+          const base = reparer(path.basename(f, path.extname(f)));
           const sep = base.indexOf(' - ');
           if (cartes.length) ch.paquets.push({ titre: sep !== -1 ? base.slice(sep + 3).trim() : 'Flashcards du chapitre', cartes });
           continue;
