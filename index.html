@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cours de mathématiques</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Cours, exercices, corrigés, fiches méthode et flashcards de mathématiques.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@500&display=swap">
+<script>
+  try { var t = localStorage.getItem('theme'); if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
+<style>
+/* Mise en page : une feuille à petits carreaux sur laquelle sont posées des cartes ; une seule colonne sur téléphone. */
+:root {
+  --fond: #f5f6fa; --carte: #ffffff; --encre: #1c2130; --encre-2: #586074; --bord: #e0e3ec; --bord-fort: #c9cedb;
+  --rouge: #c8102e; --rouge-texte: #a50d26; --rouge-doux: #fde8eb; --sur-rouge: #ffffff; --carreau: rgba(70, 100, 170, .10);
+  --t-cours: #c8102e; --t-cours-bg: #fde8eb;
+  --t-met: #a84f06; --t-met-bg: #fdf0dc;
+  --t-exo: #1f4fb8; --t-exo-bg: #e7eeff;
+  --t-cor: #0f7556; --t-cor-bg: #e0f4ec;
+  --t-dia: #6a3cc0; --t-dia-bg: #efe8fd;
+  --t-fla: #0c6f8a; --t-fla-bg: #ddf2f8;
+  --t-aut: #586074; --t-aut-bg: #eef0f5;
+  --f-titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --rayon: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #121419; --carte: #1b1e26; --encre: #eceef4; --encre-2: #a3a9b8; --bord: #2b2f3a; --bord-fort: #3c4150;
+    --rouge: #ff5a6e; --rouge-texte: #ff8292; --rouge-doux: #3a1a21; --sur-rouge: #1b0a0e; --carreau: rgba(150, 170, 230, .06);
+    --t-cours: #ff8292; --t-cours-bg: #3a1a21; --t-met: #f2b35e; --t-met-bg: #3a2a13; --t-exo: #93b2ff; --t-exo-bg: #1c2747;
+    --t-cor: #62d2a8; --t-cor-bg: #12352a; --t-dia: #bc9eff; --t-dia-bg: #2a2147; --t-fla: #62c9e3; --t-fla-bg: #12313b;
+    --t-aut: #a3a9b8; --t-aut-bg: #262a34;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #121419; --carte: #1b1e26; --encre: #eceef4; --encre-2: #a3a9b8; --bord: #2b2f3a; --bord-fort: #3c4150;
+  --rouge: #ff5a6e; --rouge-texte: #ff8292; --rouge-doux: #3a1a21; --sur-rouge: #1b0a0e; --carreau: rgba(150, 170, 230, .06);
+  --t-cours: #ff8292; --t-cours-bg: #3a1a21; --t-met: #f2b35e; --t-met-bg: #3a2a13; --t-exo: #93b2ff; --t-exo-bg: #1c2747;
+  --t-cor: #62d2a8; --t-cor-bg: #12352a; --t-dia: #bc9eff; --t-dia-bg: #2a2147; --t-fla: #62c9e3; --t-fla-bg: #12313b;
+  --t-aut: #a3a9b8; --t-aut-bg: #262a34;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background-color: var(--fond); color: var(--encre);
+  background-image: linear-gradient(var(--carreau) 1px, transparent 1px), linear-gradient(90deg, var(--carreau) 1px, transparent 1px);
+  background-size: 20px 20px;
+  font: 17px/1.6 var(--f-texte);
+  -webkit-font-smoothing: antialiased;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--carte); }
+a { color: var(--rouge-texte); }
+h1, h2, h3 { font-family: var(--f-titre); line-height: 1.15; text-wrap: balance; margin: 0; }
+:focus-visible { outline: 3px solid var(--rouge); outline-offset: 2px; border-radius: 6px; }
+.enveloppe { max-width: 1080px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* En-tête */
+.entete { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--carte); border-bottom: 1px solid var(--bord); }
+.entete .enveloppe { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding-block: 10px; }
+.marque { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--encre); margin-right: auto; min-width: 0; }
+.logo { width: 38px; height: 38px; border-radius: 10px; background: var(--rouge); color: var(--sur-rouge); display: grid; place-items: center; font: 500 15px var(--f-mono); flex: none; }
+.marque-texte { display: flex; flex-direction: column; min-width: 0; }
+.marque-nom { font: 800 19px/1.1 var(--f-titre); }
+.marque-lieu { font-size: 13px; color: var(--encre-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nav { display: flex; gap: 4px; flex-wrap: wrap; }
+.nav a { text-decoration: none; color: var(--encre); padding: 7px 12px; border-radius: 999px; font-weight: 700; font-size: 15px; }
+.nav a:hover { background: var(--rouge-doux); color: var(--rouge-texte); }
+.nav a[aria-current="page"] { background: var(--rouge); color: var(--sur-rouge); }
+.outils { display: flex; gap: 8px; align-items: center; }
+.recherche { position: relative; }
+.recherche svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 17px; height: 17px; color: var(--encre-2); pointer-events: none; }
+.recherche input { font: inherit; font-size: 15px; width: 220px; padding: 8px 12px 8px 34px; border-radius: 999px; border: 1px solid var(--bord-fort); background: var(--fond); color: var(--encre); }
+.recherche input:focus { outline: none; border-color: var(--rouge); box-shadow: 0 0 0 3px var(--rouge-doux); }
+.bouton-icone { width: 38px; height: 38px; border-radius: 999px; border: 1px solid var(--bord-fort); background: var(--carte); color: var(--encre); display: grid; place-items: center; cursor: pointer; flex: none; }
+.bouton-icone:hover { border-color: var(--rouge); color: var(--rouge-texte); }
+.bouton-icone svg { width: 19px; height: 19px; }
+@media (max-width: 720px) {
+  .outils { width: 100%; }
+  .recherche { flex: 1; }
+  .recherche input { width: 100%; }
+}
+
+main { padding-block: 28px 64px; }
+.vue { display: flex; flex-direction: column; gap: 28px; }
+
+/* Éléments communs */
+.carte { background: var(--carte); border: 1px solid var(--bord); border-radius: var(--rayon); }
+.surtitre { font: 500 13px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--rouge-texte); }
+.fil { font-size: 15px; color: var(--encre-2); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.fil a { color: var(--encre-2); }
+.fil a:hover { color: var(--rouge-texte); }
+.titre-section { font-size: 22px; display: flex; align-items: baseline; gap: 10px; }
+.titre-section small { font: 500 13px var(--f-mono); color: var(--encre-2); }
+.prose { max-width: 65ch; }
+.prose p { margin: 0 0 .8em; }
+.prose p:last-child { margin-bottom: 0; }
+.prose ul { margin: 0 0 .8em; padding-left: 1.2em; }
+.puce { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: var(--cb); color: var(--c); white-space: nowrap; }
+[data-type="cours"] { --c: var(--t-cours); --cb: var(--t-cours-bg); }
+[data-type="methode"] { --c: var(--t-met); --cb: var(--t-met-bg); }
+[data-type="exercices"] { --c: var(--t-exo); --cb: var(--t-exo-bg); }
+[data-type="corriges"] { --c: var(--t-cor); --cb: var(--t-cor-bg); }
+[data-type="diaporama"] { --c: var(--t-dia); --cb: var(--t-dia-bg); }
+[data-type="flashcards"] { --c: var(--t-fla); --cb: var(--t-fla-bg); }
+[data-type="autres"] { --c: var(--t-aut); --cb: var(--t-aut-bg); }
+.bouton { font: 700 15px var(--f-texte); display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--bord-fort); background: var(--carte); color: var(--encre); cursor: pointer; text-decoration: none; }
+.bouton:hover { border-color: var(--rouge); color: var(--rouge-texte); }
+.bouton.plein { background: var(--rouge); border-color: var(--rouge); color: var(--sur-rouge); }
+.bouton.plein:hover { filter: brightness(1.08); color: var(--sur-rouge); }
+
+/* Accueil */
+.accueil-haut { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.presentation { padding: 28px; display: flex; flex-direction: column; gap: 14px; }
+.presentation h1 { font-size: clamp(34px, 6vw, 52px); font-weight: 800; letter-spacing: -.02em; }
+.presentation h1 span { color: var(--rouge); }
+.annonces { padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+.annonces h2 { font-size: 20px; display: flex; align-items: center; gap: 8px; }
+.annonces h2 svg { width: 20px; height: 20px; color: var(--rouge); }
+.annonces .prose h3 { font: 500 13px var(--f-mono); color: var(--rouge-texte); margin: 14px 0 4px; padding-top: 12px; border-top: 1px dashed var(--bord-fort); }
+.annonces .prose h3:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+.classes { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.classe { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: center; padding: 22px; text-decoration: none; color: var(--encre); transition: border-color .15s, transform .15s; }
+.classe:hover { border-color: var(--rouge); transform: translateY(-2px); }
+.classe-sigle { width: 84px; height: 84px; border-radius: 18px; background: var(--rouge-doux); color: var(--rouge-texte); display: grid; place-items: center; font: 800 26px var(--f-titre); }
+.classe-sigle sup { font-size: .5em; }
+.classe h2 { font-size: 26px; }
+.classe p { margin: 4px 0 8px; color: var(--encre-2); font-size: 15px; }
+.chiffres { font: 500 13px var(--f-mono); color: var(--encre-2); font-variant-numeric: tabular-nums; }
+.contact { padding: 20px 22px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.contact strong { font-family: var(--f-titre); font-size: 18px; margin-right: auto; }
+.adresse { font: 500 15px var(--f-mono); user-select: all; overflow-wrap: anywhere; }
+
+/* Page d'une classe */
+.classe-grille { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; align-items: start; }
+.chapitres { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+.chapitre { padding: 18px; display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: var(--encre); transition: border-color .15s, transform .15s; }
+.chapitre:hover { border-color: var(--rouge); transform: translateY(-2px); }
+.chapitre-num { font: 500 13px var(--f-mono); color: var(--rouge-texte); }
+.chapitre h3 { font-size: 20px; }
+.puces { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 6px; }
+.progression { padding: 20px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 84px); }
+.progression h2, .progression h3 { font-size: 20px; font-family: var(--f-titre); margin-bottom: 10px; }
+.progression ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; font-size: 15px; }
+.progression li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; }
+.progression li::before { content: ""; width: 16px; height: 16px; margin-top: 4px; border-radius: 50%; border: 2px solid var(--bord-fort); }
+.progression li.fait { color: var(--encre-2); }
+.progression li.fait::before { background: var(--t-cor); border-color: var(--t-cor); }
+.progression li.encours { font-weight: 700; }
+.progression li.encours::before { border-color: var(--rouge); background: radial-gradient(circle, var(--rouge) 0 3px, transparent 4px); }
+.legende { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--bord-fort); font-size: 13px; color: var(--encre-2); }
+.legende span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; border: 2px solid var(--bord-fort); }
+.legende .l-fait::before { background: var(--t-cor); border-color: var(--t-cor); }
+.legende .l-encours::before { border-color: var(--rouge); }
+
+/* Page d'un chapitre */
+.entete-chapitre { display: flex; flex-direction: column; gap: 8px; }
+.entete-chapitre h1 { font-size: clamp(30px, 5vw, 44px); font-weight: 800; letter-spacing: -.015em; }
+.groupes { display: flex; flex-direction: column; gap: 26px; }
+.groupe { display: flex; flex-direction: column; gap: 10px; }
+.groupe-titre { display: flex; align-items: center; gap: 10px; font-size: 19px; }
+.groupe-titre .pastille { width: 12px; height: 12px; border-radius: 4px; background: var(--c); }
+.docs { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+.doc { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 14px; text-decoration: none; color: var(--encre); transition: border-color .15s; }
+a.doc:hover { border-color: var(--c); }
+.doc-icone { width: 48px; height: 56px; border-radius: 8px; background: var(--cb); color: var(--c); display: grid; place-items: center; font: 500 12px var(--f-mono); position: relative; }
+.doc-icone::after { content: ""; position: absolute; top: 0; right: 0; width: 14px; height: 14px; background: var(--carte); clip-path: polygon(0 0, 100% 100%, 100% 0); }
+.doc-titre { font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
+.doc-meta { font: 500 12px var(--f-mono); color: var(--encre-2); font-variant-numeric: tabular-nums; }
+.doc-action { font-size: 14px; font-weight: 700; color: var(--c); white-space: nowrap; }
+.doc.attente { border-style: dashed; color: var(--encre-2); }
+.doc.attente .doc-icone { background: transparent; border: 1px dashed var(--bord-fort); color: var(--encre-2); }
+.doc.attente .doc-icone::after { display: none; }
+.vide { padding: 22px; color: var(--encre-2); text-align: center; }
+
+/* Flashcards */
+.paquet { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.paquet-haut { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+.paquet-haut h3 { font-size: 19px; }
+.flash { display: block; perspective: 1200px; cursor: pointer; border: 0; background: none; padding: 0; font: inherit; color: inherit; text-align: center; width: 100%; }
+.flash-int { display: block; position: relative; min-height: 200px; transition: transform .45s; transform-style: preserve-3d; }
+.flash.retournee .flash-int { transform: rotateY(180deg); }
+.face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 22px; font-size: 20px; line-height: 1.45; overflow-wrap: anywhere; }
+.face small { font: 500 12px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; }
+.recto { background: var(--t-fla-bg); color: var(--encre); border: 1px solid var(--bord); }
+.recto small { color: var(--t-fla); }
+.verso { background: var(--carte); border: 2px solid var(--t-fla); transform: rotateY(180deg); }
+.verso small { color: var(--t-fla); }
+.paquet-bas { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.compteur { font: 500 14px var(--f-mono); color: var(--encre-2); font-variant-numeric: tabular-nums; }
+.paquet-bas .boutons { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Recherche */
+.resultats { display: flex; flex-direction: column; gap: 10px; }
+.resultat { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; padding: 12px 16px; text-decoration: none; color: var(--encre); }
+.resultat:hover { border-color: var(--rouge); }
+.resultat-titre { font-weight: 700; }
+.resultat-lieu { font-size: 14px; color: var(--encre-2); width: 100%; }
+mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 3px; padding: 0 2px; }
+
+.pied { border-top: 1px solid var(--bord); background: var(--carte); font-size: 14px; color: var(--encre-2); }
+.pied .enveloppe { padding-block: 18px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+
+@media (max-width: 860px) {
+  .accueil-haut, .classe-grille { grid-template-columns: minmax(0, 1fr); }
+  .progression { position: static; }
+}
+@media (max-width: 420px) {
+  .docs { grid-template-columns: minmax(0, 1fr); }
+  .presentation { padding: 20px; }
+  .classe-sigle { width: 64px; height: 64px; font-size: 21px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-loupe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-lune" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
+  <symbol id="i-soleil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-cloche" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 1 1 12 0v5l2 2H4z"/><path d="M10 21h4"/></symbol>
+</svg>
+
+<header class="entete">
+  <div class="enveloppe">
+    <a class="marque" href="#" data-vue="">
+      <span class="logo" aria-hidden="true">f(x)</span>
+      <span class="marque-texte">
+        <span class="marque-nom" id="nom-site">Mathématiques</span>
+        <span class="marque-lieu" id="lieu-site"></span>
+      </span>
+    </a>
+    <nav class="nav" id="nav" aria-label="Classes"></nav>
+    <div class="outils">
+      <label class="recherche">
+        <span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Rechercher un document</span>
+        <svg aria-hidden="true"><use href="#i-loupe"/></svg>
+        <input id="champ-recherche" type="search" placeholder="Rechercher un chapitre, une fiche…" autocomplete="off">
+      </label>
+      <button class="bouton-icone" id="bouton-theme" type="button" aria-label="Passer en mode sombre">
+        <svg aria-hidden="true"><use href="#i-lune"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="enveloppe">
+  <div id="contenu" class="vue"><p class="vide">Chargement…</p></div>
+</main>
+
+<footer class="pied">
+  <div class="enveloppe">
+    <span id="pied-gauche"></span>
+    <span id="pied-droite"></span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var TYPES = {
+    cours:      { label: 'Cours',            court: 'Cours' },
+    methode:    { label: 'Fiches méthode',   court: 'Méthode' },
+    exercices:  { label: 'Exercices',        court: 'Exercices' },
+    corriges:   { label: 'Corrigés',         court: 'Corrigés' },
+    diaporama:  { label: 'Diaporamas',       court: 'Diapos' },
+    flashcards: { label: 'Flashcards',       court: 'Flashcards' },
+    autres:     { label: 'Autres documents', court: 'Autres' }
+  };
+  var ORDRE = Object.keys(TYPES);
+  var MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+  var JOURS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+
+  var D = null;
+  var contenu = document.getElementById('contenu');
+  var champ = document.getElementById('champ-recherche');
+
+  /* ---------- Outils ---------- */
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function norm(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+  function lienFichier(chemin) { return chemin.split('/').map(encodeURIComponent).join('/'); }
+  function taille(o) {
+    if (!o) return '';
+    if (o < 1024 * 1024) return Math.max(1, Math.round(o / 1024)) + ' Ko';
+    return (o / 1024 / 1024).toFixed(1).replace('.', ',') + ' Mo';
+  }
+  function dateLongue(iso) {
+    var p = iso.split('-').map(Number);
+    var d = new Date(p[0], p[1] - 1, p[2]);
+    return JOURS[d.getDay()] + ' ' + p[2] + (p[2] === 1 ? 'er' : '') + ' ' + MOIS[p[1] - 1];
+  }
+  function sigle(nom) {
+    var n = norm(nom);
+    if (n.indexOf('seconde') === 0) return '<span>2<sup>de</sup></span>';
+    if (n.indexOf('premiere') === 0) return '<span>1<sup>re</sup></span>';
+    if (n.indexOf('terminale') === 0) return '<span>T<sup>le</sup></span>';
+    return esc(nom.slice(0, 3));
+  }
+  function deuxChiffres(n) { return (n < 10 ? '0' : '') + n; }
+
+  /* Mini-Markdown : titres, listes (avec [x] [~] [ ]), gras, italique, liens. */
+  function enLigne(t) {
+    return esc(t)
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>')
+      .replace(/\[([^\]]+)\]\(((?:https?:\/\/|\.?\/|documents\/)[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  }
+  function md(src) {
+    var html = '', para = [], liste = false;
+    function finPara() { if (para.length) { html += '<p>' + enLigne(para.join(' ')) + '</p>'; para = []; } }
+    function finListe() { if (liste) { html += '</ul>'; liste = false; } }
+    String(src || '').replace(/\r/g, '').split('\n').forEach(function (l) {
+      var t = l.trim(), m;
+      if (!t) { finPara(); finListe(); return; }
+      if ((m = t.match(/^(#{1,3})\s+(.*)$/))) {
+        finPara(); finListe();
+        var n = m[1].length === 1 ? 2 : 3;
+        html += '<h' + n + '>' + enLigne(m[2]) + '</h' + n + '>';
+        return;
+      }
+      if ((m = t.match(/^[-*]\s+(?:\[([ xX~])\]\s+)?(.*)$/))) {
+        finPara();
+        if (!liste) { html += '<ul>'; liste = true; }
+        var cls = m[1] === 'x' || m[1] === 'X' ? 'fait' : m[1] === '~' ? 'encours' : '';
+        html += '<li' + (cls ? ' class="' + cls + '"' : '') + '>' + enLigne(m[2]) + '</li>';
+        return;
+      }
+      finListe(); para.push(t);
+    });
+    finPara(); finListe();
+    return html;
+  }
+
+  /* Formules dans les flashcards : $...$ affiché avec KaTeX (chargé seulement si besoin). */
+  var katexEtat = 'absent';
+  function formules(texte) {
+    var brut = esc(texte);
+    if (texte.indexOf('$') === -1) return brut;
+    if (window.katex) {
+      return String(texte).split(/(\$[^$]+\$)/g).map(function (morceau) {
+        if (/^\$[^$]+\$$/.test(morceau)) {
+          try { return window.katex.renderToString(morceau.slice(1, -1), { output: 'mathml', throwOnError: false }); }
+          catch (e) { return esc(morceau); }
+        }
+        return esc(morceau);
+      }).join('');
+    }
+    if (katexEtat === 'absent') {
+      katexEtat = 'chargement';
+      var s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js';
+      s.onload = function () { katexEtat = 'pret'; rendre(); };
+      s.onerror = function () { katexEtat = 'erreur'; };
+      document.head.appendChild(s);
+    }
+    return brut;
+  }
+
+  /* ---------- Thème ---------- */
+  var boutonTheme = document.getElementById('bouton-theme');
+  function themeActuel() {
+    var t = document.documentElement.getAttribute('data-theme');
+    if (t === 'dark' || t === 'light') return t;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  function majBoutonTheme() {
+    var sombre = themeActuel() === 'dark';
+    boutonTheme.setAttribute('aria-label', sombre ? 'Passer en mode clair' : 'Passer en mode sombre');
+    boutonTheme.querySelector('use').setAttribute('href', sombre ? '#i-soleil' : '#i-lune');
+  }
+  boutonTheme.addEventListener('click', function () {
+    var nouveau = themeActuel() === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', nouveau);
+    try { localStorage.setItem('theme', nouveau); } catch (e) {}
+    majBoutonTheme();
+  });
+  if (window.matchMedia) {
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    if (mq.addEventListener) mq.addEventListener('change', majBoutonTheme);
+  }
+  majBoutonTheme();
+
+  /* ---------- Navigation ---------- */
+  var vue = '';
+  function lireAdresse() { try { return decodeURIComponent(location.hash.replace(/^#/, '')); } catch (e) { return ''; } }
+  function aller(v) {
+    vue = v || '';
+    champ.value = '';
+    try { history.pushState(null, '', vue ? '#' + vue : location.pathname + location.search); } catch (e) {}
+    rendre();
+    window.scrollTo(0, 0);
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[data-vue]');
+    if (!a || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    e.preventDefault();
+    aller(a.getAttribute('data-vue'));
+  });
+  window.addEventListener('popstate', function () { vue = lireAdresse(); rendre(); });
+  champ.addEventListener('input', rendre);
+  champ.addEventListener('keydown', function (e) { if (e.key === 'Escape') { champ.value = ''; rendre(); } });
+
+  function trouverClasse(dossier) {
+    for (var i = 0; i < D.classes.length; i++) if (D.classes[i].dossier === dossier) return D.classes[i];
+    return null;
+  }
+
+  /* ---------- Vues ---------- */
+  function compter(ch) {
+    var c = {};
+    ch.documents.forEach(function (d) { c[d.type] = (c[d.type] || 0) + 1; });
+    if (ch.paquets.length) c.flashcards = ch.paquets.length;
+    return c;
+  }
+  function puces(ch) {
+    var c = compter(ch);
+    return ORDRE.filter(function (t) { return c[t]; }).map(function (t) {
+      return '<span class="puce" data-type="' + t + '">' + c[t] + ' ' + TYPES[t].court + '</span>';
+    }).join('');
+  }
+
+  function vueAccueil() {
+    var r = D.reglages;
+    var html = '<div class="accueil-haut">' +
+      '<section class="carte presentation">' +
+        '<span class="surtitre">' + esc(r.etablissement) + '</span>' +
+        '<h1>' + esc(r.matiere) + '<span>.</span></h1>' +
+        '<div class="prose">' + md(D.textes.presentation) + '</div>' +
+      '</section>' +
+      '<section class="carte annonces" aria-labelledby="titre-annonces">' +
+        '<h2 id="titre-annonces"><svg aria-hidden="true"><use href="#i-cloche"/></svg>Annonces</h2>' +
+        '<div class="prose">' + (D.textes.annonces ? md(D.textes.annonces) : '<p>Aucune annonce pour le moment.</p>') + '</div>' +
+      '</section>' +
+    '</div>';
+
+    html += '<section class="classes" aria-label="Classes">' + D.classes.map(function (c) {
+      var nbDocs = 0;
+      c.chapitres.forEach(function (ch) { nbDocs += ch.documents.filter(function (d) { return d.disponible; }).length + ch.paquets.length; });
+      return '<a class="carte classe" href="#' + esc(c.dossier) + '" data-vue="' + esc(c.dossier) + '">' +
+        '<span class="classe-sigle" aria-hidden="true">' + sigle(c.nom) + '</span>' +
+        '<span><h2>' + esc(c.nom) + '</h2><p>' + esc(c.description || '') + '</p>' +
+        '<span class="chiffres">' + c.chapitres.length + ' chapitre' + (c.chapitres.length > 1 ? 's' : '') + ' · ' + nbDocs + ' document' + (nbDocs > 1 ? 's' : '') + '</span></span>' +
+      '</a>';
+    }).join('') + '</section>';
+
+    if (r.email) {
+      html += '<section class="carte contact">' +
+        '<strong>Une question ?</strong>' +
+        '<span class="adresse" id="adresse-mail">' + esc(r.email) + '</span>' +
+        '<button class="bouton" type="button" id="copier-mail">Copier l’adresse</button>' +
+        '<a class="bouton plein" href="mailto:' + esc(r.email) + '">Écrire un mail</a>' +
+      '</section>';
+    }
+    return html;
+  }
+
+  function vueClasse(c) {
+    var chap = c.chapitres.map(function (ch) {
+      return '<a class="carte chapitre" href="#' + esc(c.dossier + '~' + ch.id) + '" data-vue="' + esc(c.dossier + '~' + ch.id) + '">' +
+        '<span class="chapitre-num">' + (ch.numero ? 'Chapitre ' + deuxChiffres(ch.numero) : 'Chapitre') + '</span>' +
+        '<h3>' + esc(ch.titre) + '</h3>' +
+        '<span class="puces">' + puces(ch) + '</span>' +
+      '</a>';
+    }).join('');
+    var prog = c.progression
+      ? '<aside class="carte progression" aria-label="Progression de l’année">' + md(c.progression) +
+        '<div class="legende"><span class="l-fait">Traité</span><span class="l-encours">En cours</span><span>À venir</span></div></aside>'
+      : '';
+    return '<nav class="fil" aria-label="Fil d’Ariane"><a href="#" data-vue="">Accueil</a><span aria-hidden="true">›</span><span>' + esc(c.nom) + '</span></nav>' +
+      '<div class="entete-chapitre"><span class="surtitre">' + esc(c.description || '') + '</span><h1>' + esc(c.nom) + '</h1></div>' +
+      '<div class="classe-grille' + (prog ? '' : ' sans-prog') + '"' + (prog ? '' : ' style="grid-template-columns:minmax(0,1fr)"') + '>' +
+        (chap ? '<div class="chapitres">' + chap + '</div>' : '<p class="carte vide">Aucun chapitre pour l’instant.</p>') +
+        prog +
+      '</div>';
+  }
+
+  function carteDoc(d) {
+    if (!d.disponible) {
+      return '<div class="carte doc attente" data-type="' + d.type + '">' +
+        '<span class="doc-icone" aria-hidden="true">…</span>' +
+        '<span><span class="doc-titre">' + esc(d.titre) + '</span><br><span class="doc-meta">Disponible le ' + esc(dateLongue(d.date)) + '</span></span>' +
+        '<span></span></div>';
+    }
+    return '<a class="carte doc" data-type="' + d.type + '" href="' + esc(lienFichier(d.fichier)) + '" target="_blank" rel="noopener">' +
+      '<span class="doc-icone" aria-hidden="true">' + esc(d.ext.toUpperCase().slice(0, 4)) + '</span>' +
+      '<span><span class="doc-titre">' + esc(d.titre) + '</span><br><span class="doc-meta">' + esc(d.ext.toUpperCase()) + ' · ' + taille(d.taille) + '</span></span>' +
+      '<span class="doc-action">Ouvrir</span></a>';
+  }
+
+  var paquetsEtat = {};
+  function cartePaquet(cle, p) {
+    var e = paquetsEtat[cle] || (paquetsEtat[cle] = { i: 0, ordre: p.cartes.map(function (_, k) { return k; }), retournee: false });
+    var carte = p.cartes[e.ordre[e.i]];
+    return '<div class="carte paquet" data-type="flashcards" data-paquet="' + esc(cle) + '">' +
+      '<div class="paquet-haut"><h3>' + esc(p.titre) + '</h3><span class="puce">' + p.cartes.length + ' cartes</span></div>' +
+      '<button type="button" class="flash' + (e.retournee ? ' retournee' : '') + '" data-action="retourner" aria-label="Retourner la carte">' +
+        '<span class="flash-int">' +
+          '<span class="face recto"><small>Question</small><span>' + formules(carte.q) + '</span></span>' +
+          '<span class="face verso"><small>Réponse</small><span>' + formules(carte.r) + '</span></span>' +
+        '</span>' +
+      '</button>' +
+      '<div class="paquet-bas"><span class="compteur">' + (e.i + 1) + ' / ' + p.cartes.length + '</span>' +
+        '<span class="boutons">' +
+          '<button class="bouton" type="button" data-action="precedente">Précédente</button>' +
+          '<button class="bouton" type="button" data-action="melanger">Mélanger</button>' +
+          '<button class="bouton plein" type="button" data-action="suivante">Suivante</button>' +
+        '</span></div>' +
+    '</div>';
+  }
+
+  function vueChapitre(c, ch) {
+    var groupes = {};
+    ch.documents.forEach(function (d) { (groupes[d.type] = groupes[d.type] || []).push(d); });
+    var html = '<nav class="fil" aria-label="Fil d’Ariane"><a href="#" data-vue="">Accueil</a><span aria-hidden="true">›</span>' +
+      '<a href="#' + esc(c.dossier) + '" data-vue="' + esc(c.dossier) + '">' + esc(c.nom) + '</a><span aria-hidden="true">›</span><span>' + esc(ch.titre) + '</span></nav>' +
+      '<div class="entete-chapitre"><span class="surtitre">' + esc(c.nom) + (ch.numero ? ' · Chapitre ' + deuxChiffres(ch.numero) : '') + '</span>' +
+      '<h1>' + esc(ch.titre) + '</h1></div><div class="groupes">';
+    ORDRE.forEach(function (t) {
+      if (t === 'flashcards') {
+        if (!ch.paquets.length) return;
+        html += '<section class="groupe" data-type="flashcards"><h2 class="groupe-titre"><span class="pastille" aria-hidden="true"></span>Flashcards</h2>' +
+          '<div class="docs" style="grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr))">' +
+          ch.paquets.map(function (p, k) { return cartePaquet(c.dossier + '~' + ch.id + '~' + k, p); }).join('') + '</div></section>';
+        return;
+      }
+      if (!groupes[t]) return;
+      html += '<section class="groupe" data-type="' + t + '"><h2 class="groupe-titre"><span class="pastille" aria-hidden="true"></span>' + TYPES[t].label + '</h2>' +
+        '<div class="docs">' + groupes[t].map(carteDoc).join('') + '</div></section>';
+    });
+    if (!ch.documents.length && !ch.paquets.length) html += '<p class="carte vide">Les documents de ce chapitre arrivent bientôt.</p>';
+    return html + '</div>';
+  }
+
+  function vueRecherche(q) {
+    var mots = norm(q).split(/\s+/).filter(Boolean);
+    var res = [];
+    D.classes.forEach(function (c) {
+      c.chapitres.forEach(function (ch) {
+        var lieu = c.nom + ' · ' + ch.titre;
+        var cible = c.dossier + '~' + ch.id;
+        function test(texte) { var n = norm(texte + ' ' + lieu); return mots.every(function (m) { return n.indexOf(m) !== -1; }); }
+        if (test('chapitre')) res.push({ titre: ch.titre, lieu: c.nom + (ch.numero ? ' · Chapitre ' + deuxChiffres(ch.numero) : ''), cible: cible, type: null, lien: null });
+        ch.documents.forEach(function (d) {
+          if (d.disponible && test(TYPES[d.type].label + ' ' + d.titre)) res.push({ titre: d.titre, lieu: lieu, cible: cible, type: d.type, lien: d.fichier });
+        });
+        ch.paquets.forEach(function (p) {
+          var texte = 'flashcards ' + p.titre + ' ' + p.cartes.map(function (k) { return k.q + ' ' + k.r; }).join(' ');
+          if (test(texte)) res.push({ titre: p.titre, lieu: lieu, cible: cible, type: 'flashcards', lien: null });
+        });
+      });
+    });
+    function surligner(t) {
+      var h = esc(t);
+      mots.forEach(function (m) {
+        var n = norm(t), i = n.indexOf(m);
+        if (i !== -1 && m.length > 1) {
+          var orig = t.substr(i, m.length);
+          h = h.replace(esc(orig), '<mark>' + esc(orig) + '</mark>');
+        }
+      });
+      return h;
+    }
+    var html = '<h1 class="titre-section">Résultats <small>' + res.length + ' pour « ' + esc(q) + ' »</small></h1>';
+    if (!res.length) return html + '<p class="carte vide">Rien trouvé. Essayez un autre mot, par exemple « fonction » ou « méthode ».</p>';
+    return html + '<div class="resultats">' + res.slice(0, 60).map(function (r) {
+      var badge = r.type ? '<span class="puce" data-type="' + r.type + '">' + TYPES[r.type].court + '</span>' : '<span class="puce" data-type="cours" style="--cb:var(--rouge-doux)">Chapitre</span>';
+      var attrs = r.lien
+        ? 'href="' + esc(lienFichier(r.lien)) + '" target="_blank" rel="noopener"'
+        : 'href="#' + esc(r.cible) + '" data-vue="' + esc(r.cible) + '"';
+      return '<a class="carte resultat" ' + attrs + '>' + badge + '<span class="resultat-titre">' + surligner(r.titre) + '</span><span class="resultat-lieu">' + esc(r.lieu) + '</span></a>';
+    }).join('') + '</div>';
+  }
+
+  /* ---------- Rendu ---------- */
+  function rendre() {
+    if (!D) return;
+    var q = champ.value.trim();
+    var parts = vue.split('~');
+    var c = trouverClasse(parts[0]);
+    var ch = null;
+    if (c && parts[1]) c.chapitres.forEach(function (x) { if (x.id === parts[1]) ch = x; });
+
+    Array.prototype.forEach.call(document.querySelectorAll('#nav a'), function (a) {
+      if (c && a.getAttribute('data-vue') === c.dossier) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+
+    var titre = D.reglages.matiere;
+    if (q.length >= 2) contenu.innerHTML = vueRecherche(q);
+    else if (c && ch) { contenu.innerHTML = vueChapitre(c, ch); titre = ch.titre + ' · ' + c.nom; }
+    else if (c) { contenu.innerHTML = vueClasse(c); titre = c.nom + ' · ' + D.reglages.matiere; }
+    else contenu.innerHTML = vueAccueil();
+    document.title = titre + ' · ' + D.reglages.etablissement;
+  }
+
+  contenu.addEventListener('click', function (e) {
+    var copie = e.target.closest('#copier-mail');
+    if (copie) {
+      var adr = D.reglages.email;
+      var ok = function () { copie.textContent = 'Adresse copiée'; setTimeout(function () { copie.textContent = 'Copier l’adresse'; }, 2000); };
+      var repli = function () { var r = document.createRange(); r.selectNodeContents(document.getElementById('adresse-mail')); var s = getSelection(); s.removeAllRanges(); s.addRange(r); copie.textContent = 'Adresse sélectionnée'; };
+      try { navigator.clipboard.writeText(adr).then(ok, repli); } catch (err) { repli(); }
+      return;
+    }
+    var b = e.target.closest('[data-action]');
+    if (!b) return;
+    var bloc = b.closest('[data-paquet]');
+    var cle = bloc.getAttribute('data-paquet');
+    var st = paquetsEtat[cle];
+    var n = st.ordre.length;
+    var action = b.getAttribute('data-action');
+    if (action === 'retourner') {
+      st.retournee = !st.retournee;
+      bloc.querySelector('.flash').classList.toggle('retournee', st.retournee);
+      return;
+    }
+    if (action === 'suivante') st.i = (st.i + 1) % n;
+    if (action === 'precedente') st.i = (st.i - 1 + n) % n;
+    if (action === 'melanger') {
+      for (var k = n - 1; k > 0; k--) { var j = Math.floor(Math.random() * (k + 1)); var tmp = st.ordre[k]; st.ordre[k] = st.ordre[j]; st.ordre[j] = tmp; }
+      st.i = 0;
+    }
+    st.retournee = false;
+    var parts = cle.split('~');
+    var c = trouverClasse(parts[0]), p;
+    c.chapitres.forEach(function (x) { if (x.id === parts[1]) p = x.paquets[Number(parts[2])]; });
+    var div = document.createElement('div');
+    div.innerHTML = cartePaquet(cle, p);
+    bloc.replaceWith(div.firstChild);
+  });
+
+  function demarrer(donnees) {
+    D = donnees;
+    var r = D.reglages;
+    document.getElementById('nom-site').textContent = r.matiere;
+    document.getElementById('lieu-site').textContent = r.etablissement;
+    document.getElementById('nav').innerHTML = D.classes.map(function (c) {
+      return '<a href="#' + esc(c.dossier) + '" data-vue="' + esc(c.dossier) + '">' + esc(c.nom) + '</a>';
+    }).join('');
+    document.getElementById('pied-gauche').textContent = r.matiere + ' · ' + r.etablissement;
+    var g = new Date(D.genere);
+    document.getElementById('pied-droite').textContent = 'Mis à jour le ' + g.getDate() + ' ' + MOIS[g.getMonth()] + ' ' + g.getFullYear();
+    vue = lireAdresse();
+    rendre();
+  }
+
+  fetch('donnees.json', { cache: 'no-cache' })
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(demarrer)
+    .catch(function () {
+      contenu.innerHTML = '<p class="carte vide">Le site n’a pas pu charger la liste des documents. Réessayez dans quelques instants.</p>';
+    });
+})();
+</script>
+</body>
+</html>

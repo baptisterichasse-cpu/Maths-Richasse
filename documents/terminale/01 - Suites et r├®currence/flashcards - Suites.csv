@@ -1,0 +1,7 @@
+question;réponse
+Terme général d'une suite arithmétique ?;$u_n = u_0 + nr$
+Terme général d'une suite géométrique ?;$u_n = u_0 \times q^n$
+Somme $1 + 2 + \dots + n$ ?;$\dfrac{n(n+1)}{2}$
+Somme $1 + q + \dots + q^n$ (avec $q \neq 1$) ?;$\dfrac{1-q^{n+1}}{1-q}$
+Les trois étapes d'une récurrence ?;Initialisation, hérédité, conclusion
+Si $-1 < q < 1$, limite de $q^n$ ?;$0$
