@@ -5,25 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cours de mathématiques</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Cours, exercices, corrigés, fiches méthode et flashcards de mathématiques.">
+<meta name="description" content="Cours, exercices, corrigés, fiches méthode, flashcards et QCM de mathématiques.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=JetBrains+Mono:wght@500&display=swap">
 <script>
   try { var t = localStorage.getItem('theme'); if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
 </script>
 <style>
-/* Mise en page : une feuille à petits carreaux sur laquelle sont posées des cartes ; une seule colonne sur téléphone. */
+/* Mise en page : un bandeau ardoise en haut (en-tête + titre de la page), puis des cartes blanches sur fond gris clair. */
 :root {
-  --fond: #f5f6fa; --carte: #ffffff; --encre: #1c2130; --encre-2: #586074; --bord: #e0e3ec; --bord-fort: #c9cedb;
-  --rouge: #c8102e; --rouge-texte: #a50d26; --rouge-doux: #fde8eb; --sur-rouge: #ffffff; --carreau: rgba(70, 100, 170, .10);
-  --t-cours: #c8102e; --t-cours-bg: #fde8eb;
-  --t-met: #a84f06; --t-met-bg: #fdf0dc;
+  --fond: #f1f2f5; --carte: #ffffff; --encre: #1b2030; --encre-2: #5a6172; --bord: #dfe2ea; --bord-fort: #c6cad6;
+  --rouge: #c8102e; --rouge-texte: #a50d26; --rouge-doux: #fde8eb; --sur-rouge: #ffffff;
+  --bande: #1c2232; --bande-encre: #eef0f6; --bande-encre-2: #b4bacb; --bande-accent: #ff7a8c; --bande-bord: #3a4258; --bande-champ: #262d40; --bande-pastille: #e0263f;
+  --vert: #0f7556; --vert-doux: #e0f4ec;
+  --t-cours: #b80e2a; --t-cours-bg: #fde8eb;
+  --t-met: #995204; --t-met-bg: #fdf0dc;
   --t-exo: #1f4fb8; --t-exo-bg: #e7eeff;
   --t-cor: #0f7556; --t-cor-bg: #e0f4ec;
   --t-dia: #6a3cc0; --t-dia-bg: #efe8fd;
-  --t-fla: #0c6f8a; --t-fla-bg: #ddf2f8;
-  --t-aut: #586074; --t-aut-bg: #eef0f5;
+  --t-fla: #0c6582; --t-fla-bg: #ddf2f8;
+  --t-qcm: #a8215f; --t-qcm-bg: #fbe6f0;
+  --t-aut: #565e70; --t-aut-bg: #eceef3;
   --f-titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --f-texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
   --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
@@ -31,143 +34,172 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --fond: #121419; --carte: #1b1e26; --encre: #eceef4; --encre-2: #a3a9b8; --bord: #2b2f3a; --bord-fort: #3c4150;
-    --rouge: #ff5a6e; --rouge-texte: #ff8292; --rouge-doux: #3a1a21; --sur-rouge: #1b0a0e; --carreau: rgba(150, 170, 230, .06);
+    --fond: #11141c; --carte: #1a1f2b; --encre: #eceef4; --encre-2: #a3a9b8; --bord: #2a3040; --bord-fort: #3b4254;
+    --rouge: #ff5a6e; --rouge-texte: #ff8292; --rouge-doux: #3a1a21; --sur-rouge: #1b0a0e;
+    --bande: #0a0d14; --bande-encre: #eef0f6; --bande-encre-2: #a9b0c3; --bande-accent: #ff8292; --bande-bord: #262c3c; --bande-champ: #151a26; --bande-pastille: #e0263f;
+    --vert: #62d2a8; --vert-doux: #12352a;
     --t-cours: #ff8292; --t-cours-bg: #3a1a21; --t-met: #f2b35e; --t-met-bg: #3a2a13; --t-exo: #93b2ff; --t-exo-bg: #1c2747;
     --t-cor: #62d2a8; --t-cor-bg: #12352a; --t-dia: #bc9eff; --t-dia-bg: #2a2147; --t-fla: #62c9e3; --t-fla-bg: #12313b;
-    --t-aut: #a3a9b8; --t-aut-bg: #262a34;
+    --t-qcm: #f28dbd; --t-qcm-bg: #3a1a2c; --t-aut: #a3a9b8; --t-aut-bg: #262a34;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --fond: #121419; --carte: #1b1e26; --encre: #eceef4; --encre-2: #a3a9b8; --bord: #2b2f3a; --bord-fort: #3c4150;
-  --rouge: #ff5a6e; --rouge-texte: #ff8292; --rouge-doux: #3a1a21; --sur-rouge: #1b0a0e; --carreau: rgba(150, 170, 230, .06);
+  --fond: #11141c; --carte: #1a1f2b; --encre: #eceef4; --encre-2: #a3a9b8; --bord: #2a3040; --bord-fort: #3b4254;
+  --rouge: #ff5a6e; --rouge-texte: #ff8292; --rouge-doux: #3a1a21; --sur-rouge: #1b0a0e;
+  --bande: #0a0d14; --bande-encre: #eef0f6; --bande-encre-2: #a9b0c3; --bande-accent: #ff8292; --bande-bord: #262c3c; --bande-champ: #151a26; --bande-pastille: #e0263f;
+  --vert: #62d2a8; --vert-doux: #12352a;
   --t-cours: #ff8292; --t-cours-bg: #3a1a21; --t-met: #f2b35e; --t-met-bg: #3a2a13; --t-exo: #93b2ff; --t-exo-bg: #1c2747;
   --t-cor: #62d2a8; --t-cor-bg: #12352a; --t-dia: #bc9eff; --t-dia-bg: #2a2147; --t-fla: #62c9e3; --t-fla-bg: #12313b;
-  --t-aut: #a3a9b8; --t-aut-bg: #262a34;
+  --t-qcm: #f28dbd; --t-qcm-bg: #3a1a2c; --t-aut: #a3a9b8; --t-aut-bg: #262a34;
   color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
-body {
-  margin: 0; background-color: var(--fond); color: var(--encre);
-  background-image: linear-gradient(var(--carreau) 1px, transparent 1px), linear-gradient(90deg, var(--carreau) 1px, transparent 1px);
-  background-size: 20px 20px;
-  font: 17px/1.6 var(--f-texte);
-  -webkit-font-smoothing: antialiased;
-}
-body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--carte); }
+body { margin: 0; background: var(--fond); color: var(--encre); font: 17px/1.6 var(--f-texte); -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bande); }
 a { color: var(--rouge-texte); }
-h1, h2, h3 { font-family: var(--f-titre); line-height: 1.15; text-wrap: balance; margin: 0; }
+h1, h2, h3, h4 { font-family: var(--f-titre); line-height: 1.15; text-wrap: balance; margin: 0; }
 :focus-visible { outline: 3px solid var(--rouge); outline-offset: 2px; border-radius: 6px; }
-.enveloppe { max-width: 1080px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.cache { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.enveloppe { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 
-/* En-tête */
-.entete { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--carte); border-bottom: 1px solid var(--bord); }
-.entete .enveloppe { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding-block: 10px; }
-.marque { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--encre); margin-right: auto; min-width: 0; }
-.logo { width: 38px; height: 38px; border-radius: 10px; background: var(--rouge); color: var(--sur-rouge); display: grid; place-items: center; font: 500 15px var(--f-mono); flex: none; }
-.marque-texte { display: flex; flex-direction: column; min-width: 0; }
-.marque-nom { font: 800 19px/1.1 var(--f-titre); }
-.marque-lieu { font-size: 13px; color: var(--encre-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Bandeau */
+.bandeau { background: var(--bande); color: var(--bande-encre); }
+.bandeau a { color: var(--bande-encre); }
+.entete { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bande); border-bottom: 1px solid transparent; transition: border-color .2s; }
+.entete.colle { border-bottom-color: var(--bande-bord); }
+.entete .enveloppe { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; padding-block: 12px; }
+.marque { display: flex; align-items: center; gap: 12px; text-decoration: none; margin-right: auto; min-width: 0; }
+.logo { width: 40px; height: 40px; border-radius: 10px; background: var(--bande-pastille); color: #ffffff; display: grid; place-items: center; font: 500 14px var(--f-mono); flex: none; }
+.marque-texte { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
+.marque-nom { font: 800 19px/1.15 var(--f-titre); }
+.marque-lieu { font-size: 13px; color: var(--bande-encre-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .nav { display: flex; gap: 4px; flex-wrap: wrap; }
-.nav a { text-decoration: none; color: var(--encre); padding: 7px 12px; border-radius: 999px; font-weight: 700; font-size: 15px; }
-.nav a:hover { background: var(--rouge-doux); color: var(--rouge-texte); }
-.nav a[aria-current="page"] { background: var(--rouge); color: var(--sur-rouge); }
+.nav a { text-decoration: none; padding: 7px 14px; border-radius: 999px; font-weight: 700; font-size: 15px; }
+.nav a:hover { background: var(--bande-champ); }
+.nav a[aria-current="page"] { background: var(--bande-pastille); color: #ffffff; }
 .outils { display: flex; gap: 8px; align-items: center; }
 .recherche { position: relative; }
-.recherche svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 17px; height: 17px; color: var(--encre-2); pointer-events: none; }
-.recherche input { font: inherit; font-size: 15px; width: 220px; padding: 8px 12px 8px 34px; border-radius: 999px; border: 1px solid var(--bord-fort); background: var(--fond); color: var(--encre); }
-.recherche input:focus { outline: none; border-color: var(--rouge); box-shadow: 0 0 0 3px var(--rouge-doux); }
-.bouton-icone { width: 38px; height: 38px; border-radius: 999px; border: 1px solid var(--bord-fort); background: var(--carte); color: var(--encre); display: grid; place-items: center; cursor: pointer; flex: none; }
-.bouton-icone:hover { border-color: var(--rouge); color: var(--rouge-texte); }
+.recherche svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 17px; height: 17px; color: var(--bande-encre-2); pointer-events: none; }
+.recherche input { font: inherit; font-size: 15px; width: 230px; padding: 8px 14px 8px 36px; border-radius: 999px; border: 1px solid var(--bande-bord); background: var(--bande-champ); color: var(--bande-encre); }
+.recherche input::placeholder { color: var(--bande-encre-2); }
+.recherche input:focus { outline: none; border-color: var(--bande-accent); }
+.bouton-icone { width: 40px; height: 40px; border-radius: 999px; border: 1px solid var(--bande-bord); background: var(--bande-champ); color: var(--bande-encre); display: grid; place-items: center; cursor: pointer; flex: none; }
+.bouton-icone:hover { border-color: var(--bande-accent); }
 .bouton-icone svg { width: 19px; height: 19px; }
-@media (max-width: 720px) {
+@media (max-width: 760px) {
   .outils { width: 100%; }
   .recherche { flex: 1; }
   .recherche input { width: 100%; }
 }
+.tete { padding-block: 28px 56px; display: flex; flex-direction: column; gap: 12px; }
+.tete.haute { padding-block: 36px 104px; }
+.tete h1 { font-weight: 800; font-size: clamp(32px, 5.4vw, 54px); line-height: 1.05; letter-spacing: -.02em; max-width: 20ch; }
+.tete .prose { color: var(--bande-encre-2); }
+.tete .prose a { color: var(--bande-encre); }
+.tete .prose strong { color: var(--bande-encre); }
+.surtitre { font: 500 13px var(--f-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--rouge-texte); }
+.bandeau .surtitre { color: var(--bande-accent); }
+.fil { font-size: 15px; color: var(--bande-encre-2); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.bandeau .fil a { color: var(--bande-encre-2); }
+.bandeau .fil a:hover { color: var(--bande-encre); }
 
-main { padding-block: 28px 64px; }
-.vue { display: flex; flex-direction: column; gap: 28px; }
+main { padding-block: 28px 64px; display: flex; flex-direction: column; gap: 24px; }
+main.chevauche { margin-top: -72px; }
 
 /* Éléments communs */
 .carte { background: var(--carte); border: 1px solid var(--bord); border-radius: var(--rayon); }
-.surtitre { font: 500 13px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--rouge-texte); }
-.fil { font-size: 15px; color: var(--encre-2); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.fil a { color: var(--encre-2); }
-.fil a:hover { color: var(--rouge-texte); }
-.titre-section { font-size: 22px; display: flex; align-items: baseline; gap: 10px; }
-.titre-section small { font: 500 13px var(--f-mono); color: var(--encre-2); }
 .prose { max-width: 65ch; }
 .prose p { margin: 0 0 .8em; }
 .prose p:last-child { margin-bottom: 0; }
-.prose ul { margin: 0 0 .8em; padding-left: 1.2em; }
+.prose ul, .prose ol { margin: 0 0 .8em; padding-left: 1.3em; }
+.prose li { margin-bottom: .25em; }
+.prose h2 { font-size: 24px; margin: 1.3em 0 .5em; }
+.prose h3 { font-size: 19px; margin: 1.1em 0 .4em; }
+.prose h2:first-child, .prose h3:first-child { margin-top: 0; }
+.titre-section { font-size: 21px; display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px; }
+.titre-section small { font: 500 13px var(--f-mono); color: var(--encre-2); }
 .puce { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: var(--cb); color: var(--c); white-space: nowrap; }
+.puce-nouveau { font: 700 11px var(--f-texte); letter-spacing: .04em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; background: var(--rouge); color: var(--sur-rouge); vertical-align: 2px; white-space: nowrap; }
 [data-type="cours"] { --c: var(--t-cours); --cb: var(--t-cours-bg); }
 [data-type="methode"] { --c: var(--t-met); --cb: var(--t-met-bg); }
 [data-type="exercices"] { --c: var(--t-exo); --cb: var(--t-exo-bg); }
 [data-type="corriges"] { --c: var(--t-cor); --cb: var(--t-cor-bg); }
 [data-type="diaporama"] { --c: var(--t-dia); --cb: var(--t-dia-bg); }
 [data-type="flashcards"] { --c: var(--t-fla); --cb: var(--t-fla-bg); }
+[data-type="qcm"] { --c: var(--t-qcm); --cb: var(--t-qcm-bg); }
 [data-type="autres"] { --c: var(--t-aut); --cb: var(--t-aut-bg); }
-.bouton { font: 700 15px var(--f-texte); display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--bord-fort); background: var(--carte); color: var(--encre); cursor: pointer; text-decoration: none; }
+[data-type="chapitre"] { --c: var(--rouge-texte); --cb: var(--rouge-doux); }
+.bouton { font: 700 15px var(--f-texte); display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 16px; min-height: 42px; border-radius: 999px; border: 1px solid var(--bord-fort); background: var(--carte); color: var(--encre); cursor: pointer; text-decoration: none; }
 .bouton:hover { border-color: var(--rouge); color: var(--rouge-texte); }
 .bouton.plein { background: var(--rouge); border-color: var(--rouge); color: var(--sur-rouge); }
 .bouton.plein:hover { filter: brightness(1.08); color: var(--sur-rouge); }
+.bouton.discret { border-color: transparent; background: transparent; color: var(--encre-2); padding-inline: 8px; }
+.bouton.discret:hover { color: var(--rouge-texte); }
+.bouton svg { width: 17px; height: 17px; }
+.grille-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 24px; align-items: start; }
+.bloc { padding: 24px 26px; display: flex; flex-direction: column; gap: 14px; }
+.bloc > h2 { font-size: 21px; }
 
 /* Accueil */
-.accueil-haut { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 20px; align-items: start; }
-.presentation { padding: 28px; display: flex; flex-direction: column; gap: 14px; }
-.presentation h1 { font-size: clamp(34px, 6vw, 52px); font-weight: 800; letter-spacing: -.02em; }
-.presentation h1 span { color: var(--rouge); }
-.annonces { padding: 22px; display: flex; flex-direction: column; gap: 12px; }
-.annonces h2 { font-size: 20px; display: flex; align-items: center; gap: 8px; }
-.annonces h2 svg { width: 20px; height: 20px; color: var(--rouge); }
-.annonces .prose h3 { font: 500 13px var(--f-mono); color: var(--rouge-texte); margin: 14px 0 4px; padding-top: 12px; border-top: 1px dashed var(--bord-fort); }
-.annonces .prose h3:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
-.classes { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-.classe { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: center; padding: 22px; text-decoration: none; color: var(--encre); transition: border-color .15s, transform .15s; }
+.classe { display: flex; flex-direction: column; gap: 6px; padding: 26px 28px; text-decoration: none; color: var(--encre); transition: border-color .15s, transform .15s; }
 .classe:hover { border-color: var(--rouge); transform: translateY(-2px); }
-.classe-sigle { width: 84px; height: 84px; border-radius: 18px; background: var(--rouge-doux); color: var(--rouge-texte); display: grid; place-items: center; font: 800 26px var(--f-titre); }
-.classe-sigle sup { font-size: .5em; }
-.classe h2 { font-size: 26px; }
-.classe p { margin: 4px 0 8px; color: var(--encre-2); font-size: 15px; }
-.chiffres { font: 500 13px var(--f-mono); color: var(--encre-2); font-variant-numeric: tabular-nums; }
-.contact { padding: 20px 22px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
-.contact strong { font-family: var(--f-titre); font-size: 18px; margin-right: auto; }
+.classe-chiffres { font: 500 13px var(--f-mono); color: var(--rouge-texte); font-variant-numeric: tabular-nums; }
+.classe h2 { font-size: 32px; font-weight: 800; }
+.classe p { margin: 0; color: var(--encre-2); font-size: 15px; }
+.classe-lien { margin-top: 8px; font-weight: 700; font-size: 15px; color: var(--rouge-texte); }
+.annonces .prose h4 { font: 500 13px var(--f-mono); color: var(--rouge-texte); margin: 14px 0 2px; padding-top: 12px; border-top: 1px solid var(--bord); }
+.annonces .prose h4:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+.annonces .prose p { margin-bottom: 0; }
+.nouveautes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.nouveautes li + li { border-top: 1px solid var(--bord); }
+.nouveaute { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 2px 12px; align-items: baseline; padding: 10px 0; text-decoration: none; color: var(--encre); }
+.nouveaute:hover .nouveaute-titre { color: var(--rouge-texte); }
+.nouveaute .puce { grid-row: span 2; align-self: center; justify-self: start; }
+.nouveaute-titre { font-weight: 700; line-height: 1.35; }
+.nouveaute-lieu { font-size: 14px; color: var(--encre-2); }
+.contact { padding: 20px 26px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.contact strong { font-family: var(--f-titre); font-size: 19px; margin-right: auto; }
 .adresse { font: 500 15px var(--f-mono); user-select: all; overflow-wrap: anywhere; }
 
 /* Page d'une classe */
 .classe-grille { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; align-items: start; }
-.chapitres { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-.chapitre { padding: 18px; display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: var(--encre); transition: border-color .15s, transform .15s; }
+.chapitres { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 16px; }
+.chapitre { padding: 20px; display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: var(--encre); transition: border-color .15s, transform .15s; }
 .chapitre:hover { border-color: var(--rouge); transform: translateY(-2px); }
 .chapitre-num { font: 500 13px var(--f-mono); color: var(--rouge-texte); }
 .chapitre h3 { font-size: 20px; }
 .puces { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 6px; }
-.progression { padding: 20px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 84px); }
-.progression h2, .progression h3 { font-size: 20px; font-family: var(--f-titre); margin-bottom: 10px; }
+.progression { padding: 22px; }
+.progression h3 { font-size: 20px; margin-bottom: 10px; }
 .progression ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; font-size: 15px; }
-.progression li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; }
+.progression li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; margin: 0; }
 .progression li::before { content: ""; width: 16px; height: 16px; margin-top: 4px; border-radius: 50%; border: 2px solid var(--bord-fort); }
 .progression li.fait { color: var(--encre-2); }
-.progression li.fait::before { background: var(--t-cor); border-color: var(--t-cor); }
+.progression li.fait::before { background: var(--vert); border-color: var(--vert); }
 .progression li.encours { font-weight: 700; }
 .progression li.encours::before { border-color: var(--rouge); background: radial-gradient(circle, var(--rouge) 0 3px, transparent 4px); }
-.legende { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--bord-fort); font-size: 13px; color: var(--encre-2); }
+.legende { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--bord); font-size: 13px; color: var(--encre-2); }
 .legende span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; border: 2px solid var(--bord-fort); }
-.legende .l-fait::before { background: var(--t-cor); border-color: var(--t-cor); }
+.legende .l-fait::before { background: var(--vert); border-color: var(--vert); }
 .legende .l-encours::before { border-color: var(--rouge); }
 
 /* Page d'un chapitre */
-.entete-chapitre { display: flex; flex-direction: column; gap: 8px; }
-.entete-chapitre h1 { font-size: clamp(30px, 5vw, 44px); font-weight: 800; letter-spacing: -.015em; }
-.groupes { display: flex; flex-direction: column; gap: 26px; }
-.groupe { display: flex; flex-direction: column; gap: 10px; }
-.groupe-titre { display: flex; align-items: center; gap: 10px; font-size: 19px; }
+.essentiel { padding: 22px 26px; display: flex; flex-direction: column; gap: 12px; }
+.essentiel-haut { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+.essentiel-haut h2 { font-size: 21px; display: flex; align-items: center; gap: 10px; }
+.essentiel-haut h2 svg { width: 22px; height: 22px; color: var(--rouge); }
+.essentiel .prose { max-width: none; columns: 2 300px; column-gap: 40px; }
+.essentiel .prose h3 { break-after: avoid; font-size: 16px; font-family: var(--f-mono); font-weight: 500; letter-spacing: .05em; text-transform: uppercase; color: var(--rouge-texte); }
+.essentiel .prose ul { break-inside: auto; }
+.essentiel .prose li { break-inside: avoid; }
+.groupes { display: flex; flex-direction: column; gap: 28px; }
+.groupe { display: flex; flex-direction: column; gap: 12px; }
+.groupe-titre { display: flex; align-items: center; gap: 10px; font-size: 20px; }
 .groupe-titre .pastille { width: 12px; height: 12px; border-radius: 4px; background: var(--c); }
-.docs { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+.docs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+.docs.larges { grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr)); }
 .doc { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 14px; text-decoration: none; color: var(--encre); transition: border-color .15s; }
 a.doc:hover { border-color: var(--c); }
 .doc-icone { width: 48px; height: 56px; border-radius: 8px; background: var(--cb); color: var(--c); display: grid; place-items: center; font: 500 12px var(--f-mono); position: relative; }
@@ -184,18 +216,56 @@ a.doc:hover { border-color: var(--c); }
 .paquet { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
 .paquet-haut { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
 .paquet-haut h3 { font-size: 19px; }
+.jauge { display: flex; flex-direction: column; gap: 6px; }
+.jauge-barre { height: 8px; border-radius: 999px; background: var(--fond); overflow: hidden; display: flex; }
+.jauge-barre span { display: block; height: 100%; }
+.jauge-sues { background: var(--vert); }
+.jauge-revoir { background: var(--rouge); }
+.jauge-texte { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--encre-2); font-variant-numeric: tabular-nums; }
+.jauge-texte b { color: var(--encre); }
 .flash { display: block; perspective: 1200px; cursor: pointer; border: 0; background: none; padding: 0; font: inherit; color: inherit; text-align: center; width: 100%; }
-.flash-int { display: grid; position: relative; min-height: 200px; transition: transform .45s; transform-style: preserve-3d; }
+.flash-int { display: grid; position: relative; transition: transform .45s; transform-style: preserve-3d; }
 .flash.retournee .flash-int { transform: rotateY(180deg); }
-.face { grid-area: 1 / 1; position: relative; min-height: 200px; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 22px; font-size: clamp(16px, 2.2vw, 19px); line-height: 1.5; overflow-wrap: anywhere; }
-.face small { font: 500 12px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; }
+.face { grid-area: 1 / 1; position: relative; min-height: 210px; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 24px 22px; font-size: clamp(16px, 2.2vw, 19px); line-height: 1.5; overflow-wrap: anywhere; }
+.face small { font: 500 12px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--t-fla); }
+.face .aide { font-size: 13px; color: var(--encre-2); }
 .recto { background: var(--t-fla-bg); color: var(--encre); border: 1px solid var(--bord); }
-.recto small { color: var(--t-fla); }
 .verso { background: var(--carte); border: 2px solid var(--t-fla); transform: rotateY(180deg); }
-.verso small { color: var(--t-fla); }
-.paquet-bas { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
-.compteur { font: 500 14px var(--f-mono); color: var(--encre-2); font-variant-numeric: tabular-nums; }
-.paquet-bas .boutons { display: flex; gap: 8px; flex-wrap: wrap; }
+.etat-carte { position: absolute; top: 10px; right: 12px; font: 700 11px var(--f-texte); letter-spacing: .04em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; background: var(--carte); color: var(--encre-2); }
+.etat-carte.revoir { background: var(--rouge-doux); color: var(--rouge-texte); }
+.etat-carte.sue { background: var(--vert-doux); color: var(--vert); }
+.paquet-bas { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.paquet-bas .reponses { display: flex; gap: 8px; flex: 1 1 auto; }
+.paquet-bas .reponses .bouton { flex: 1 1 0; }
+.bouton.revoir { border-color: var(--rouge); color: var(--rouge-texte); }
+.bouton.revoir:hover { background: var(--rouge-doux); }
+.bouton.savais { border-color: var(--vert); background: var(--vert); color: var(--carte); }
+.bouton.savais:hover { filter: brightness(1.08); color: var(--carte); }
+.paquet-outils { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+.bravo { padding: 26px 20px; border-radius: 12px; background: var(--vert-doux); color: var(--encre); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.bravo strong { font-family: var(--f-titre); font-size: 22px; color: var(--vert); }
+
+/* QCM */
+.qcm { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.qcm-question { font-size: 18px; font-weight: 700; line-height: 1.45; }
+.qcm-num { font: 500 13px var(--f-mono); color: var(--t-qcm); }
+.options { display: flex; flex-direction: column; gap: 8px; }
+.option { font: inherit; text-align: left; display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: center; padding: 10px 14px; min-height: 48px; border-radius: 10px; border: 1px solid var(--bord-fort); background: var(--carte); color: var(--encre); cursor: pointer; }
+.option:hover:not(:disabled) { border-color: var(--t-qcm); }
+.option:disabled { cursor: default; }
+.option-lettre { width: 30px; height: 30px; border-radius: 50%; background: var(--t-qcm-bg); color: var(--t-qcm); display: grid; place-items: center; font: 500 13px var(--f-mono); }
+.option.juste { border: 2px solid var(--vert); background: var(--vert-doux); }
+.option.juste .option-lettre { background: var(--vert); color: var(--carte); }
+.option.faux { border: 2px solid var(--rouge); background: var(--rouge-doux); }
+.option.faux .option-lettre { background: var(--rouge); color: var(--sur-rouge); }
+.option.terne { opacity: .6; }
+.verdict { padding: 12px 16px; border-radius: 10px; background: var(--fond); }
+.verdict strong { display: block; margin-bottom: 2px; }
+.verdict.ok strong { color: var(--vert); }
+.verdict.ko strong { color: var(--rouge-texte); }
+.qcm-bas { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; font-size: 14px; color: var(--encre-2); font-variant-numeric: tabular-nums; }
+.score { padding: 26px 20px; border-radius: 12px; background: var(--t-qcm-bg); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.score-note { font: 800 44px/1 var(--f-titre); color: var(--t-qcm); font-variant-numeric: tabular-nums; }
 
 /* Recherche */
 .resultats { display: flex; flex-direction: column; gap: 10px; }
@@ -205,17 +275,38 @@ a.doc:hover { border-color: var(--c); }
 .resultat-lieu { font-size: 14px; color: var(--encre-2); width: 100%; }
 mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 3px; padding: 0 2px; }
 
+/* Méthodologie */
+.page-texte { padding: 30px 34px; }
+.page-texte .prose h2 { padding-top: 18px; border-top: 1px solid var(--bord); }
+.page-texte .prose h2:first-child { padding-top: 0; border-top: 0; }
+
 .pied { border-top: 1px solid var(--bord); background: var(--carte); font-size: 14px; color: var(--encre-2); }
 .pied .enveloppe { padding-block: 18px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
 
-@media (max-width: 860px) {
-  .accueil-haut, .classe-grille { grid-template-columns: minmax(0, 1fr); }
-  .progression { position: static; }
+/* Impression */
+#impression { display: none; }
+@media print {
+  body { background: #ffffff; color: #000000; font-size: 11pt; }
+  body::before { display: none; }
+  body.imprime > *:not(#impression) { display: none !important; }
+  body.imprime #impression { display: block; }
+  #impression h1 { font-size: 18pt; margin-bottom: 2pt; }
+  #impression .sous-titre { font-size: 10pt; color: #444444; margin-bottom: 12pt; }
+  #impression table { width: 100%; border-collapse: collapse; }
+  #impression th, #impression td { border: 1px solid #999999; padding: 6pt 8pt; vertical-align: top; text-align: left; }
+  #impression th { background: #eeeeee; font-size: 10pt; }
+  #impression td.num { width: 22pt; color: #666666; }
+  #impression tr { break-inside: avoid; }
+  #impression .prose { max-width: none; }
 }
-@media (max-width: 420px) {
-  .docs { grid-template-columns: minmax(0, 1fr); }
-  .presentation { padding: 20px; }
-  .classe-sigle { width: 64px; height: 64px; font-size: 21px; }
+
+@media (max-width: 860px) {
+  .classe-grille { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 480px) {
+  .tete.haute { padding-block: 24px 96px; }
+  .bloc, .essentiel, .page-texte { padding: 20px; }
+  .paquet-bas .reponses { flex-basis: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
@@ -228,35 +319,37 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
   <symbol id="i-loupe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
   <symbol id="i-lune" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
   <symbol id="i-soleil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
-  <symbol id="i-cloche" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 1 1 12 0v5l2 2H4z"/><path d="M10 21h4"/></symbol>
+  <symbol id="i-imprimer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></symbol>
+  <symbol id="i-cible" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></symbol>
 </svg>
 
-<header class="entete">
-  <div class="enveloppe">
-    <a class="marque" href="#" data-vue="">
-      <span class="logo" aria-hidden="true">f(x)</span>
-      <span class="marque-texte">
-        <span class="marque-nom" id="nom-site">Mathématiques</span>
-        <span class="marque-lieu" id="lieu-site"></span>
-      </span>
-    </a>
-    <nav class="nav" id="nav" aria-label="Classes"></nav>
-    <div class="outils">
-      <label class="recherche">
-        <span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Rechercher un document</span>
-        <svg aria-hidden="true"><use href="#i-loupe"/></svg>
-        <input id="champ-recherche" type="search" placeholder="Rechercher un chapitre, une fiche…" autocomplete="off">
-      </label>
-      <button class="bouton-icone" id="bouton-theme" type="button" aria-label="Passer en mode sombre">
-        <svg aria-hidden="true"><use href="#i-lune"/></svg>
-      </button>
+<div class="bandeau">
+  <header class="entete" id="entete">
+    <div class="enveloppe">
+      <a class="marque" href="#" data-vue="">
+        <span class="logo" aria-hidden="true">f(x)</span>
+        <span class="marque-texte">
+          <span class="marque-nom" id="nom-site">Mathématiques</span>
+          <span class="marque-lieu" id="lieu-site"></span>
+        </span>
+      </a>
+      <nav class="nav" id="nav" aria-label="Rubriques"></nav>
+      <div class="outils">
+        <label class="recherche">
+          <span class="cache">Rechercher un document</span>
+          <svg aria-hidden="true"><use href="#i-loupe"/></svg>
+          <input id="champ-recherche" type="search" placeholder="Rechercher un chapitre, une fiche…" autocomplete="off">
+        </label>
+        <button class="bouton-icone" id="bouton-theme" type="button" aria-label="Passer en mode sombre">
+          <svg aria-hidden="true"><use href="#i-lune"/></svg>
+        </button>
+      </div>
     </div>
-  </div>
-</header>
+  </header>
+  <div class="enveloppe tete" id="tete"></div>
+</div>
 
-<main class="enveloppe">
-  <div id="contenu" class="vue"><p class="vide">Chargement…</p></div>
-</main>
+<main class="enveloppe" id="contenu"><p class="carte vide">Chargement…</p></main>
 
 <footer class="pied">
   <div class="enveloppe">
@@ -264,6 +357,8 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     <span id="pied-droite"></span>
   </div>
 </footer>
+
+<div id="impression"></div>
 
 <script>
 (function () {
@@ -276,13 +371,16 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     corriges:   { label: 'Corrigés',         court: 'Corrigés' },
     diaporama:  { label: 'Diaporamas',       court: 'Diapos' },
     flashcards: { label: 'Flashcards',       court: 'Flashcards' },
+    qcm:        { label: 'QCM',              court: 'QCM' },
     autres:     { label: 'Autres documents', court: 'Autres' }
   };
   var ORDRE = Object.keys(TYPES);
   var MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
   var JOURS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+  var JOURS_NOUVEAU = 7;
 
   var D = null;
+  var tete = document.getElementById('tete');
   var contenu = document.getElementById('contenu');
   var champ = document.getElementById('champ-recherche');
 
@@ -292,52 +390,67 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
-  function norm(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+  function norm(s) { return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
   function lienFichier(chemin) { return chemin.split('/').map(encodeURIComponent).join('/'); }
   function taille(o) {
     if (!o) return '';
     if (o < 1024 * 1024) return Math.max(1, Math.round(o / 1024)) + ' Ko';
     return (o / 1024 / 1024).toFixed(1).replace('.', ',') + ' Mo';
   }
+  function dateObj(iso) { var p = iso.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); }
   function dateLongue(iso) {
-    var p = iso.split('-').map(Number);
-    var d = new Date(p[0], p[1] - 1, p[2]);
-    return JOURS[d.getDay()] + ' ' + p[2] + (p[2] === 1 ? 'er' : '') + ' ' + MOIS[p[1] - 1];
+    var d = dateObj(iso), j = d.getDate();
+    return JOURS[d.getDay()] + ' ' + j + (j === 1 ? 'er' : '') + ' ' + MOIS[d.getMonth()];
   }
-  function sigle(nom) {
-    var n = norm(nom);
-    if (n.indexOf('seconde') === 0) return '<span>2<sup>de</sup></span>';
-    if (n.indexOf('premiere') === 0) return '<span>1<sup>re</sup></span>';
-    if (n.indexOf('terminale') === 0) return '<span>T<sup>le</sup></span>';
-    return esc(nom.slice(0, 3));
+  function dateCourte(iso) { var d = dateObj(iso), j = d.getDate(); return j + (j === 1 ? 'er' : '') + ' ' + MOIS[d.getMonth()]; }
+  function aujourdhui() { var d = new Date(); d.setHours(0, 0, 0, 0); return d; }
+  function estNouveau(iso) {
+    if (!iso) return false;
+    var ecart = (aujourdhui() - dateObj(iso)) / 86400000;
+    return ecart >= 0 && ecart < JOURS_NOUVEAU;
   }
+  function badgeNouveau(iso) { return estNouveau(iso) ? ' <span class="puce-nouveau">Nouveau</span>' : ''; }
   function deuxChiffres(n) { return (n < 10 ? '0' : '') + n; }
+  function hachage(s) { var h = 5381; for (var i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0; return h.toString(36); }
+  function melanger(t) { for (var k = t.length - 1; k > 0; k--) { var j = Math.floor(Math.random() * (k + 1)); var x = t[k]; t[k] = t[j]; t[j] = x; } return t; }
+  function lire(cle) { try { return JSON.parse(localStorage.getItem(cle) || 'null'); } catch (e) { return null; } }
+  function ecrire(cle, v) { try { localStorage.setItem(cle, JSON.stringify(v)); } catch (e) {} }
+  function effacer(cle) { try { localStorage.removeItem(cle); } catch (e) {} }
+  function pluriel(n, mot) { return n + ' ' + mot + (n > 1 ? 's' : ''); }
 
-  /* Mini-Markdown : titres, listes (avec [x] [~] [ ]), gras, italique, liens. */
+  /* Mini-Markdown : # titres, listes (- ou 1.), [x] [~] [ ], **gras**, *italique*, [liens](…), formules $…$. */
   function enLigne(t) {
-    return esc(t)
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>')
-      .replace(/\[([^\]]+)\]\(((?:https?:\/\/|\.?\/|documents\/)[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    var morceaux = String(t).split(/(\$[^$]+\$)/g);
+    return morceaux.map(function (m) {
+      if (/^\$[^$]+\$$/.test(m)) return formules(m);
+      return esc(m)
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>')
+        .replace(/\[([^\]]+)\]\(((?:https?:\/\/|\.?\/|documents\/|#)[^)\s]+)\)/g, function (_, txt, url) {
+          return url.charAt(0) === '#' ? '<a href="' + url + '">' + txt + '</a>' : '<a href="' + url + '" target="_blank" rel="noopener">' + txt + '</a>';
+        });
+    }).join('');
   }
   function md(src) {
-    var html = '', para = [], liste = false;
+    var html = '', para = [], liste = null;
     function finPara() { if (para.length) { html += '<p>' + enLigne(para.join(' ')) + '</p>'; para = []; } }
-    function finListe() { if (liste) { html += '</ul>'; liste = false; } }
+    function finListe() { if (liste) { html += '</' + liste + '>'; liste = null; } }
     String(src || '').replace(/\r/g, '').split('\n').forEach(function (l) {
       var t = l.trim(), m;
       if (!t) { finPara(); finListe(); return; }
       if ((m = t.match(/^(#{1,3})\s+(.*)$/))) {
         finPara(); finListe();
-        var n = m[1].length === 1 ? 2 : 3;
+        var n = m[1].length + 1;
         html += '<h' + n + '>' + enLigne(m[2]) + '</h' + n + '>';
         return;
       }
-      if ((m = t.match(/^[-*]\s+(?:\[([ xX~])\]\s+)?(.*)$/))) {
+      var puce = t.match(/^[-*]\s+(?:\[([ xX~])\]\s+)?(.*)$/), num = t.match(/^\d+[.)]\s+(.*)$/);
+      if (puce || num) {
         finPara();
-        if (!liste) { html += '<ul>'; liste = true; }
-        var cls = m[1] === 'x' || m[1] === 'X' ? 'fait' : m[1] === '~' ? 'encours' : '';
-        html += '<li' + (cls ? ' class="' + cls + '"' : '') + '>' + enLigne(m[2]) + '</li>';
+        var genre = puce ? 'ul' : 'ol';
+        if (liste !== genre) { finListe(); html += '<' + genre + '>'; liste = genre; }
+        var cls = puce && (puce[1] === 'x' || puce[1] === 'X') ? 'fait' : puce && puce[1] === '~' ? 'encours' : '';
+        html += '<li' + (cls ? ' class="' + cls + '"' : '') + '>' + enLigne(puce ? puce[2] : num[1]) + '</li>';
         return;
       }
       finListe(); para.push(t);
@@ -346,10 +459,9 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     return html;
   }
 
-  /* Formules dans les flashcards : $...$ affiché avec KaTeX (chargé seulement si besoin). */
+  /* Formules $…$ affichées avec KaTeX (chargé seulement si besoin). */
   var katexEtat = 'absent';
-  /* Chrome n'affiche pas les lettres « ajourées » (ℕ, ℤ, ℚ…) en MathML : on les remplace par leur caractère Unicode. */
-  var AJOUREES = { C: 'ℂ', H: 'ℍ', N: 'ℕ', P: 'ℙ', Q: 'ℚ', R: 'ℝ', Z: 'ℤ' };
+  var AJOUREES = { C: '\u2102', H: '\u210D', N: '\u2115', P: '\u2119', Q: '\u211A', R: '\u211D', Z: '\u2124' };
   function ajouree(l) {
     if (AJOUREES[l]) return AJOUREES[l];
     var code = l.charCodeAt(0);
@@ -363,10 +475,10 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     });
   }
   function formules(texte) {
-    var brut = esc(texte);
-    if (texte.indexOf('$') === -1) return brut;
+    texte = String(texte);
+    if (texte.indexOf('$') === -1) return esc(texte);
     if (window.katex) {
-      return String(texte).split(/(\$[^$]+\$)/g).map(function (morceau) {
+      return texte.split(/(\$[^$]+\$)/g).map(function (morceau) {
         if (/^\$[^$]+\$$/.test(morceau)) {
           try { return ajusterMathml(window.katex.renderToString(morceau.slice(1, -1), { output: 'mathml', throwOnError: false })); }
           catch (e) { return esc(morceau); }
@@ -378,11 +490,11 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       katexEtat = 'chargement';
       var s = document.createElement('script');
       s.src = 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js';
-      s.onload = function () { katexEtat = 'pret'; rendre(); };
+      s.onload = function () { katexEtat = 'pret'; rendre(true); };
       s.onerror = function () { katexEtat = 'erreur'; };
       document.head.appendChild(s);
     }
-    return brut;
+    return esc(texte);
   }
 
   /* ---------- Thème ---------- */
@@ -408,6 +520,8 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     if (mq.addEventListener) mq.addEventListener('change', majBoutonTheme);
   }
   majBoutonTheme();
+  var entete = document.getElementById('entete');
+  window.addEventListener('scroll', function () { entete.classList.toggle('colle', window.scrollY > 8); }, { passive: true });
 
   /* ---------- Navigation ---------- */
   var vue = '';
@@ -426,19 +540,25 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     aller(a.getAttribute('data-vue'));
   });
   window.addEventListener('popstate', function () { vue = lireAdresse(); rendre(); });
-  champ.addEventListener('input', rendre);
+  champ.addEventListener('input', function () { rendre(); });
   champ.addEventListener('keydown', function (e) { if (e.key === 'Escape') { champ.value = ''; rendre(); } });
 
   function trouverClasse(dossier) {
     for (var i = 0; i < D.classes.length; i++) if (D.classes[i].dossier === dossier) return D.classes[i];
     return null;
   }
+  function trouverChapitre(c, id) {
+    for (var i = 0; i < c.chapitres.length; i++) if (c.chapitres[i].id === id) return c.chapitres[i];
+    return null;
+  }
+  function nomChapitre(ch) { return (ch.numero || ch.numero === 0 ? 'Chapitre ' + deuxChiffres(ch.numero) : 'Chapitre'); }
 
   /* ---------- Vues ---------- */
   function compter(ch) {
     var c = {};
     ch.documents.forEach(function (d) { c[d.type] = (c[d.type] || 0) + 1; });
     if (ch.paquets.length) c.flashcards = ch.paquets.length;
+    if (ch.qcms.length) c.qcm = ch.qcms.length;
     return c;
   }
   function puces(ch) {
@@ -447,30 +567,67 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       return '<span class="puce" data-type="' + t + '">' + c[t] + ' ' + TYPES[t].court + '</span>';
     }).join('');
   }
+  function filAriane(liens) {
+    return '<nav class="fil" aria-label="Fil d’Ariane">' + liens.map(function (l, i) {
+      var sep = i ? '<span aria-hidden="true">›</span>' : '';
+      return sep + (l[1] != null ? '<a href="#' + esc(l[1]) + '" data-vue="' + esc(l[1]) + '">' + esc(l[0]) + '</a>' : '<span>' + esc(l[0]) + '</span>');
+    }).join('') + '</nav>';
+  }
+  function anneeScolaire() {
+    var d = new Date(), a = d.getFullYear();
+    return d.getMonth() >= 7 ? a + ' – ' + (a + 1) : (a - 1) + ' – ' + a;
+  }
+
+  /* Toutes les ressources publiées, avec leur date d'ajout */
+  function toutesRessources() {
+    var res = [];
+    D.classes.forEach(function (c) {
+      c.chapitres.forEach(function (ch) {
+        var cible = c.dossier + '~' + ch.id, lieu = c.nom + ' · ' + ch.titre;
+        ch.documents.forEach(function (d) { if (d.disponible) res.push({ type: d.type, titre: d.titre, ajoute: d.ajoute, lieu: lieu, cible: cible, lien: d.fichier }); });
+        ch.paquets.forEach(function (p) { res.push({ type: 'flashcards', titre: p.titre, ajoute: p.ajoute, lieu: lieu, cible: cible }); });
+        ch.qcms.forEach(function (q) { res.push({ type: 'qcm', titre: q.titre, ajoute: q.ajoute, lieu: lieu, cible: cible }); });
+      });
+    });
+    return res;
+  }
+  function lienRessource(r) {
+    return r.lien
+      ? 'href="' + esc(lienFichier(r.lien)) + '" target="_blank" rel="noopener"'
+      : 'href="#' + esc(r.cible) + '" data-vue="' + esc(r.cible) + '"';
+  }
 
   function vueAccueil() {
     var r = D.reglages;
-    var html = '<div class="accueil-haut">' +
-      '<section class="carte presentation">' +
-        '<span class="surtitre">' + esc(r.etablissement) + '</span>' +
-        '<h1>' + esc(r.matiere) + '<span>.</span></h1>' +
-        '<div class="prose">' + md(D.textes.presentation) + '</div>' +
-      '</section>' +
-      '<section class="carte annonces" aria-labelledby="titre-annonces">' +
-        '<h2 id="titre-annonces"><svg aria-hidden="true"><use href="#i-cloche"/></svg>Annonces</h2>' +
-        '<div class="prose">' + (D.textes.annonces ? md(D.textes.annonces) : '<p>Aucune annonce pour le moment.</p>') + '</div>' +
-      '</section>' +
-    '</div>';
+    var t = '<span class="surtitre">Année scolaire ' + anneeScolaire() + '</span>' +
+      '<h1>Cours, exercices et corrigés de ' + esc(r.matiere.toLowerCase()) + '</h1>' +
+      '<div class="prose">' + md(D.textes.presentation) + '</div>';
 
-    html += '<section class="classes" aria-label="Classes">' + D.classes.map(function (c) {
+    var html = '<section class="grille-2" aria-label="Classes">' + D.classes.map(function (c) {
       var nbDocs = 0;
-      c.chapitres.forEach(function (ch) { nbDocs += ch.documents.filter(function (d) { return d.disponible; }).length + ch.paquets.length; });
+      c.chapitres.forEach(function (ch) { nbDocs += ch.documents.filter(function (d) { return d.disponible; }).length + ch.paquets.length + ch.qcms.length; });
       return '<a class="carte classe" href="#' + esc(c.dossier) + '" data-vue="' + esc(c.dossier) + '">' +
-        '<span class="classe-sigle" aria-hidden="true">' + sigle(c.nom) + '</span>' +
-        '<span><h2>' + esc(c.nom) + '</h2><p>' + esc(c.description || '') + '</p>' +
-        '<span class="chiffres">' + c.chapitres.length + ' chapitre' + (c.chapitres.length > 1 ? 's' : '') + ' · ' + nbDocs + ' document' + (nbDocs > 1 ? 's' : '') + '</span></span>' +
+        '<span class="classe-chiffres">' + pluriel(c.chapitres.length, 'chapitre') + ' · ' + pluriel(nbDocs, 'ressource') + '</span>' +
+        '<h2>' + esc(c.nom) + '</h2>' +
+        '<p>' + esc(c.description || '') + '</p>' +
+        '<span class="classe-lien">Voir les chapitres →</span>' +
       '</a>';
     }).join('') + '</section>';
+
+    var recents = toutesRessources().filter(function (x) { return x.ajoute; })
+      .sort(function (a, b) { return a.ajoute < b.ajoute ? 1 : a.ajoute > b.ajoute ? -1 : 0; }).slice(0, 6);
+    var blocNouveautes = recents.length
+      ? '<section class="carte bloc" aria-labelledby="titre-nouv"><h2 id="titre-nouv">Derniers ajouts</h2><ul class="nouveautes">' + recents.map(function (x) {
+          return '<li><a class="nouveaute" ' + lienRessource(x) + '>' +
+            '<span class="puce" data-type="' + x.type + '">' + TYPES[x.type].court + '</span>' +
+            '<span class="nouveaute-titre">' + esc(x.titre) + badgeNouveau(x.ajoute) + '</span>' +
+            '<span class="nouveaute-lieu">' + esc(x.lieu) + ' · ' + esc(dateCourte(x.ajoute)) + '</span></a></li>';
+        }).join('') + '</ul></section>'
+      : '';
+    html += '<div class="grille-2">' +
+      '<section class="carte bloc annonces" aria-labelledby="titre-annonces"><h2 id="titre-annonces">Annonces</h2>' +
+        '<div class="prose">' + (D.textes.annonces.trim() ? md(D.textes.annonces.replace(/^#{1,2}(?!#)/gm, '###')) : '<p>Aucune annonce pour le moment.</p>') + '</div></section>' +
+      blocNouveautes + '</div>';
 
     if (r.email) {
       html += '<section class="carte contact">' +
@@ -480,27 +637,27 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
         '<a class="bouton plein" href="mailto:' + esc(r.email) + '">Écrire un mail</a>' +
       '</section>';
     }
-    return html;
+    return { tete: t, corps: html, haute: true };
   }
 
   function vueClasse(c) {
+    var t = filAriane([['Accueil', ''], [c.nom]]) +
+      '<span class="surtitre">' + esc(c.description || '') + '</span><h1>' + esc(c.nom) + '</h1>';
     var chap = c.chapitres.map(function (ch) {
       return '<a class="carte chapitre" href="#' + esc(c.dossier + '~' + ch.id) + '" data-vue="' + esc(c.dossier + '~' + ch.id) + '">' +
-        '<span class="chapitre-num">' + (ch.numero ? 'Chapitre ' + deuxChiffres(ch.numero) : 'Chapitre') + '</span>' +
+        '<span class="chapitre-num">' + nomChapitre(ch) + '</span>' +
         '<h3>' + esc(ch.titre) + '</h3>' +
         '<span class="puces">' + puces(ch) + '</span>' +
       '</a>';
     }).join('');
-    var prog = c.progression
+    var prog = c.progression.trim()
       ? '<aside class="carte progression" aria-label="Progression de l’année">' + md(c.progression) +
         '<div class="legende"><span class="l-fait">Traité</span><span class="l-encours">En cours</span><span>À venir</span></div></aside>'
       : '';
-    return '<nav class="fil" aria-label="Fil d’Ariane"><a href="#" data-vue="">Accueil</a><span aria-hidden="true">›</span><span>' + esc(c.nom) + '</span></nav>' +
-      '<div class="entete-chapitre"><span class="surtitre">' + esc(c.description || '') + '</span><h1>' + esc(c.nom) + '</h1></div>' +
-      '<div class="classe-grille' + (prog ? '' : ' sans-prog') + '"' + (prog ? '' : ' style="grid-template-columns:minmax(0,1fr)"') + '>' +
+    var corps = '<div class="classe-grille"' + (prog ? '' : ' style="grid-template-columns:minmax(0,1fr)"') + '>' +
         (chap ? '<div class="chapitres">' + chap + '</div>' : '<p class="carte vide">Aucun chapitre pour l’instant.</p>') +
-        prog +
-      '</div>';
+        prog + '</div>';
+    return { tete: t, corps: corps };
   }
 
   function carteDoc(d) {
@@ -512,112 +669,289 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     }
     return '<a class="carte doc" data-type="' + d.type + '" href="' + esc(lienFichier(d.fichier)) + '" target="_blank" rel="noopener">' +
       '<span class="doc-icone" aria-hidden="true">' + esc(d.ext.toUpperCase().slice(0, 4)) + '</span>' +
-      '<span><span class="doc-titre">' + esc(d.titre) + '</span><br><span class="doc-meta">' + esc(d.ext.toUpperCase()) + ' · ' + taille(d.taille) + '</span></span>' +
+      '<span><span class="doc-titre">' + esc(d.titre) + badgeNouveau(d.ajoute) + '</span><br><span class="doc-meta">' + esc(d.ext.toUpperCase()) + ' · ' + taille(d.taille) + '</span></span>' +
       '<span class="doc-action">Ouvrir</span></a>';
   }
 
-  var paquetsEtat = {};
+  /* ---------- Flashcards « je savais / à revoir » ---------- */
+  var NIVEAUX = ['Nouvelle', 'À revoir', 'Sue', 'Maîtrisée'];
+  var POIDS = [5, 7, 2, 1];
+  var paquets = {};
+  function etatPaquet(cle, p) {
+    var e = paquets[cle];
+    if (!e) {
+      var memo = lire('fc:' + cle) || {};
+      e = paquets[cle] = { p: p, ids: p.cartes.map(function (c) { return hachage(c.q); }), memo: memo, i: 0, retournee: false, fini: false };
+      e.i = choisirCarte(e, -1);
+    }
+    return e;
+  }
+  function niveau(e, k) { return e.memo[e.ids[k]] || 0; }
+  function choisirCarte(e, eviter) {
+    var n = e.ids.length, total = 0, poids = [];
+    for (var k = 0; k < n; k++) { var w = (k === eviter && n > 1) ? 0 : POIDS[niveau(e, k)]; poids.push(w); total += w; }
+    var x = Math.random() * total;
+    for (k = 0; k < n; k++) { x -= poids[k]; if (x < 0) return k; }
+    return 0;
+  }
+  function bilan(e) {
+    var b = [0, 0, 0, 0];
+    e.ids.forEach(function (_, k) { b[niveau(e, k)]++; });
+    return b;
+  }
   function cartePaquet(cle, p) {
-    var e = paquetsEtat[cle] || (paquetsEtat[cle] = { i: 0, ordre: p.cartes.map(function (_, k) { return k; }), retournee: false });
-    var carte = p.cartes[e.ordre[e.i]];
+    var e = etatPaquet(cle, p), n = p.cartes.length, b = bilan(e);
+    var sues = b[2] + b[3], pc = function (x) { return (100 * x / n).toFixed(1) + '%'; };
+    var jauge = '<div class="jauge"><div class="jauge-barre" aria-hidden="true"><span class="jauge-sues" style="width:' + pc(sues) + '"></span><span class="jauge-revoir" style="width:' + pc(b[1]) + '"></span></div>' +
+      '<div class="jauge-texte"><span><b>' + sues + '</b> sue' + (sues > 1 ? 's' : '') + '</span><span><b>' + b[1] + '</b> à revoir</span><span><b>' + b[0] + '</b> jamais vue' + (b[0] > 1 ? 's' : '') + '</span></div></div>';
+    var outils = '<div class="paquet-outils">' +
+      '<button class="bouton discret" type="button" data-action="imprimer-paquet"><svg aria-hidden="true"><use href="#i-imprimer"/></svg>Imprimer</button>' +
+      '<button class="bouton discret" type="button" data-action="reinitialiser">' + (e.confirmer ? 'Confirmer l’effacement ?' : 'Recommencer à zéro') + '</button></div>';
+    var milieu;
+    if (e.fini) {
+      milieu = '<div class="bravo"><strong>Bravo !</strong><span>Toutes les cartes de ce paquet sont maîtrisées.</span>' +
+        '<button class="bouton" type="button" data-action="continuer">Continuer à réviser</button></div>';
+    } else {
+      var carte = p.cartes[e.i], niv = niveau(e, e.i);
+      var classeEtat = niv === 1 ? ' revoir' : niv >= 2 ? ' sue' : '';
+      milieu = '<button type="button" class="flash' + (e.retournee ? ' retournee' : '') + '" data-action="retourner" aria-label="' + (e.retournee ? 'Voir la question' : 'Voir la réponse') + '">' +
+          '<span class="flash-int">' +
+            '<span class="face recto"><span class="etat-carte' + classeEtat + '">' + NIVEAUX[niv] + '</span><small>Question</small><span>' + formules(carte.q) + '</span><span class="aide">Touchez la carte pour voir la réponse</span></span>' +
+            '<span class="face verso"><small>Réponse</small><span>' + formules(carte.r) + '</span></span>' +
+          '</span>' +
+        '</button>' +
+        '<div class="paquet-bas"><span class="reponses">' +
+          '<button class="bouton revoir" type="button" data-action="revoir">À revoir</button>' +
+          '<button class="bouton savais" type="button" data-action="savais">Je savais</button>' +
+        '</span></div>';
+    }
     return '<div class="carte paquet" data-type="flashcards" data-paquet="' + esc(cle) + '">' +
-      '<div class="paquet-haut"><h3>' + esc(p.titre) + '</h3><span class="puce">' + p.cartes.length + ' cartes</span></div>' +
-      '<button type="button" class="flash' + (e.retournee ? ' retournee' : '') + '" data-action="retourner" aria-label="Retourner la carte">' +
-        '<span class="flash-int">' +
-          '<span class="face recto"><small>Question</small><span>' + formules(carte.q) + '</span></span>' +
-          '<span class="face verso"><small>Réponse</small><span>' + formules(carte.r) + '</span></span>' +
-        '</span>' +
-      '</button>' +
-      '<div class="paquet-bas"><span class="compteur">' + (e.i + 1) + ' / ' + p.cartes.length + '</span>' +
-        '<span class="boutons">' +
-          '<button class="bouton" type="button" data-action="precedente">Précédente</button>' +
-          '<button class="bouton" type="button" data-action="melanger">Mélanger</button>' +
-          '<button class="bouton plein" type="button" data-action="suivante">Suivante</button>' +
-        '</span></div>' +
-    '</div>';
+      '<div class="paquet-haut"><h3>' + esc(p.titre) + badgeNouveau(p.ajoute) + '</h3><span class="puce">' + n + ' cartes</span></div>' +
+      jauge + milieu + outils + '</div>';
+  }
+  function actionPaquet(bloc, action) {
+    var cle = bloc.getAttribute('data-paquet'), e = paquets[cle];
+    if (action === 'retourner') {
+      e.retournee = !e.retournee;
+      var f = bloc.querySelector('.flash');
+      f.classList.toggle('retournee', e.retournee);
+      f.setAttribute('aria-label', e.retournee ? 'Voir la question' : 'Voir la réponse');
+      return;
+    }
+    if (action === 'imprimer-paquet') { imprimerPaquet(cle, e.p); return; }
+    if (action === 'reinitialiser') {
+      if (!e.confirmer) { e.confirmer = true; }
+      else { e.memo = {}; effacer('fc:' + cle); e.confirmer = false; e.fini = false; e.i = choisirCarte(e, -1); e.retournee = false; }
+    } else {
+      e.confirmer = false;
+      if (action === 'savais' || action === 'revoir') {
+        var id = e.ids[e.i], niv = e.memo[id] || 0;
+        e.memo[id] = action === 'revoir' ? 1 : (niv < 2 ? 2 : 3);
+        ecrire('fc:' + cle, e.memo);
+        var b = bilan(e);
+        e.fini = b[3] === e.ids.length;
+      }
+      if (action === 'continuer') { e.fini = false; }
+      if (!e.fini) { e.i = choisirCarte(e, e.i); e.retournee = false; }
+    }
+    remplacer(bloc, cartePaquet(cle, e.p));
+    var nouveau = document.querySelector('[data-paquet="' + cssEsc(cle) + '"] [data-action="retourner"]');
+    if (nouveau && action !== 'reinitialiser') nouveau.focus({ preventScroll: true });
+  }
+
+  /* ---------- QCM ---------- */
+  var qcms = {};
+  function etatQcm(cle, q) {
+    var e = qcms[cle];
+    if (!e) e = qcms[cle] = { q: q, i: 0, score: 0, choix: null, options: null, fini: false };
+    if (!e.options && !e.fini) {
+      var qu = q.questions[e.i];
+      e.options = melanger([{ t: qu.bonne, ok: true }].concat(qu.fausses.map(function (f) { return { t: f, ok: false }; })));
+    }
+    return e;
+  }
+  function carteQcm(cle, q) {
+    var e = etatQcm(cle, q), n = q.questions.length, corps;
+    var meilleur = lire('qcm:' + cle);
+    if (e.fini) {
+      var msg = e.score === n ? 'Parfait, sans faute !' : e.score >= n * 0.7 ? 'Très bien, encore un petit effort.' : e.score >= n * 0.4 ? 'C’est un début : relisez le cours et recommencez.' : 'Revoyez le cours et les flashcards, puis réessayez.';
+      corps = '<div class="score"><span class="score-note">' + e.score + ' / ' + n + '</span><span>' + msg + '</span>' +
+        (meilleur != null ? '<span style="font-size:14px;color:var(--encre-2)">Meilleur score : ' + meilleur + ' / ' + n + '</span>' : '') +
+        '<button class="bouton plein" type="button" data-action="recommencer">Recommencer</button></div>';
+    } else {
+      var qu = q.questions[e.i], lettres = 'ABCD';
+      corps = '<span class="qcm-num">Question ' + (e.i + 1) + ' / ' + n + '</span>' +
+        '<div class="qcm-question">' + formules(qu.q) + '</div>' +
+        '<div class="options" role="group" aria-label="Réponses possibles">' + e.options.map(function (o, k) {
+          var cls = '';
+          if (e.choix != null) cls = o.ok ? ' juste' : (k === e.choix ? ' faux' : ' terne');
+          return '<button type="button" class="option' + cls + '" data-action="choisir" data-k="' + k + '"' + (e.choix != null ? ' disabled' : '') + '>' +
+            '<span class="option-lettre" aria-hidden="true">' + lettres.charAt(k) + '</span><span>' + formules(o.t) + '</span></button>';
+        }).join('') + '</div>';
+      if (e.choix != null) {
+        var ok = e.options[e.choix].ok;
+        corps += '<div class="verdict ' + (ok ? 'ok' : 'ko') + '" role="status"><strong>' + (ok ? 'Bonne réponse !' : 'Pas tout à fait.') + '</strong>' +
+          (qu.expl ? formules(qu.expl) : (ok ? '' : 'La bonne réponse était : ' + formules(qu.bonne))) + '</div>' +
+          '<div class="qcm-bas"><span>Score : ' + e.score + ' / ' + (e.i + 1) + '</span>' +
+          '<button class="bouton plein" type="button" data-action="suivante">' + (e.i + 1 < n ? 'Question suivante' : 'Voir mon score') + '</button></div>';
+      } else {
+        corps += '<div class="qcm-bas"><span>Score : ' + e.score + ' / ' + e.i + '</span></div>';
+      }
+    }
+    return '<div class="carte qcm" data-type="qcm" data-qcm="' + esc(cle) + '">' +
+      '<div class="paquet-haut"><h3>' + esc(q.titre) + badgeNouveau(q.ajoute) + '</h3><span class="puce">' + pluriel(n, 'question') + '</span></div>' +
+      corps + '</div>';
+  }
+  function actionQcm(bloc, action, bouton) {
+    var cle = bloc.getAttribute('data-qcm'), e = qcms[cle], n = e.q.questions.length;
+    if (action === 'choisir' && e.choix == null) {
+      e.choix = Number(bouton.getAttribute('data-k'));
+      if (e.options[e.choix].ok) e.score++;
+    } else if (action === 'suivante') {
+      e.i++; e.choix = null; e.options = null;
+      if (e.i >= n) {
+        e.fini = true;
+        var m = lire('qcm:' + cle);
+        if (m == null || e.score > m) ecrire('qcm:' + cle, e.score);
+      }
+    } else if (action === 'recommencer') {
+      e.i = 0; e.score = 0; e.choix = null; e.options = null; e.fini = false;
+    }
+    remplacer(bloc, carteQcm(cle, e.q));
+    var cible = document.querySelector('[data-qcm="' + cssEsc(cle) + '"] ' + (action === 'choisir' ? '[data-action="suivante"]' : '.option, [data-action="recommencer"]'));
+    if (cible) cible.focus({ preventScroll: true });
+  }
+
+  function cssEsc(s) { return window.CSS && CSS.escape ? CSS.escape(s) : s.replace(/["\\]/g, '\\$&'); }
+  function remplacer(bloc, html) { var d = document.createElement('div'); d.innerHTML = html; bloc.replaceWith(d.firstChild); }
+
+  /* ---------- Impression ---------- */
+  var zoneImpression = document.getElementById('impression');
+  function imprimer(html) {
+    zoneImpression.innerHTML = html;
+    document.body.classList.add('imprime');
+    var fin = function () { document.body.classList.remove('imprime'); zoneImpression.innerHTML = ''; window.removeEventListener('afterprint', fin); };
+    window.addEventListener('afterprint', fin);
+    setTimeout(function () { window.print(); }, 50);
+  }
+  function lieuDe(cle) {
+    var parts = cle.split('~'), c = trouverClasse(parts[0]), ch = c && trouverChapitre(c, parts[1]);
+    return c && ch ? c.nom + ' · ' + nomChapitre(ch) + ' · ' + ch.titre : '';
+  }
+  function imprimerPaquet(cle, p) {
+    imprimer('<h1>' + esc(p.titre) + '</h1><div class="sous-titre">' + esc(lieuDe(cle)) + ' · ' + esc(D.reglages.matiere + ', ' + D.reglages.etablissement) + '</div>' +
+      '<table><thead><tr><th></th><th>Question</th><th>Réponse</th></tr></thead><tbody>' +
+      p.cartes.map(function (c, k) { return '<tr><td class="num">' + (k + 1) + '</td><td>' + formules(c.q) + '</td><td>' + formules(c.r) + '</td></tr>'; }).join('') +
+      '</tbody></table>');
   }
 
   function vueChapitre(c, ch) {
+    var cle0 = c.dossier + '~' + ch.id;
+    var t = filAriane([['Accueil', ''], [c.nom, c.dossier], [ch.titre]]) +
+      '<span class="surtitre">' + esc(c.nom) + ' · ' + nomChapitre(ch) + '</span><h1>' + esc(ch.titre) + '</h1>';
+    var html = '';
+    if (ch.essentiel.trim()) {
+      html += '<section class="carte essentiel" aria-labelledby="titre-ess"><div class="essentiel-haut">' +
+        '<h2 id="titre-ess"><svg aria-hidden="true"><use href="#i-cible"/></svg>L’essentiel du chapitre</h2>' +
+        '<button class="bouton discret" type="button" id="imprimer-essentiel"><svg aria-hidden="true"><use href="#i-imprimer"/></svg>Imprimer</button></div>' +
+        '<div class="prose">' + md(ch.essentiel) + '</div></section>';
+    }
     var groupes = {};
     ch.documents.forEach(function (d) { (groupes[d.type] = groupes[d.type] || []).push(d); });
-    var html = '<nav class="fil" aria-label="Fil d’Ariane"><a href="#" data-vue="">Accueil</a><span aria-hidden="true">›</span>' +
-      '<a href="#' + esc(c.dossier) + '" data-vue="' + esc(c.dossier) + '">' + esc(c.nom) + '</a><span aria-hidden="true">›</span><span>' + esc(ch.titre) + '</span></nav>' +
-      '<div class="entete-chapitre"><span class="surtitre">' + esc(c.nom) + (ch.numero ? ' · Chapitre ' + deuxChiffres(ch.numero) : '') + '</span>' +
-      '<h1>' + esc(ch.titre) + '</h1></div><div class="groupes">';
+    html += '<div class="groupes">';
     ORDRE.forEach(function (t) {
       if (t === 'flashcards') {
         if (!ch.paquets.length) return;
         html += '<section class="groupe" data-type="flashcards"><h2 class="groupe-titre"><span class="pastille" aria-hidden="true"></span>Flashcards</h2>' +
-          '<div class="docs" style="grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr))">' +
-          ch.paquets.map(function (p, k) { return cartePaquet(c.dossier + '~' + ch.id + '~' + k, p); }).join('') + '</div></section>';
+          '<div class="docs larges">' + ch.paquets.map(function (p, k) { return cartePaquet(cle0 + '~f' + k + '~' + hachage(p.titre), p); }).join('') + '</div></section>';
+        return;
+      }
+      if (t === 'qcm') {
+        if (!ch.qcms.length) return;
+        html += '<section class="groupe" data-type="qcm"><h2 class="groupe-titre"><span class="pastille" aria-hidden="true"></span>QCM</h2>' +
+          '<div class="docs larges">' + ch.qcms.map(function (q, k) { return carteQcm(cle0 + '~q' + k + '~' + hachage(q.titre), q); }).join('') + '</div></section>';
         return;
       }
       if (!groupes[t]) return;
       html += '<section class="groupe" data-type="' + t + '"><h2 class="groupe-titre"><span class="pastille" aria-hidden="true"></span>' + TYPES[t].label + '</h2>' +
         '<div class="docs">' + groupes[t].map(carteDoc).join('') + '</div></section>';
     });
-    if (!ch.documents.length && !ch.paquets.length) html += '<p class="carte vide">Les documents de ce chapitre arrivent bientôt.</p>';
-    return html + '</div>';
+    if (!ch.documents.length && !ch.paquets.length && !ch.qcms.length) html += '<p class="carte vide">Les documents de ce chapitre arrivent bientôt.</p>';
+    return { tete: t, corps: html + '</div>' };
+  }
+
+  function vueMethodologie() {
+    return {
+      tete: filAriane([['Accueil', ''], ['Méthodologie']]) + '<span class="surtitre">Conseils</span><h1>Méthodologie</h1>',
+      corps: '<article class="carte page-texte"><div class="prose">' + md(D.textes.methodologie) + '</div></article>'
+    };
   }
 
   function vueRecherche(q) {
     var mots = norm(q).split(/\s+/).filter(Boolean);
     var res = [];
+    function test(texte) { var n = norm(texte); return mots.every(function (m) { return n.indexOf(m) !== -1; }); }
     D.classes.forEach(function (c) {
       c.chapitres.forEach(function (ch) {
-        var lieu = c.nom + ' · ' + ch.titre;
-        var cible = c.dossier + '~' + ch.id;
-        function test(texte) { var n = norm(texte + ' ' + lieu); return mots.every(function (m) { return n.indexOf(m) !== -1; }); }
-        if (test('chapitre')) res.push({ titre: ch.titre, lieu: c.nom + (ch.numero ? ' · Chapitre ' + deuxChiffres(ch.numero) : ''), cible: cible, type: null, lien: null });
+        var lieu = c.nom + ' · ' + ch.titre, cible = c.dossier + '~' + ch.id;
+        if (test('chapitre ' + ch.titre + ' ' + c.nom + ' ' + ch.essentiel)) res.push({ type: 'chapitre', titre: ch.titre, lieu: c.nom + ' · ' + nomChapitre(ch), cible: cible });
         ch.documents.forEach(function (d) {
-          if (d.disponible && test(TYPES[d.type].label + ' ' + d.titre)) res.push({ titre: d.titre, lieu: lieu, cible: cible, type: d.type, lien: d.fichier });
+          if (d.disponible && test(TYPES[d.type].label + ' ' + d.titre + ' ' + lieu)) res.push({ type: d.type, titre: d.titre, lieu: lieu, cible: cible, lien: d.fichier });
         });
         ch.paquets.forEach(function (p) {
-          var texte = 'flashcards ' + p.titre + ' ' + p.cartes.map(function (k) { return k.q + ' ' + k.r; }).join(' ');
-          if (test(texte)) res.push({ titre: p.titre, lieu: lieu, cible: cible, type: 'flashcards', lien: null });
+          if (test('flashcards ' + p.titre + ' ' + lieu + ' ' + p.cartes.map(function (k) { return k.q + ' ' + k.r; }).join(' '))) res.push({ type: 'flashcards', titre: p.titre, lieu: lieu, cible: cible });
+        });
+        ch.qcms.forEach(function (x) {
+          if (test('qcm quiz ' + x.titre + ' ' + lieu + ' ' + x.questions.map(function (k) { return k.q; }).join(' '))) res.push({ type: 'qcm', titre: x.titre, lieu: lieu, cible: cible });
         });
       });
     });
+    if (D.textes.methodologie && test('methodologie methode conseils ' + D.textes.methodologie)) res.push({ type: 'methode', titre: 'Méthodologie', lieu: 'Conseils pour travailler', cible: 'methodologie' });
     function surligner(t) {
       var h = esc(t);
       mots.forEach(function (m) {
-        var n = norm(t), i = n.indexOf(m);
-        if (i !== -1 && m.length > 1) {
-          var orig = t.substr(i, m.length);
-          h = h.replace(esc(orig), '<mark>' + esc(orig) + '</mark>');
-        }
+        var i = norm(t).indexOf(m);
+        if (i !== -1 && m.length > 1) { var o = t.substr(i, m.length); h = h.replace(esc(o), '<mark>' + esc(o) + '</mark>'); }
       });
       return h;
     }
-    var html = '<h1 class="titre-section">Résultats <small>' + res.length + ' pour « ' + esc(q) + ' »</small></h1>';
-    if (!res.length) return html + '<p class="carte vide">Rien trouvé. Essayez un autre mot, par exemple « fonction » ou « méthode ».</p>';
-    return html + '<div class="resultats">' + res.slice(0, 60).map(function (r) {
-      var badge = r.type ? '<span class="puce" data-type="' + r.type + '">' + TYPES[r.type].court + '</span>' : '<span class="puce" data-type="cours" style="--cb:var(--rouge-doux)">Chapitre</span>';
-      var attrs = r.lien
-        ? 'href="' + esc(lienFichier(r.lien)) + '" target="_blank" rel="noopener"'
-        : 'href="#' + esc(r.cible) + '" data-vue="' + esc(r.cible) + '"';
-      return '<a class="carte resultat" ' + attrs + '>' + badge + '<span class="resultat-titre">' + surligner(r.titre) + '</span><span class="resultat-lieu">' + esc(r.lieu) + '</span></a>';
+    var tt = '<span class="surtitre">Recherche</span><h1>« ' + esc(q) + ' »</h1>';
+    var corps = '<h2 class="titre-section">Résultats <small>' + pluriel(res.length, 'résultat') + '</small></h2>';
+    if (!res.length) corps += '<p class="carte vide">Rien trouvé. Essayez un autre mot, par exemple « fonction » ou « méthode ».</p>';
+    else corps += '<div class="resultats">' + res.slice(0, 60).map(function (r) {
+      var label = r.type === 'chapitre' ? 'Chapitre' : TYPES[r.type].court;
+      return '<a class="carte resultat" ' + lienRessource(r) + '><span class="puce" data-type="' + r.type + '">' + label + '</span><span class="resultat-titre">' + surligner(r.titre) + '</span><span class="resultat-lieu">' + esc(r.lieu) + '</span></a>';
     }).join('') + '</div>';
+    return { tete: tt, corps: corps };
   }
 
   /* ---------- Rendu ---------- */
-  function rendre() {
+  var derniere = '';
+  function rendre(garderPosition) {
     if (!D) return;
     var q = champ.value.trim();
     var parts = vue.split('~');
     var c = trouverClasse(parts[0]);
-    var ch = null;
-    if (c && parts[1]) c.chapitres.forEach(function (x) { if (x.id === parts[1]) ch = x; });
+    var ch = c && parts[1] ? trouverChapitre(c, parts[1]) : null;
 
     Array.prototype.forEach.call(document.querySelectorAll('#nav a'), function (a) {
-      if (c && a.getAttribute('data-vue') === c.dossier) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+      var v = a.getAttribute('data-vue');
+      if ((c && v === c.dossier) || (!c && v === vue && v)) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
 
-    var titre = D.reglages.matiere;
-    if (q.length >= 2) contenu.innerHTML = vueRecherche(q);
-    else if (c && ch) { contenu.innerHTML = vueChapitre(c, ch); titre = ch.titre + ' · ' + c.nom; }
-    else if (c) { contenu.innerHTML = vueClasse(c); titre = c.nom + ' · ' + D.reglages.matiere; }
-    else contenu.innerHTML = vueAccueil();
+    var titre = D.reglages.matiere, r;
+    if (q.length >= 2) r = vueRecherche(q);
+    else if (c && ch) { r = vueChapitre(c, ch); titre = ch.titre + ' · ' + c.nom; }
+    else if (c) { r = vueClasse(c); titre = c.nom + ' · ' + D.reglages.matiere; }
+    else if (vue === 'methodologie' && D.textes.methodologie.trim()) { r = vueMethodologie(); titre = 'Méthodologie · ' + D.reglages.matiere; }
+    else r = vueAccueil();
+
+    var y = window.scrollY;
+    tete.innerHTML = r.tete;
+    tete.className = 'enveloppe tete' + (r.haute ? ' haute' : '');
+    contenu.className = 'enveloppe' + (r.haute ? ' chevauche' : '');
+    contenu.innerHTML = r.corps;
+    if (garderPosition === true) window.scrollTo(0, y);
     document.title = titre + ' · ' + D.reglages.etablissement;
   }
 
@@ -626,45 +960,33 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     if (copie) {
       var adr = D.reglages.email;
       var ok = function () { copie.textContent = 'Adresse copiée'; setTimeout(function () { copie.textContent = 'Copier l’adresse'; }, 2000); };
-      var repli = function () { var r = document.createRange(); r.selectNodeContents(document.getElementById('adresse-mail')); var s = getSelection(); s.removeAllRanges(); s.addRange(r); copie.textContent = 'Adresse sélectionnée'; };
+      var repli = function () { var rg = document.createRange(); rg.selectNodeContents(document.getElementById('adresse-mail')); var s = getSelection(); s.removeAllRanges(); s.addRange(rg); copie.textContent = 'Adresse sélectionnée'; };
       try { navigator.clipboard.writeText(adr).then(ok, repli); } catch (err) { repli(); }
+      return;
+    }
+    if (e.target.closest('#imprimer-essentiel')) {
+      var parts = vue.split('~'), c = trouverClasse(parts[0]), ch = c && trouverChapitre(c, parts[1]);
+      if (ch) imprimer('<h1>L’essentiel · ' + esc(ch.titre) + '</h1><div class="sous-titre">' + esc(c.nom + ' · ' + nomChapitre(ch) + ' · ' + D.reglages.matiere + ', ' + D.reglages.etablissement) + '</div><div class="prose">' + md(ch.essentiel) + '</div>');
       return;
     }
     var b = e.target.closest('[data-action]');
     if (!b) return;
     var bloc = b.closest('[data-paquet]');
-    var cle = bloc.getAttribute('data-paquet');
-    var st = paquetsEtat[cle];
-    var n = st.ordre.length;
-    var action = b.getAttribute('data-action');
-    if (action === 'retourner') {
-      st.retournee = !st.retournee;
-      bloc.querySelector('.flash').classList.toggle('retournee', st.retournee);
-      return;
-    }
-    if (action === 'suivante') st.i = (st.i + 1) % n;
-    if (action === 'precedente') st.i = (st.i - 1 + n) % n;
-    if (action === 'melanger') {
-      for (var k = n - 1; k > 0; k--) { var j = Math.floor(Math.random() * (k + 1)); var tmp = st.ordre[k]; st.ordre[k] = st.ordre[j]; st.ordre[j] = tmp; }
-      st.i = 0;
-    }
-    st.retournee = false;
-    var parts = cle.split('~');
-    var c = trouverClasse(parts[0]), p;
-    c.chapitres.forEach(function (x) { if (x.id === parts[1]) p = x.paquets[Number(parts[2])]; });
-    var div = document.createElement('div');
-    div.innerHTML = cartePaquet(cle, p);
-    bloc.replaceWith(div.firstChild);
+    if (bloc) { actionPaquet(bloc, b.getAttribute('data-action')); return; }
+    bloc = b.closest('[data-qcm]');
+    if (bloc) actionQcm(bloc, b.getAttribute('data-action'), b);
   });
 
   function demarrer(donnees) {
     D = donnees;
+    D.classes.forEach(function (c) { c.chapitres.forEach(function (ch) { ch.paquets = ch.paquets || []; ch.qcms = ch.qcms || []; ch.essentiel = ch.essentiel || ''; }); c.progression = c.progression || ''; });
+    D.textes.methodologie = D.textes.methodologie || '';
     var r = D.reglages;
     document.getElementById('nom-site').textContent = r.matiere;
     document.getElementById('lieu-site').textContent = r.etablissement;
     document.getElementById('nav').innerHTML = D.classes.map(function (c) {
       return '<a href="#' + esc(c.dossier) + '" data-vue="' + esc(c.dossier) + '">' + esc(c.nom) + '</a>';
-    }).join('');
+    }).join('') + (D.textes.methodologie.trim() ? '<a href="#methodologie" data-vue="methodologie">Méthodologie</a>' : '');
     document.getElementById('pied-gauche').textContent = r.matiere + ' · ' + r.etablissement;
     var g = new Date(D.genere);
     document.getElementById('pied-droite').textContent = 'Mis à jour le ' + g.getDate() + ' ' + MOIS[g.getMonth()] + ' ' + g.getFullYear();
@@ -676,6 +998,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then(demarrer)
     .catch(function () {
+      tete.innerHTML = '<h1>Mathématiques</h1>';
       contenu.innerHTML = '<p class="carte vide">Le site n’a pas pu charger la liste des documents. Réessayez dans quelques instants.</p>';
     });
 })();
