@@ -3,6 +3,7 @@
 // Vous n'avez normalement jamais besoin de modifier ce fichier.
 
 import { readdir, readFile, writeFile, mkdir, copyFile, rm, stat } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -65,22 +66,25 @@ function analyserNom(fichier) {
   let titre = sep !== -1 ? base.slice(sep + 3).trim() : '';
   if (!titre) titre = type === 'autres' ? base : LIBELLES[type] + ' du chapitre';
   if (type === 'corriges' && sep !== -1 && !norm(titre).startsWith('corrig')) titre = 'Corrigé · ' + titre;
-  return { ext, type, titre, date };
+  return { ext, type, titre, date, base };
 }
+const titreApresTiret = (base, defaut) => {
+  const sep = base.indexOf(' - ');
+  return sep !== -1 ? base.slice(sep + 3).trim() : defaut;
+};
 
-// Lit un fichier CSV de flashcards : séparateur virgule, point-virgule ou tabulation,
+// Lit un fichier CSV : séparateur virgule, point-virgule ou tabulation,
 // champs entre guillemets acceptés (un guillemet dans le texte s'écrit "").
-function lireFlashcards(texte) {
+function lireCsv(texte) {
   texte = texte.replace(/^﻿/, '').replace(/\r\n?/g, '\n');
-  // Le séparateur est celui qui apparaît en premier hors guillemets sur la première ligne utile.
-  let sep = ';', dansGuillemets = false;
+  let sep = ';', guill = false;
   for (const ch of texte) {
-    if (ch === '"') dansGuillemets = !dansGuillemets;
-    else if (!dansGuillemets && (ch === ',' || ch === ';' || ch === '\t')) { sep = ch; break; }
-    else if (!dansGuillemets && ch === '\n') { dansGuillemets = false; }
+    if (ch === '"') guill = !guill;
+    else if (!guill && (ch === ',' || ch === ';' || ch === '\t')) { sep = ch; break; }
   }
   const lignes = [];
-  let champ = '', ligne = [], i = 0, guill = false;
+  let champ = '', ligne = [], i = 0;
+  guill = false;
   while (i < texte.length) {
     const ch = texte[i];
     if (guill) {
@@ -94,15 +98,46 @@ function lireFlashcards(texte) {
     champ += ch; i++;
   }
   ligne.push(champ); lignes.push(ligne);
+  return { sep, lignes: lignes.map((l) => l.map((c) => c.trim())).filter((l) => l[0] && !l[0].startsWith('#')) };
+}
 
+function lireFlashcards(texte) {
+  const { sep, lignes } = lireCsv(texte);
   const cartes = [];
   for (const l of lignes) {
-    const q = (l[0] || '').trim(), r = l.slice(1).join(sep).trim();
-    if (!q || q.startsWith('#') || !r) continue;
-    if (norm(q) === 'question') continue; // ligne d'en-tête
+    const q = l[0], r = l.slice(1).join(sep).trim();
+    if (!r || norm(q) === 'question') continue; // ligne d'en-tête
     cartes.push({ q, r });
   }
   return cartes;
+}
+
+// QCM : question, bonne réponse, mauvaise réponse 1, 2, 3 (facultatives), explication (facultative)
+function lireQcm(texte) {
+  const questions = [];
+  for (const l of lireCsv(texte).lignes) {
+    if (norm(l[0]) === 'question') continue;
+    const bonne = l[1] || '';
+    const fausses = [l[2], l[3], l[4]].filter(Boolean);
+    if (!bonne || !fausses.length) continue;
+    questions.push({ q: l[0], bonne, fausses, expl: l[5] || '' });
+  }
+  return questions;
+}
+
+// Date d'ajout de chaque fichier, lue dans l'historique GitHub.
+function datesAjout() {
+  const dates = new Map();
+  try {
+    const sortie = execFileSync('git', ['-c', 'core.quotepath=off', 'log', '--diff-filter=ACR', '--format=@@%cs', '--name-only', '--', 'documents'],
+      { cwd: RACINE, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore'] });
+    let date = null;
+    for (const ligne of sortie.split('\n')) {
+      if (ligne.startsWith('@@')) date = ligne.slice(2);
+      else if (ligne && date && !dates.has(ligne)) dates.set(ligne, date); // le plus récent ajout d'abord
+    }
+  } catch { /* pas d'historique disponible : pas de « nouveautés » */ }
+  return dates;
 }
 
 async function lireTexte(fichier) {
@@ -129,18 +164,21 @@ async function main() {
   const reglages = JSON.parse(await readFile(path.join(RACINE, 'reglages.json'), 'utf8'));
   await rm(SORTIE, { recursive: true, force: true });
   await mkdir(SORTIE, { recursive: true });
+  const ajouts = datesAjout();
 
   const donnees = {
     genere: new Date().toISOString(),
+    aujourdhui: AUJOURDHUI,
     reglages: { matiere: reglages.matiere, etablissement: reglages.etablissement, email: reglages.email || '' },
     textes: {
       presentation: await lireTexte(path.join(RACINE, 'textes', 'presentation.md')),
       annonces: await lireTexte(path.join(RACINE, 'textes', 'annonces.md')),
+      methodologie: await lireTexte(path.join(RACINE, 'textes', 'methodologie.md')),
     },
     classes: [],
   };
 
-  let nbPublies = 0, nbEnAttente = 0;
+  let nbPublies = 0, nbEnAttente = 0, nbCartes = 0, nbQcm = 0;
   for (const classe of reglages.classes) {
     const dossierClasse = path.join(RACINE, 'documents', classe.dossier);
     const c = {
@@ -156,19 +194,26 @@ async function main() {
       let id = slug(reparer(nomChap));
       while (ids.has(id)) id += '-2';
       ids.add(id);
-      const ch = { id, numero, titre, documents: [], paquets: [] };
+      const dossierChap = path.join(dossierClasse, nomChap);
+      const ch = { id, numero, titre, essentiel: await lireTexte(path.join(dossierChap, '_essentiel.md')), documents: [], paquets: [], qcms: [] };
 
-      for (const f of await fichiers(path.join(dossierClasse, nomChap))) {
-        const source = path.join(dossierClasse, nomChap, f);
+      for (const f of await fichiers(dossierChap)) {
+        const source = path.join(dossierChap, f);
         const relatif = ['documents', classe.dossier, nomChap, f].join('/');
         const info = analyserNom(f);
+        const ajoute = ajouts.get(relatif);
+        const nf = norm(info.base);
 
-        if (norm(f).startsWith('flash') && (info.ext === 'csv' || info.ext === 'txt')) {
+        if ((info.ext === 'csv' || info.ext === 'txt') && nf.startsWith('flash')) {
           const cartes = lireFlashcards(await readFile(source, 'utf8'));
-          const base = reparer(path.basename(f, path.extname(f)));
-          const sep = base.indexOf(' - ');
-          if (cartes.length) ch.paquets.push({ titre: sep !== -1 ? base.slice(sep + 3).trim() : 'Flashcards du chapitre', cartes });
+          if (cartes.length) { ch.paquets.push({ titre: titreApresTiret(info.base, 'Flashcards du chapitre'), cartes, ajoute }); nbCartes += cartes.length; }
           else console.warn(`Attention : aucune carte lue dans « ${f} ».`);
+          continue;
+        }
+        if ((info.ext === 'csv' || info.ext === 'txt') && nf.startsWith('qcm')) {
+          const questions = lireQcm(await readFile(source, 'utf8'));
+          if (questions.length) { ch.qcms.push({ titre: titreApresTiret(info.base, 'QCM du chapitre'), questions, ajoute }); nbQcm++; }
+          else console.warn(`Attention : aucune question lue dans « ${f} ».`);
           continue;
         }
 
@@ -178,6 +223,9 @@ async function main() {
         if (disponible) {
           doc.fichier = relatif;
           doc.taille = (await stat(source)).size;
+          // un corrigé daté est « nouveau » à partir de sa date de publication
+          const d = info.date && (!ajoute || info.date > ajoute) ? info.date : ajoute;
+          if (d) doc.ajoute = d;
           await copier(source, path.join(SORTIE, ...relatif.split('/')));
           nbPublies++;
         } else {
@@ -192,7 +240,7 @@ async function main() {
 
   await copier(path.join(RACINE, 'index.html'), path.join(SORTIE, 'index.html'));
   await writeFile(path.join(SORTIE, 'donnees.json'), JSON.stringify(donnees));
-  console.log(`Site construit (${AUJOURDHUI}) : ${nbPublies} document(s) publié(s), ${nbEnAttente} corrigé(s) en attente.`);
+  console.log(`Site construit (${AUJOURDHUI}) : ${nbPublies} document(s) publié(s), ${nbEnAttente} corrigé(s) en attente, ${nbCartes} flashcard(s), ${nbQcm} QCM.`);
 }
 
 main().catch((e) => { console.error('Erreur :', e.message); process.exit(1); });
