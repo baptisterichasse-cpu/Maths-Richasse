@@ -68,18 +68,39 @@ function analyserNom(fichier) {
   return { ext, type, titre, date };
 }
 
+// Lit un fichier CSV de flashcards : séparateur virgule, point-virgule ou tabulation,
+// champs entre guillemets acceptés (un guillemet dans le texte s'écrit "").
 function lireFlashcards(texte) {
+  texte = texte.replace(/^﻿/, '').replace(/\r\n?/g, '\n');
+  // Le séparateur est celui qui apparaît en premier hors guillemets sur la première ligne utile.
+  let sep = ';', dansGuillemets = false;
+  for (const ch of texte) {
+    if (ch === '"') dansGuillemets = !dansGuillemets;
+    else if (!dansGuillemets && (ch === ',' || ch === ';' || ch === '\t')) { sep = ch; break; }
+    else if (!dansGuillemets && ch === '\n') { dansGuillemets = false; }
+  }
+  const lignes = [];
+  let champ = '', ligne = [], i = 0, guill = false;
+  while (i < texte.length) {
+    const ch = texte[i];
+    if (guill) {
+      if (ch === '"' && texte[i + 1] === '"') { champ += '"'; i += 2; continue; }
+      if (ch === '"') { guill = false; i++; continue; }
+      champ += ch; i++; continue;
+    }
+    if (ch === '"' && champ.trim() === '') { guill = true; champ = ''; i++; continue; }
+    if (ch === sep) { ligne.push(champ); champ = ''; i++; continue; }
+    if (ch === '\n') { ligne.push(champ); lignes.push(ligne); ligne = []; champ = ''; i++; continue; }
+    champ += ch; i++;
+  }
+  ligne.push(champ); lignes.push(ligne);
+
   const cartes = [];
-  for (const ligne of texte.replace(/^﻿/, '').split(/\r?\n/)) {
-    const l = ligne.trim();
-    if (!l || l.startsWith('#')) continue;
-    const sep = l.includes('\t') ? '\t' : ';';
-    const i = l.indexOf(sep);
-    if (i === -1) continue;
-    const q = l.slice(0, i).trim().replace(/^"|"$/g, '');
-    const r = l.slice(i + 1).trim().replace(/^"|"$/g, '');
+  for (const l of lignes) {
+    const q = (l[0] || '').trim(), r = l.slice(1).join(sep).trim();
+    if (!q || q.startsWith('#') || !r) continue;
     if (norm(q) === 'question') continue; // ligne d'en-tête
-    if (q && r) cartes.push({ q, r });
+    cartes.push({ q, r });
   }
   return cartes;
 }
@@ -147,6 +168,7 @@ async function main() {
           const base = reparer(path.basename(f, path.extname(f)));
           const sep = base.indexOf(' - ');
           if (cartes.length) ch.paquets.push({ titre: sep !== -1 ? base.slice(sep + 3).trim() : 'Flashcards du chapitre', cartes });
+          else console.warn(`Attention : aucune carte lue dans « ${f} ».`);
           continue;
         }
 
