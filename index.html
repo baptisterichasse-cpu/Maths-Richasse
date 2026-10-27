@@ -185,9 +185,9 @@ a.doc:hover { border-color: var(--c); }
 .paquet-haut { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
 .paquet-haut h3 { font-size: 19px; }
 .flash { display: block; perspective: 1200px; cursor: pointer; border: 0; background: none; padding: 0; font: inherit; color: inherit; text-align: center; width: 100%; }
-.flash-int { display: block; position: relative; min-height: 200px; transition: transform .45s; transform-style: preserve-3d; }
+.flash-int { display: grid; position: relative; min-height: 200px; transition: transform .45s; transform-style: preserve-3d; }
 .flash.retournee .flash-int { transform: rotateY(180deg); }
-.face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 22px; font-size: 20px; line-height: 1.45; overflow-wrap: anywhere; }
+.face { grid-area: 1 / 1; position: relative; min-height: 200px; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 22px; font-size: clamp(16px, 2.2vw, 19px); line-height: 1.5; overflow-wrap: anywhere; }
 .face small { font: 500 12px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; }
 .recto { background: var(--t-fla-bg); color: var(--encre); border: 1px solid var(--bord); }
 .recto small { color: var(--t-fla); }
@@ -348,13 +348,27 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
 
   /* Formules dans les flashcards : $...$ affiché avec KaTeX (chargé seulement si besoin). */
   var katexEtat = 'absent';
+  /* Chrome n'affiche pas les lettres « ajourées » (ℕ, ℤ, ℚ…) en MathML : on les remplace par leur caractère Unicode. */
+  var AJOUREES = { C: 'ℂ', H: 'ℍ', N: 'ℕ', P: 'ℙ', Q: 'ℚ', R: 'ℝ', Z: 'ℤ' };
+  function ajouree(l) {
+    if (AJOUREES[l]) return AJOUREES[l];
+    var code = l.charCodeAt(0);
+    if (code >= 65 && code <= 90) return String.fromCodePoint(0x1D538 + code - 65);
+    if (code >= 97 && code <= 122) return String.fromCodePoint(0x1D552 + code - 97);
+    return l;
+  }
+  function ajusterMathml(html) {
+    return html.replace(/<mi mathvariant="double-struck">([A-Za-z])<\/mi>/g, function (_, l) {
+      return '<mi mathvariant="normal">' + ajouree(l) + '</mi>';
+    });
+  }
   function formules(texte) {
     var brut = esc(texte);
     if (texte.indexOf('$') === -1) return brut;
     if (window.katex) {
       return String(texte).split(/(\$[^$]+\$)/g).map(function (morceau) {
         if (/^\$[^$]+\$$/.test(morceau)) {
-          try { return window.katex.renderToString(morceau.slice(1, -1), { output: 'mathml', throwOnError: false }); }
+          try { return ajusterMathml(window.katex.renderToString(morceau.slice(1, -1), { output: 'mathml', throwOnError: false })); }
           catch (e) { return esc(morceau); }
         }
         return esc(morceau);
