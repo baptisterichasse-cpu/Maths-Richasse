@@ -24,8 +24,8 @@ jobs:
       url: ${{ steps.deploiement.outputs.page_url }}
     steps:
       - uses: actions/checkout@v5
-                 with:
-             fetch-depth: 0
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
           node-version: 22
