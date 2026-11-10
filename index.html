@@ -288,6 +288,7 @@ a.doc:hover { border-color: var(--c); }
 .rev-exo { padding: 22px; display: flex; flex-direction: column; gap: 16px; scroll-margin-top: 90px; }
 .rev-consigne { font-weight: 700; }
 .rev-enonce { font-size: clamp(21px, 4vw, 28px); text-align: center; padding: 18px 12px; border-radius: 12px; background: var(--t-rev-bg); overflow-x: auto; }
+.rev-enonce.long { font-size: clamp(17px, 2.6vw, 21px); line-height: 1.5; }
 .rev-libelle { font-size: 14px; font-weight: 700; color: var(--encre-2); margin-bottom: -10px; }
 .rev-champ { display: flex; gap: 8px; flex-wrap: wrap; }
 .rev-saisie { flex: 1 1 150px; min-width: 0; font: 500 19px var(--f-mono); padding: 10px 14px; min-height: 48px; border-radius: 10px; border: 1px solid var(--bord-fort); background: var(--carte); color: var(--encre); }
@@ -1214,7 +1215,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
           if (!simple) return;
           if (f.t === 'neg') return visiter(f.e);
           if (f.t === 'mul') { visiter(f.a); visiter(f.b); return; }
-          if (f.t === 'div') { if (estEntierEcrit(sansPar(f.b))) { visiter(f.a); nb++; } else simple = false; return; }
+          if (f.t === 'div') { if (estEntierEcrit(sansPar(f.b))) { var avant = nb; visiter(f.a); if (nb === avant) nb++; } else simple = false; return; }
           if (f.t === 'num') { nb++; return; }
           if (f.t === 'var') { if (lettres[f.n]) reduite = false; lettres[f.n] = 1; return; }
           if (f.t === 'pow' && f.b.t === 'var') { if (lettres[f.b.n]) reduite = false; lettres[f.b.n] = 1; return; }
@@ -1267,7 +1268,8 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       fraction: 'Calculer et donner le résultat sous forme d’une fraction irréductible.',
       developpe: 'Développer et réduire l’expression.',
       factorise: 'Factoriser l’expression.',
-      egal: 'Calculer.'
+      egal: 'Calculer.',
+      nombre: 'Calculer et donner le résultat sous la forme d’un seul nombre.'
     };
 
     function verifier(type, saisie, attendu, enonce) {
@@ -1293,6 +1295,22 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
         if (!f.entier && pgcd(f.n, f.d) !== 1) {
           return { etat: 'presque', message: 'La valeur est juste, mais la fraction n’est pas irréductible : $' + Math.abs(f.n) + '$ et $' + f.d + '$ sont tous deux divisibles par $' + pgcd(f.n, f.d) + '$.' };
         }
+        return { etat: 'juste', message: '' };
+      }
+
+      if (type === 'nombre') {
+        if (!juste) {
+          if (!Object.keys(p).every(function (c) { return c === ''; })) return { etat: 'faux', message: 'Le résultat ne doit pas contenir de lettre.' };
+          return { etat: 'faux', message: 'Ce n’est pas le bon résultat.' };
+        }
+        var seul = lu.arbre;
+        while (seul.t === 'neg' || seul.t === 'par') seul = seul.e;
+        if (seul.t === 'num') return { etat: 'juste', message: '' };
+        var fr = lireFraction(lu.arbre);
+        if (!fr) return { etat: 'presque', message: 'La valeur est juste, mais le calcul n’est pas terminé : donner un seul nombre.' };
+        if (fr.denNegatif) return { etat: 'presque', message: 'La valeur est juste, mais le signe − se place devant la fraction ou au numérateur.' };
+        if (fr.d === 1) return { etat: 'presque', message: 'La valeur est juste : une fraction de dénominateur $1$ s’écrit simplement comme un entier.' };
+        if (pgcd(fr.n, fr.d) !== 1) return { etat: 'presque', message: 'La valeur est juste, mais la fraction n’est pas irréductible : $' + Math.abs(fr.n) + '$ et $' + fr.d + '$ sont tous deux divisibles par $' + pgcd(fr.n, fr.d) + '$.' };
         return { etat: 'juste', message: '' };
       }
 
@@ -1365,18 +1383,20 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
   })();
 
   /* ---------- Révisions : exercices corrigés automatiquement ---------- */
-  var EXEMPLES = { fraction: '7/12', developpe: '3x^2-5x+2', factorise: '(x+1)(x-3)', egal: '' };
+  var EXEMPLES = { fraction: '7/12', developpe: '3x^2-5x+2', factorise: '(x+1)(x-3)', egal: '', nombre: '-7 ou 3/4 ou 2,5' };
   var TOUCHES = {
     fraction: [['/', '/'], ['−', '-'], ['(', '('], [')', ')']],
     developpe: [['x', 'x'], ['x²', '^2'], ['(', '('], [')', ')']],
     factorise: [['x', 'x'], ['x²', '^2'], ['(', '('], [')', ')']],
-    egal: [['x', 'x'], ['x²', '^2'], ['/', '/'], ['(', '('], [')', ')']]
+    egal: [['x', 'x'], ['x²', '^2'], ['/', '/'], ['(', '('], [')', ')']],
+    nombre: [['−', '-'], ['/', '/'], [',', ',']]
   };
   var AIDES = {
     fraction: 'Écrire 7/12 pour la fraction sept douzièmes.',
     developpe: 'Écrire x^2 pour x².',
     factorise: 'Écrire x^2 pour x², (x+1)(x-3) pour un produit.',
-    egal: 'Écrire x^2 pour x², / pour une fraction.'
+    egal: 'Écrire x^2 pour x², / pour une fraction.',
+    nombre: 'Écrire 3/4 pour une fraction, 2,5 pour un décimal.'
   };
   var revs = {};
   function idTheme(t) { return 'r-' + hachage(t.titre); }
@@ -1442,7 +1462,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       '<div class="paquet-haut"><span class="qcm-num" id="rev-titre">Exercice ' + (e.i + 1) + ' / ' + n + '</span>' +
         (s ? '<span class="etat-carte ' + (s.s === 'ok' ? 'sue' : 'revoir') + '" style="position:static">' + (s.s === 'ok' ? 'Déjà réussi' : 'À retravailler') + '</span>' : '') + '</div>' +
       '<div class="rev-consigne">' + formules(x.consigne || Algebre.CONSIGNES[x.type] || '') + '</div>' +
-      '<div class="rev-enonce">' + formules(x.enonce) + '</div>' +
+      '<div class="rev-enonce' + (x.enonce.replace(/\$[^$]*\$/g, '').length > 40 ? ' long' : '') + '">' + formules(x.enonce) + '</div>' +
       '<label class="rev-libelle" for="rev-saisie">Réponse</label>' +
       '<div class="rev-champ"><input id="rev-saisie" class="rev-saisie" type="text" inputmode="text" enterkeyhint="done" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"' +
         (EXEMPLES[x.type] ? ' placeholder="Exemple : ' + esc(EXEMPLES[x.type]) + '"' : '') + ' value="' + esc(e.saisie) + '"' + (resolu ? ' readonly' : '') + '>' +

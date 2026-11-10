@@ -127,7 +127,7 @@ function lireQcm(texte) {
 
 // Révisions : consigne, énoncé, réponse, vérification, correction
 // (vérification = fraction, developpe, factorise ou egal)
-const VERIFICATIONS = ['fraction', 'developpe', 'factorise', 'egal'];
+const VERIFICATIONS = ['fraction', 'developpe', 'factorise', 'egal', 'nombre'];
 function lireRevision(texte, f) {
   const exercices = [];
   for (const l of lireCsv(texte).lignes) {
@@ -241,7 +241,9 @@ async function main() {
 
         if ((info.ext === 'csv' || info.ext === 'txt') && nf.startsWith('revision')) {
           const exercices = lireRevision(await readFile(source, 'utf8'), f);
-          if (exercices.length) { ch.revisions.push({ titre: titreApresTiret(info.base, 'Révisions'), exercices, ajoute }); nbRevisions += exercices.length; }
+          // « revision - 2 - Réduire une expression » : le numéro fixe l'ordre d'affichage
+          const brut = titreApresTiret(info.base, 'Révisions'), num = brut.match(/^(\d+)\s*[-–.)]\s*(.+)$/);
+          if (exercices.length) { ch.revisions.push({ titre: num ? num[2].trim() : brut, ordre: num ? Number(num[1]) : 999, exercices, ajoute }); nbRevisions += exercices.length; }
           else console.warn(`Attention : aucun exercice lu dans « ${f} ».`);
           continue;
         }
@@ -262,6 +264,7 @@ async function main() {
         }
         ch.documents.push(doc);
       }
+      ch.revisions.sort((a, b) => a.ordre - b.ordre || a.titre.localeCompare(b.titre, 'fr'));
       c.chapitres.push(ch);
     }
     donnees.classes.push(c);
