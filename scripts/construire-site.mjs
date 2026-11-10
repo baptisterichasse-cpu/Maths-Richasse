@@ -141,6 +141,11 @@ function lireRevision(texte, f) {
   return exercices;
 }
 
+// Notions à maîtriser avant un chapitre : un thème de révision par ligne (les lignes # sont des commentaires)
+function lirePrerequis(texte) {
+  return String(texte || '').split(/\r?\n/).map((l) => l.replace(/^[-*•]\s*/, '').trim()).filter((l) => l && !l.startsWith('#'));
+}
+
 // Date d'ajout de chaque fichier, lue dans l'historique GitHub.
 function datesAjout() {
   const dates = new Map();
@@ -198,7 +203,7 @@ async function main() {
   for (const classe of reglages.classes) {
     const dossierClasse = path.join(RACINE, 'documents', classe.dossier);
     const c = {
-      dossier: classe.dossier, nom: classe.nom, description: classe.description || '',
+      dossier: classe.dossier, nom: classe.nom, description: classe.description || '', type: classe.type || '',
       progression: await lireTexte(path.join(dossierClasse, '_progression.md')),
       chapitres: [],
     };
@@ -211,7 +216,8 @@ async function main() {
       while (ids.has(id)) id += '-2';
       ids.add(id);
       const dossierChap = path.join(dossierClasse, nomChap);
-      const ch = { id, numero, titre, essentiel: await lireTexte(path.join(dossierChap, '_essentiel.md')), documents: [], paquets: [], qcms: [], revisions: [] };
+      const ch = { id, numero, titre, essentiel: await lireTexte(path.join(dossierChap, '_essentiel.md')), documents: [], paquets: [], qcms: [], revisions: [],
+        domaine: classe.type === 'revisions', prerequis: lirePrerequis(await lireTexte(path.join(dossierChap, '_prerequis.txt'))) };
 
       for (const f of await fichiers(dossierChap)) {
         const source = path.join(dossierChap, f);

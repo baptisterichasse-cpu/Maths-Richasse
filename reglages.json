@@ -6,6 +6,7 @@
   "envoi_progression": "",
   "classes": [
     { "dossier": "seconde", "nom": "Seconde", "description": "Seconde générale et technologique" },
-    { "dossier": "terminale", "nom": "Terminale", "description": "Spécialité mathématiques" }
+    { "dossier": "terminale", "nom": "Terminale", "description": "Spécialité mathématiques" },
+    { "dossier": "revisions", "nom": "Révisions", "description": "Exercices corrigés automatiquement, pour toutes les classes", "type": "revisions" }
   ]
 }

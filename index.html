@@ -310,6 +310,20 @@ a.doc:hover { border-color: var(--c); }
 .bouton:disabled:hover { border-color: var(--bord-fort); color: var(--encre); }
 .bouton.plein:disabled:hover { color: var(--sur-rouge); }
 
+/* Onglet Révisions et prérequis */
+.domaines { display: flex; flex-direction: column; gap: 28px; min-width: 0; }
+.domaines .groupe { margin: 0; }
+.prerequis { padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; border-left: 4px solid var(--t-rev); }
+.prerequis h2 { font-size: 20px; display: flex; align-items: center; gap: 8px; }
+.prerequis p { margin: 0; color: var(--encre-2); font-size: 15px; }
+.prereq-liste { display: flex; flex-wrap: wrap; gap: 8px; }
+.prereq { display: inline-flex; align-items: center; gap: 10px; padding: 8px 8px 8px 14px; border-radius: 999px; border: 1px solid var(--bord-fort); background: var(--carte); color: var(--encre); text-decoration: none; font-weight: 700; font-size: 15px; }
+a.prereq:hover { border-color: var(--t-rev); }
+.prereq.absent { font-weight: 500; color: var(--encre-2); border-style: dashed; padding-right: 14px; }
+.prereq-score { font: 500 13px var(--f-mono); padding: 3px 9px; border-radius: 999px; background: var(--fond); color: var(--encre-2); font-variant-numeric: tabular-nums; }
+.prereq-score.ok { background: var(--vert); color: var(--carte); }
+.prereq-score.encours { background: var(--t-met-bg); color: var(--t-met); }
+
 /* Code d'accès */
 .bouton-eleve { height: 40px; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--bande-bord); background: var(--bande-champ); color: var(--bande-encre); font: 500 13px var(--f-mono); cursor: pointer; white-space: nowrap; flex: none; }
 .bouton-eleve:hover { border-color: var(--bande-accent); }
@@ -625,7 +639,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     for (var i = 0; i < c.chapitres.length; i++) if (c.chapitres[i].id === id) return c.chapitres[i];
     return null;
   }
-  function nomChapitre(ch) { return ch.numero === 0 ? 'Toute l’année' : (ch.numero ? 'Chapitre ' + deuxChiffres(ch.numero) : 'Chapitre'); }
+  function nomChapitre(ch) { return ch.domaine ? 'Révisions' : ch.numero === 0 ? 'Toute l’année' : (ch.numero ? 'Chapitre ' + deuxChiffres(ch.numero) : 'Chapitre'); }
 
   /* ---------- Vues ---------- */
   function compter(ch) {
@@ -716,7 +730,29 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     return { tete: t, corps: html, haute: true };
   }
 
+  function vueOngletRevisions(c) {
+    var t = filAriane([['Accueil', ''], [c.nom]]) +
+      '<span class="surtitre">' + esc(c.description || '') + '</span><h1>' + esc(c.nom) + '</h1>';
+    var sections = c.chapitres.map(function (ch) {
+      var cle0 = c.dossier + '~' + ch.id;
+      var cartes = ch.revisions.map(function (th) { return carteTheme(c, ch, th); });
+      if (ch.paquets.length || ch.qcms.length || ch.documents.length) {
+        cartes.push('<a class="carte theme" data-type="flashcards" href="#' + esc(cle0) + '" data-vue="' + esc(cle0) + '"><h3>' +
+          (ch.paquets.length ? 'Flashcards' : 'Documents') + '</h3><span class="puces">' + puces(ch) + '</span><span class="theme-lien">Ouvrir →</span></a>');
+      }
+      if (!cartes.length) return '';
+      return '<section class="groupe" data-type="revision"><h2 class="groupe-titre"><span class="pastille" aria-hidden="true"></span>' + esc(ch.titre) + '</h2>' +
+        '<div class="themes">' + cartes.join('') + '</div></section>';
+    }).join('');
+    var envoi = carteEnvoi(c);
+    var corps = '<div class="classe-grille"' + (envoi ? '' : ' style="grid-template-columns:minmax(0,1fr)"') + '>' +
+      '<div class="domaines">' + (sections || '<p class="carte vide">Aucun thème de révision pour l’instant.</p>') + '</div>' +
+      (envoi ? '<div class="cote">' + envoi + '</div>' : '') + '</div>';
+    return { tete: t, corps: corps };
+  }
+
   function vueClasse(c) {
+    if (c.type === 'revisions') return vueOngletRevisions(c);
     var t = filAriane([['Accueil', ''], [c.nom]]) +
       '<span class="surtitre">' + esc(c.description || '') + '</span><h1>' + esc(c.nom) + '</h1>';
     var chap = c.chapitres.map(function (ch) {
@@ -1571,16 +1607,36 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     fetch(D.reglages.envoi + (D.reglages.envoi.indexOf('?') === -1 ? '?' : '&') + 'code=' + encodeURIComponent(code))
       .then(function (r) { return r.json(); })
       .then(function (rep) {
-        if (rep && rep.ok) { accepter('Code ' + code + ' enregistré sur cet appareil.'); return; }
+        if (rep && rep.ok) { if (rep.classe) ecrire('eleve:classe', rep.classe); else effacer('eleve:classe'); accepter('Code ' + code + ' enregistré sur cet appareil.'); return; }
         ident.statut = 'erreur'; ident.message = 'Ce code n’est pas reconnu. Vérifier le code donné par ' + nomProf() + '.';
         rendre(true);
       })
       .catch(function () { accepter('Code ' + code + ' enregistré. Il n’a pas pu être vérifié pour l’instant : il le sera au premier envoi.'); });
   }
 
+  function activite(p) {
+    return p.qcm.some(function (x) { return x.meilleur != null; }) || p.flashcards.some(function (x) { return x.sues > 0; }) ||
+      p.revisions.some(function (x) { return x.reussis + x.aRetravailler > 0; });
+  }
+  function classeDeLEleve() {
+    var n = norm(lire('eleve:classe') || '');
+    if (!n) return null;
+    return D.classes.filter(function (c) { return c.type !== 'revisions' && (norm(c.nom) === n || norm(c.dossier) === n); })[0] || null;
+  }
+  // Révisions de toutes les classes + QCM et flashcards de la classe de l'élève
+  function progressionEleve(cPage) {
+    var r = { revisions: [], qcm: [], flashcards: [] }, sienne = classeDeLEleve();
+    D.classes.forEach(function (c) {
+      var p = progressionClasse(c);
+      r.revisions = r.revisions.concat(p.revisions);
+      var garder = c.type === 'revisions' || (sienne ? c === sienne : (c === cPage || activite(p)));
+      if (garder) { r.qcm = r.qcm.concat(p.qcm); r.flashcards = r.flashcards.concat(p.flashcards); }
+    });
+    return r;
+  }
   function carteEnvoi(c) {
     if (!D.reglages.envoi) return '';
-    var p = progressionClasse(c), e = envoiEtat[c.dossier] || {}, code = codeEleve(), dernier = lire('envoi:' + c.dossier);
+    var p = progressionEleve(c), e = envoiEtat.courant || {}, code = codeEleve(), dernier = lire('envoi:dernier');
     var rev = 0, qcm = 0, fc = 0;
     p.revisions.forEach(function (x) { rev += x.reussis; });
     p.qcm.forEach(function (x) { if (x.meilleur != null) qcm++; });
@@ -1599,7 +1655,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       : '<p class="envoi-code">Pour envoyer sa progression, il faut d’abord saisir son code d’accès.</p>' +
         '<button class="bouton plein" type="button" data-action="ident-ouvrir">Saisir mon code d’accès</button>';
     return '<section class="carte envoi" data-envoi="' + esc(c.dossier) + '" aria-labelledby="titre-envoi">' +
-      '<h3 id="titre-envoi">Ma progression · ' + esc(c.nom) + '</h3>' +
+      '<h3 id="titre-envoi">Ma progression</h3>' +
       (resume.length ? '<p class="envoi-resume">' + resume.join(' · ') + '</p>' : '') +
       identite + message + '</section>';
   }
@@ -1615,24 +1671,25 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     if (!c) return;
     if (!code) { ouvrirIdent(); return; }
     delete envoiEtat._annonce;
-    envoiEtat[dossier] = { statut: 'encours', message: 'Envoi en cours…' };
+    envoiEtat.courant = { statut: 'encours', message: 'Envoi en cours…' };
     rendre(true);
-    var donnees = { code: code, classe: c.nom, dossier: dossier, appareil: idAppareil(), envoye: new Date().toISOString(), progression: progressionClasse(c) };
+    var sienne = classeDeLEleve() || (c.type !== 'revisions' ? c : null);
+    var donnees = { code: code, classe: sienne ? sienne.nom : (lire('eleve:classe') || ''), appareil: idAppareil(), envoye: new Date().toISOString(), progression: progressionEleve(c) };
     fetch(D.reglages.envoi, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(donnees) })
       .then(function (r) { return r.json(); })
       .then(function (rep) {
         if (rep && rep.erreur === 'code inconnu') {
-          envoiEtat[dossier] = { statut: 'erreur', message: 'Le code ' + code + ' n’est pas reconnu. Le corriger avec « Changer », puis renvoyer.' };
+          envoiEtat.courant = { statut: 'erreur', message: 'Le code ' + code + ' n’est pas reconnu. Le corriger avec « Changer », puis renvoyer.' };
           rendre(true); return;
         }
         if (!rep || !rep.ok) throw new Error((rep && rep.erreur) || 'refus');
         var jour = isoAujourdhui();
-        ecrire('envoi:' + dossier, jour);
-        envoiEtat[dossier] = { statut: 'ok', message: 'Progression envoyée à ' + nomProf() + ' le ' + dateLongue(jour) + '. Merci !' };
+        ecrire('envoi:dernier', jour);
+        envoiEtat.courant = { statut: 'ok', message: 'Progression envoyée à ' + nomProf() + ' le ' + dateLongue(jour) + '. Merci !' };
         rendre(true);
       })
       .catch(function () {
-        envoiEtat[dossier] = { statut: 'erreur', message: 'L’envoi n’a pas abouti. Vérifier la connexion internet, puis réessayer.' };
+        envoiEtat.courant = { statut: 'erreur', message: 'L’envoi n’a pas abouti. Vérifier la connexion internet, puis réessayer.' };
         rendre(true);
       });
   }
@@ -1657,11 +1714,35 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       '</tbody></table>');
   }
 
+  function trouverThemeParTitre(titre) {
+    var n = norm(titre).replace(/^revision\s*-\s*/, '').trim();
+    for (var i = 0; i < D.classes.length; i++) for (var j = 0; j < D.classes[i].chapitres.length; j++) {
+      var ch = D.classes[i].chapitres[j];
+      for (var k = 0; k < ch.revisions.length; k++) if (norm(ch.revisions[k].titre) === n) return { c: D.classes[i], ch: ch, t: ch.revisions[k] };
+    }
+    return null;
+  }
+  function blocPrerequis(ch) {
+    if (!ch.prerequis || !ch.prerequis.length) return '';
+    var liens = ch.prerequis.map(function (titre) {
+      var r = trouverThemeParTitre(titre);
+      if (!r) return '<span class="prereq absent">' + esc(titre) + ' · bientôt</span>';
+      var cle = r.c.dossier + '~' + r.ch.id + '~' + idTheme(r.t), b = bilanRev(cle, r.t), n = r.t.exercices.length;
+      var etat = b.ok >= 0.8 * n ? 'ok' : (b.ok + b.ko ? 'encours' : '');
+      return '<a class="prereq" data-type="revision" href="#' + esc(cle) + '" data-vue="' + esc(cle) + '">' + esc(r.t.titre) +
+        '<span class="prereq-score ' + etat + '">' + b.ok + '/' + n + '</span></a>';
+    }).join('');
+    return '<section class="carte prerequis" data-type="revision" aria-labelledby="titre-prereq">' +
+      '<h2 id="titre-prereq">À maîtriser avant de commencer</h2>' +
+      '<p>Ces notions servent tout au long du chapitre. S’entraîner dans les Révisions :</p>' +
+      '<div class="prereq-liste">' + liens + '</div></section>';
+  }
+
   function vueChapitre(c, ch) {
     var cle0 = c.dossier + '~' + ch.id;
     var t = filAriane([['Accueil', ''], [c.nom, c.dossier], [ch.titre]]) +
       '<span class="surtitre">' + esc(c.nom) + ' · ' + nomChapitre(ch) + '</span><h1>' + esc(ch.titre) + '</h1>';
-    var html = '';
+    var html = blocPrerequis(ch);
     if (ch.essentiel.trim()) {
       html += '<section class="carte essentiel" aria-labelledby="titre-ess"><div class="essentiel-haut">' +
         '<h2 id="titre-ess"><svg aria-hidden="true"><use href="#i-cible"/></svg>L’essentiel du chapitre</h2>' +
