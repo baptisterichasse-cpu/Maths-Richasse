@@ -310,17 +310,30 @@ a.doc:hover { border-color: var(--c); }
 .bouton:disabled:hover { border-color: var(--bord-fort); color: var(--encre); }
 .bouton.plein:disabled:hover { color: var(--sur-rouge); }
 
+/* Code d'accès */
+.bouton-eleve { height: 40px; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--bande-bord); background: var(--bande-champ); color: var(--bande-encre); font: 500 13px var(--f-mono); cursor: pointer; white-space: nowrap; flex: none; }
+.bouton-eleve:hover { border-color: var(--bande-accent); }
+.bouton-eleve[hidden] { display: none; }
+.ident-code::placeholder { text-transform: none; }
+.bouton-eleve svg { width: 16px; height: 16px; }
+.ident { padding: 20px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; border: 2px solid var(--rouge); }
+.ident-texte { flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.ident-texte h2 { font-size: 20px; }
+.ident-texte p { margin: 0; font-size: 15px; color: var(--encre-2); }
+.ident-form { flex: 1 1 300px; display: flex; flex-wrap: wrap; gap: 8px; }
+.ident-code { flex: 1 1 140px; min-width: 0; font: 500 18px var(--f-mono); text-transform: uppercase; padding: 8px 12px; min-height: 44px; border-radius: 10px; border: 1px solid var(--bord-fort); background: var(--carte); color: var(--encre); }
+.ident-code:focus { outline: none; border-color: var(--rouge); box-shadow: 0 0 0 3px var(--rouge-doux); }
+.ident .envoi-msg { flex-basis: 100%; }
+.envoi-code { margin: 0; font-size: 15px; }
+.envoi-code b { font-family: var(--f-mono); font-weight: 500; }
+.lien-bouton { font: inherit; font-size: 14px; font-weight: 700; color: var(--rouge-texte); background: none; border: 0; padding: 0 0 0 6px; cursor: pointer; text-decoration: underline; }
+
 /* Envoi de la progression */
 .cote { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
 .envoi { padding: 22px; display: flex; flex-direction: column; gap: 10px; }
 .envoi h3 { font-size: 20px; }
 .envoi-resume { margin: 0; font-size: 15px; color: var(--encre-2); }
 .envoi-resume b { color: var(--encre); }
-.envoi-libelle { font-size: 14px; font-weight: 700; color: var(--encre-2); }
-.envoi-ligne { display: flex; flex-wrap: wrap; gap: 8px; }
-.envoi-numero { flex: 1 1 110px; min-width: 0; font: 500 18px var(--f-mono); padding: 8px 12px; min-height: 44px; border-radius: 10px; border: 1px solid var(--bord-fort); background: var(--carte); color: var(--encre); }
-.envoi-numero:focus { outline: none; border-color: var(--rouge); box-shadow: 0 0 0 3px var(--rouge-doux); }
-.envoi-ligne .bouton { flex: 1 1 auto; }
 .envoi-msg { margin: 0; font-size: 14px; color: var(--encre-2); }
 .envoi-msg.ok { color: var(--vert); font-weight: 700; }
 .envoi-msg.erreur { color: var(--rouge-texte); font-weight: 700; }
@@ -378,6 +391,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
   <symbol id="i-lune" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
   <symbol id="i-soleil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
   <symbol id="i-imprimer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></symbol>
+  <symbol id="i-eleve" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
   <symbol id="i-cible" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></symbol>
 </svg>
 
@@ -398,6 +412,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
           <svg aria-hidden="true"><use href="#i-loupe"/></svg>
           <input id="champ-recherche" type="search" placeholder="Rechercher un chapitre, une fiche…" autocomplete="off">
         </label>
+        <button class="bouton-eleve" id="bouton-eleve" type="button" hidden><svg aria-hidden="true"><use href="#i-eleve"/></svg><span></span></button>
         <button class="bouton-icone" id="bouton-theme" type="button" aria-label="Passer en mode sombre">
           <svg aria-hidden="true"><use href="#i-lune"/></svg>
         </button>
@@ -1506,10 +1521,66 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     if (!id) { id = Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); ecrire('appareil', id); }
     return id;
   }
+
+  /* Code d'accès de l'élève : demandé à la première visite, puis mémorisé sur l'appareil */
+  var ident = { ouvert: false, plusTard: false, statut: '', message: '', saisie: null };
+  function codeEleve() { return lire('eleve:code') || ''; }
+  function normaliserCode(c) { return String(c || '').toUpperCase().replace(/\s+/g, '').replace(/[^A-Z0-9-]/g, ''); }
+  function afficherIdent() { return !!D.reglages.envoi && (ident.ouvert || (!codeEleve() && !ident.plusTard)); }
+  function carteIdent() {
+    if (!afficherIdent()) return '';
+    var actuel = codeEleve(), val = ident.saisie != null ? ident.saisie : actuel;
+    return '<section class="carte ident" data-ident aria-labelledby="titre-ident">' +
+      '<div class="ident-texte"><h2 id="titre-ident">Mon code d’accès</h2>' +
+      '<p>Saisir le code personnel donné par ' + esc(nomProf()) + '. Il ne sera plus demandé sur cet appareil et permettra d’envoyer sa progression.</p></div>' +
+      '<div class="ident-form"><label class="cache" for="ident-code">Code d’accès</label>' +
+      '<input id="ident-code" class="ident-code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="20" placeholder="Ex. A07-K4PZ" value="' + esc(val) + '">' +
+      '<button class="bouton plein" type="button" data-action="ident-valider"' + (ident.statut === 'encours' ? ' disabled' : '') + '>Valider</button>' +
+      '<button class="bouton discret" type="button" data-action="ident-fermer">' + (actuel ? 'Annuler' : 'Plus tard') + '</button></div>' +
+      (ident.message ? '<p class="envoi-msg ' + ident.statut + '" role="status">' + esc(ident.message) + '</p>' : '') +
+      '</section>';
+  }
+  function majBoutonEleve() {
+    var b = document.getElementById('bouton-eleve'), code = D && D.reglages.envoi ? codeEleve() : '';
+    if (!b) return;
+    b.hidden = !code;
+    b.querySelector('span').textContent = code;
+    b.setAttribute('aria-label', 'Code d’accès : ' + code + '. Changer de code');
+  }
+  function actionIdent(action) {
+    var champCode = document.getElementById('ident-code');
+    if (action === 'ident-fermer') {
+      ident = { ouvert: false, plusTard: true, statut: '', message: '', saisie: null };
+      rendre(true); return;
+    }
+    var code = normaliserCode(champCode ? champCode.value : '');
+    if (!/^[A-Z0-9-]{3,20}$/.test(code)) {
+      ident.statut = 'erreur'; ident.saisie = champCode ? champCode.value : ''; ident.message = 'Saisir le code tel qu’il a été donné, par exemple A07-K4PZ.';
+      rendre(true); return;
+    }
+    ident.statut = 'encours'; ident.saisie = code; ident.message = 'Vérification du code…';
+    rendre(true);
+    var accepter = function (msg) {
+      ecrire('eleve:code', code);
+      ident = { ouvert: false, plusTard: false, statut: '', message: '', saisie: null };
+      envoiEtat = {};
+      envoiEtat._annonce = msg;
+      majBoutonEleve();
+      rendre(true);
+    };
+    fetch(D.reglages.envoi + (D.reglages.envoi.indexOf('?') === -1 ? '?' : '&') + 'code=' + encodeURIComponent(code))
+      .then(function (r) { return r.json(); })
+      .then(function (rep) {
+        if (rep && rep.ok) { accepter('Code ' + code + ' enregistré sur cet appareil.'); return; }
+        ident.statut = 'erreur'; ident.message = 'Ce code n’est pas reconnu. Vérifier le code donné par ' + nomProf() + '.';
+        rendre(true);
+      })
+      .catch(function () { accepter('Code ' + code + ' enregistré. Il n’a pas pu être vérifié pour l’instant : il le sera au premier envoi.'); });
+  }
+
   function carteEnvoi(c) {
     if (!D.reglages.envoi) return '';
-    var p = progressionClasse(c), e = envoiEtat[c.dossier] || {};
-    var num = e.saisie != null ? e.saisie : (lire('eleve:numero') || ''), dernier = lire('envoi:' + c.dossier);
+    var p = progressionClasse(c), e = envoiEtat[c.dossier] || {}, code = codeEleve(), dernier = lire('envoi:' + c.dossier);
     var rev = 0, qcm = 0, fc = 0;
     p.revisions.forEach(function (x) { rev += x.reussis; });
     p.qcm.forEach(function (x) { if (x.meilleur != null) qcm++; });
@@ -1520,30 +1591,40 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     if (p.flashcards.length) resume.push('<b>' + fc + '</b> flashcard' + (fc > 1 ? 's' : '') + ' sue' + (fc > 1 ? 's' : ''));
     var message = e.message
       ? '<p class="envoi-msg ' + (e.statut || '') + '" role="status">' + esc(e.message) + '</p>'
-      : (dernier ? '<p class="envoi-msg">Dernier envoi : ' + esc(dateLongue(dernier)) + '.</p>' : '');
+      : (envoiEtat._annonce ? '<p class="envoi-msg ok" role="status">' + esc(envoiEtat._annonce) + '</p>'
+        : (dernier ? '<p class="envoi-msg">Dernier envoi : ' + esc(dateLongue(dernier)) + '.</p>' : ''));
+    var identite = code
+      ? '<p class="envoi-code">Code d’accès : <b>' + esc(code) + '</b> <button class="lien-bouton" type="button" data-action="ident-ouvrir">Changer</button></p>' +
+        '<button class="bouton plein" type="button" data-action="envoyer"' + (e.statut === 'encours' ? ' disabled' : '') + '>Envoyer ma progression à ' + esc(nomProf()) + '</button>'
+      : '<p class="envoi-code">Pour envoyer sa progression, il faut d’abord saisir son code d’accès.</p>' +
+        '<button class="bouton plein" type="button" data-action="ident-ouvrir">Saisir mon code d’accès</button>';
     return '<section class="carte envoi" data-envoi="' + esc(c.dossier) + '" aria-labelledby="titre-envoi">' +
       '<h3 id="titre-envoi">Ma progression · ' + esc(c.nom) + '</h3>' +
       (resume.length ? '<p class="envoi-resume">' + resume.join(' · ') + '</p>' : '') +
-      '<label class="envoi-libelle" for="envoi-numero">Mon numéro (donné par ' + esc(nomProf()) + ')</label>' +
-      '<div class="envoi-ligne"><input id="envoi-numero" class="envoi-numero" type="text" inputmode="numeric" autocomplete="off" maxlength="12" value="' + esc(num) + '">' +
-      '<button class="bouton plein" type="button" data-action="envoyer"' + (e.statut === 'encours' ? ' disabled' : '') + '>Envoyer ma progression à ' + esc(nomProf()) + '</button></div>' +
-      message + '</section>';
+      identite + message + '</section>';
+  }
+  function ouvrirIdent() {
+    ident = { ouvert: true, plusTard: false, statut: '', message: '', saisie: null };
+    rendre(true);
+    window.scrollTo(0, 0);
+    var ch = document.getElementById('ident-code');
+    if (ch) { ch.focus({ preventScroll: true }); try { ch.select(); } catch (err) {} }
   }
   function envoyer(bloc) {
-    var dossier = bloc.getAttribute('data-envoi'), c = trouverClasse(dossier), champNum = document.getElementById('envoi-numero');
-    if (!c || !champNum) return;
-    var num = champNum.value.trim();
-    if (!/^[A-Za-z0-9-]{1,12}$/.test(num)) {
-      envoiEtat[dossier] = { statut: 'erreur', saisie: champNum.value, message: 'Saisir le numéro donné par ' + nomProf() + ' : des chiffres ou des lettres, sans espace.' };
-      rendre(true); return;
-    }
-    ecrire('eleve:numero', num);
+    var dossier = bloc.getAttribute('data-envoi'), c = trouverClasse(dossier), code = codeEleve();
+    if (!c) return;
+    if (!code) { ouvrirIdent(); return; }
+    delete envoiEtat._annonce;
     envoiEtat[dossier] = { statut: 'encours', message: 'Envoi en cours…' };
     rendre(true);
-    var donnees = { numero: num, classe: c.nom, dossier: dossier, appareil: idAppareil(), envoye: new Date().toISOString(), progression: progressionClasse(c) };
+    var donnees = { code: code, classe: c.nom, dossier: dossier, appareil: idAppareil(), envoye: new Date().toISOString(), progression: progressionClasse(c) };
     fetch(D.reglages.envoi, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(donnees) })
       .then(function (r) { return r.json(); })
       .then(function (rep) {
+        if (rep && rep.erreur === 'code inconnu') {
+          envoiEtat[dossier] = { statut: 'erreur', message: 'Le code ' + code + ' n’est pas reconnu. Le corriger avec « Changer », puis renvoyer.' };
+          rendre(true); return;
+        }
         if (!rep || !rep.ok) throw new Error((rep && rep.erreur) || 'refus');
         var jour = isoAujourdhui();
         ecrire('envoi:' + dossier, jour);
@@ -1689,13 +1770,14 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     else r = vueAccueil();
 
     var y = window.scrollY, actif = document.activeElement, curseur = null;
-    if (actif && actif.id === 'rev-saisie') { try { curseur = actif.selectionStart; } catch (e) {} }
+    var idActif = actif && (actif.id === 'rev-saisie' || actif.id === 'ident-code') ? actif.id : null;
+    if (idActif) { try { curseur = actif.selectionStart; } catch (e) {} }
     tete.innerHTML = r.tete;
     tete.className = 'enveloppe tete' + (r.haute ? ' haute' : '');
     contenu.className = 'enveloppe' + (r.haute ? ' chevauche' : '');
-    contenu.innerHTML = r.corps;
+    contenu.innerHTML = carteIdent() + r.corps;
     if (garderPosition === true) window.scrollTo(0, y);
-    if (curseur != null) { var nv = document.getElementById('rev-saisie'); if (nv && !nv.readOnly) { nv.focus({ preventScroll: true }); try { nv.setSelectionRange(curseur, curseur); } catch (e) {} } }
+    if (curseur != null) { var nv = document.getElementById(idActif); if (nv && !nv.readOnly) { nv.focus({ preventScroll: true }); try { nv.setSelectionRange(curseur, curseur); } catch (e) {} } }
     document.title = titre + ' · ' + D.reglages.etablissement;
   }
 
@@ -1715,6 +1797,9 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     }
     var b = e.target.closest('[data-action]');
     if (!b) return;
+    var act = b.getAttribute('data-action');
+    if (act === 'ident-ouvrir') { ouvrirIdent(); return; }
+    if (act === 'ident-valider' || act === 'ident-fermer') { actionIdent(act); return; }
     var bloc = b.closest('[data-envoi]');
     if (bloc) { envoyer(bloc); return; }
     bloc = b.closest('[data-paquet]');
@@ -1726,9 +1811,10 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
   });
   contenu.addEventListener('input', function (e) {
     if (e.target.id === 'rev-saisie') saisieRev(e.target);
+    if (e.target.id === 'ident-code') ident.saisie = e.target.value;
   });
   contenu.addEventListener('keydown', function (e) {
-    if (e.target.id === 'envoi-numero' && e.key === 'Enter') { e.preventDefault(); envoyer(e.target.closest('[data-envoi]')); return; }
+    if (e.target.id === 'ident-code' && e.key === 'Enter') { e.preventDefault(); actionIdent('ident-valider'); return; }
     if (e.target.id === 'rev-saisie' && e.key === 'Enter') { e.preventDefault(); var bloc = e.target.closest('[data-rev]'); if (bloc) actionRev(bloc, 'verifier'); }
   });
 
@@ -1747,7 +1833,9 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     document.getElementById('pied-droite').textContent = 'Mis à jour le ' + g.getDate() + ' ' + MOIS[g.getMonth()] + ' ' + g.getFullYear();
     vue = lireAdresse();
     rendre();
+    majBoutonEleve();
   }
+  document.getElementById('bouton-eleve').addEventListener('click', function () { ouvrirIdent(); });
 
   fetch('donnees.json', { cache: 'no-cache' })
     .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
