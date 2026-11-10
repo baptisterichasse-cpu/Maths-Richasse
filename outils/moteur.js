@@ -179,6 +179,7 @@ var Algebre = (function () {
         var cr = constante(polynome(n.e));
         if (!cr) throw new Error('Racine carrée d’une expression contenant une lettre.');
         if (cr[0] < 0) throw new Error('Racine carrée d’un nombre négatif.');
+        if (cr[0] === 0) return {};
         var dc = carres(cr[0] * cr[1]), res = {};
         res[dc[1] > 1 ? '√' + dc[1] : ''] = rat(dc[0], cr[1]);
         return nettoyer(res);

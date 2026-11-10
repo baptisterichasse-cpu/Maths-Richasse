@@ -130,7 +130,7 @@ function equation(th, o) {
     c = parts.join(' ');
   }
   if (!c) ko('correction manquante pour ' + o.eq);
-  return { enonce, r, type: 'ensemble', c: (o.n ? o.n + ' ' : '') + c };
+  return { enonce, r, type: 'ensemble', c: note(o.n) + c };
 }
 const OPS = { '<=': ['≤', ' \\leqslant '], '>=': ['≥', ' \\geqslant '], '<': ['<', ' < '], '>': ['>', ' > '] };
 const INV = { '≤': '≥', '≥': '≤', '<': '>', '>': '<' };
@@ -140,7 +140,7 @@ function inequation(th, o) {
   if (Aa[0] === 0) throw new Error('inéquation sans inconnue');
   const borne = div(B, Aa), opF = Aa[0] < 0 ? INV[op] : op, symF = Object.values(OPS).find((x) => x[0] === opF)[1];
   if (cmp(Aa, [1, 1]) !== 0) parts.push(`On divise par $${fr(Aa)}$${Aa[0] < 0 ? ', qui est négatif : le sens de l’inégalité change' : ''} : $${lettre}${symF}${fr(borne)}$.`);
-  return { enonce: '$' + tex(g) + sym + tex(d) + '$', r: lettre + opF + txt(borne), type: 'inequation', c: (o.n ? o.n + ' ' : '') + parts.join(' ') };
+  return { enonce: '$' + tex(g) + sym + tex(d) + '$', r: lettre + opF + txt(borne), type: 'inequation', c: note(o.n) + parts.join(' ') };
 }
 
 /* ----- Arithmétique ----- */
@@ -194,8 +194,10 @@ function scientifique(o) {
   while (cmp(a, [10, 1]) >= 0) { a = div(a, [10, 1]); n++; }
   while (cmp(a, [1, 1]) < 0) { a = mul(a, [10, 1]); n--; }
   const at = (q[0] < 0 ? '-' : '') + txt(a, true), r = at + '*10^' + n;
-  return { enonce: '$' + nb(s) + '$', r, type: 'scientifique', c: `Le premier facteur doit être compris entre $1$ et $10$ : la virgule se déplace de $${Math.abs(n)}$ rang${Math.abs(n) > 1 ? 's' : ''} vers la ${n > 0 ? 'gauche' : 'droite'}. $${nb(s)} = ${nb(at)}\\times 10^{${n}}$` };
+  return { consigne: A.CONSIGNES.scientifique, enonce: '$' + nb(s) + '$', r, type: 'scientifique', c: `Le premier facteur doit être compris entre $1$ et $10$ : la virgule se déplace de $${Math.abs(n)}$ rang${Math.abs(n) > 1 ? 's' : ''} vers la ${n > 0 ? 'gauche' : 'droite'}. $${nb(s)} = ${nb(at)}\\times 10^{${n}}$` };
 }
+
+const note = (n) => !n ? '' : /[.!?]$/.test(n) ? n + ' ' : n + ' : ';
 
 /* ----- Un exercice ----- */
 function chaine(th, type, e, etapes, rImpose) {
@@ -227,13 +229,13 @@ function exercice(th, brut) {
   if (o.div) { const d = o.parmi.filter((k) => o.div % k === 0); return { consigne: 'Parmi les nombres proposés, lesquels sont des diviseurs du nombre donné ? (Répondre « aucun » s’il n’y en a pas.)', enonce: `$${nb(o.div)}$ — nombres proposés : ` + o.parmi.map((k) => '$' + k + '$').join(' ; '), r: d.join(';') || 'aucun', type: 'ensemble', c: o.parmi.map((k) => critere(o.div, k)).join(' ; ') + '.' }; }
   if (o.diviseurs) { const d = diviseurs(o.diviseurs); return { consigne: 'Donner tous les diviseurs du nombre, séparés par des points-virgules.', enonce: '$' + o.diviseurs + '$', r: d.join(';'), type: 'ensemble', c: 'On cherche les produits égaux à $' + o.diviseurs + '$ : ' + d.filter((k) => k * k <= o.diviseurs).map((k) => `$${k}\\times ${o.diviseurs / k}$`).join(', ') + `. Il y a $${d.length}$ diviseurs.` }; }
   if (o.multiples) { const [k, lo, hi] = o.multiples, m = []; for (let x = Math.ceil(lo / k) * k; x <= hi; x += k) m.push(x); return { consigne: 'Donner tous les multiples demandés, séparés par des points-virgules.', enonce: `Multiples de $${k}$ compris entre $${lo}$ et $${hi}$`, r: m.join(';'), type: 'ensemble', c: m.map((x) => `$${k}\\times ${x / k} = ${x}$`).join(' ; ') + '.' }; }
-  if (o.de) { const [a, b] = o.de, q = Math.floor(a / b), r = a % b; return { consigne: 'Donner le quotient puis le reste de la division euclidienne, séparés par un point-virgule.', enonce: o.t || `Division euclidienne de $${nb(a)}$ par $${b}$`, r: q + ';' + r, type: 'liste', c: (o.n ? o.n + ' ' : '') + (r ? `$${nb(a)} = ${b}\\times ${q} + ${r}$ et le reste $${r}$ est bien inférieur à $${b}$.` : `$${nb(a)} = ${b}\\times ${q}$ : le reste est nul.`) }; }
+  if (o.de) { const [a, b] = o.de, q = Math.floor(a / b), r = a % b; return { consigne: 'Donner le quotient puis le reste de la division euclidienne, séparés par un point-virgule.', enonce: o.t || `Division euclidienne de $${nb(a)}$ par $${b}$`, r: q + ';' + r, type: 'liste', c: note(o.n) + (r ? `$${nb(a)} = ${b}\\times ${q} + ${r}$ et le reste $${r}$ est bien inférieur à $${b}$.` : `$${nb(a)} = ${b}\\times ${q}$ : le reste est nul.`) }; }
   if (o.premiers) { const p = o.premiers.filter(A.estPremier); return { consigne: 'Parmi les nombres proposés, lesquels sont des nombres premiers ? (Répondre « aucun » s’il n’y en a pas.)', enonce: o.premiers.map((k) => '$' + k + '$').join(' ; '), r: p.join(';') || 'aucun', type: 'ensemble', c: o.premiers.map((k) => A.estPremier(k) ? `$${k}$ est premier` : k < 2 ? `$${k}$ n’est pas premier (un nombre premier a exactement deux diviseurs)` : `$${k} = ${puissances(facteursPremiers(k), '\\times ').replace(/\^(\d+)/g, '^{$1}')}$`).join(' ; ') + '.' }; }
   if (o.dec) { const f = facteursPremiers(o.dec), etapes = []; let reste = o.dec; f.slice(0, -1).forEach((p, i) => { reste /= p; etapes.push(f.slice(0, i + 1).join('*') + '*' + reste); }); const r = puissances(f); const ch = chaine({ mode: 'lin' }, 'decomposition', String(o.dec), etapes.filter((x) => x !== r), r); return { enonce: '$' + nb(o.dec) + '$', r, type: 'decomposition', c: 'On divise par les nombres premiers successifs. ' + ch.texte }; }
   if (o.pgcd || o.irr || o.communs) {
     const [a, b] = o.pgcd || o.irr || o.communs, g = pgcd(a, b), dec = (n) => `$${nb(n)} = ${lin(puissances(facteursPremiers(n)))}$`;
     if (o.communs) { const d = diviseurs(g); return { consigne: 'Donner tous les diviseurs communs aux deux nombres, séparés par des points-virgules.', enonce: `$${a}$ et $${b}$`, r: d.join(';'), type: 'ensemble', c: `Diviseurs de $${a}$ : ${diviseurs(a).join(', ')}. Diviseurs de $${b}$ : ${diviseurs(b).join(', ')}. Les diviseurs communs sont ceux de $${g}$.` }; }
-    if (o.pgcd) return { consigne: o.t ? 'Répondre par un nombre.' : 'Donner le plus grand diviseur commun aux deux nombres.', enonce: o.t || `$${nb(a)}$ et $${nb(b)}$`, r: String(g), type: 'nombre', c: (o.n ? o.n + ' ' : '') + `${dec(a)} et ${dec(b)}. ` + (g > 1 ? `On garde les facteurs communs : $${lin(puissances(facteursPremiers(g)))}${A.estPremier(g) ? '' : ' = ' + g}$.` : 'Il n’y a aucun facteur premier commun : le plus grand diviseur commun est $1$.') };
+    if (o.pgcd) return { consigne: o.t ? 'Répondre par un nombre.' : 'Donner le plus grand diviseur commun aux deux nombres.', enonce: o.t || `$${nb(a)}$ et $${nb(b)}$`, r: String(g), type: 'nombre', c: note(o.n) + `${dec(a)} et ${dec(b)}. ` + (g > 1 ? `On garde les facteurs communs : $${lin(puissances(facteursPremiers(g)))}${A.estPremier(g) ? '' : ' = ' + g}$.` : 'Il n’y a aucun facteur premier commun : le plus grand diviseur commun est $1$.') };
     const r = txt(R(a, b));
     return { consigne: 'Rendre la fraction irréductible.', enonce: `$\\dfrac{${a}}{${b}}$`, r, type: 'fraction', c: g === 1 ? `${dec(a)} et ${dec(b)} n’ont aucun facteur premier commun : la fraction est déjà irréductible.` : `${dec(a)} et ${dec(b)} : le plus grand diviseur commun est $${g}$. $\\dfrac{${a}}{${b}} = \\dfrac{${g}\\times ${a / g}}{${g}\\times ${b / g}} = ${fr(R(a, b))}$` };
   }
@@ -256,7 +258,7 @@ function exercice(th, brut) {
     mb.forEach((x, i) => { if (!A.egaux(v(x), v(mb[0]))) ko(`correction : étape ${i + 1} fausse (${x})`); });
     if (POLY.includes(type) && !A.egaux(v(mb[mb.length - 1]), v(r))) ko('correction : la chaîne n’aboutit pas à la réponse ' + r);
     return '$' + mb.map(rendu).join(' = ') + '$';
-  }) : (o.n ? o.n + ' ' : '') + (res ? res.texte : '');
+  }) : note(o.n) + (res ? res.texte : '');
   if (!c) ko('correction manquante');
   return { consigne: o.consigne, enonce: o.t || o.el || res.enonce, r, type, c };
 }
