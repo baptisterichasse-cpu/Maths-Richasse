@@ -212,9 +212,10 @@ function chaine(th, type, e, etapes, rImpose) {
   else if (liste[liste.length - 1].replace(/\s/g, '') !== r) liste.push(r);
   const ref = val(r);
   liste.forEach((m, i) => { if (!A.egaux(val(m), ref)) ko(`étape ${i + 1} fausse : ${m} (réponse ${r})`); });
-  if (A.verifier(type, mode ? calc(e) : e, r).etat === 'juste') ko('énoncé déjà sous la forme attendue : ' + e);
+  if (!th.libre && A.verifier(type, mode ? calc(e) : e, r).etat === 'juste') ko('énoncé déjà sous la forme attendue : ' + e);
   return { r, rendu, texte: '$' + liste.map(rendu).join(' = ') + '$', enonce: '$' + rendu(e) + '$' };
 }
+const formes = require('./formes.js')({ A, cst, txt, fr, nb, N, tex, lin, calc, chaine, equation, substituer, resoudre, R, add, mul, div, neg, cmp, pgcd, poly });
 function exercice(th, brut) {
   let o = brut;
   if (typeof o === 'string' || Array.isArray(o)) {
@@ -247,6 +248,8 @@ function exercice(th, brut) {
     return { consigne: o.max ? 'Quel est le plus grand de ces nombres ?' : 'Quel est le plus petit de ces nombres ?', enonce: vals.map((v) => '$' + N(v) + '$').join(' ; '), r: (o.max ? tri[tri.length - 1] : tri[0]).v, type: 'nombre', c };
   }
   if (o.q) { const [f, Q, u] = o.q, q = cst(f), simple = Number(Q) % q[1] === 0; const ch = chaine({ mode: 'lin', decimal: true }, 'nombre', `${f}*${Q}`, [simple ? `${q[0]}*${Number(Q) / q[1]}` : `(${q[0]}*${Q})/(${q[1]})`]); return { enonce: `${q[0] === 1 ? 'Le' : 'Les'} $${fr(q)}$ de $${nb(Q)}$${u ? ' ' + u : ''}`, r: ch.r, type: 'nombre', c: `Prendre une fraction d’une quantité, c’est multiplier par cette fraction. ${ch.texte}` }; }
+  const auto = formes(th, o);
+  if (auto) return auto;
   if (o.v) { // problème à mettre en équation : v = équation en x
     const [g, d] = o.v.split('='), sols = resoudre(g, d);
     if (sols.length !== 1) throw new Error('problème sans solution unique');
@@ -254,7 +257,7 @@ function exercice(th, brut) {
   }
   // Forme générale : énoncé calculé (e) ou texte (t), étapes (s), note (n), correction rédigée (c)
   let res;
-  if (o.e) res = chaine(th, type, o.e, o.s || [], o.r);
+  if (o.e) res = chaine(o.t ? Object.assign({}, th, { libre: true }) : th, type, o.e, o.s || [], o.r);
   const r = res ? res.r : o.r;
   if (!r) throw new Error('réponse manquante');
   const rendu = res ? res.rendu : (s) => (th.mode === 'lin' ? lin(s) : tex(s));
