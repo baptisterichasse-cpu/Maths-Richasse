@@ -127,7 +127,7 @@ function lireQcm(texte) {
 
 // Révisions : consigne, énoncé, réponse, vérification, correction
 // (vérification = fraction, developpe, factorise ou egal)
-const VERIFICATIONS = ['fraction', 'developpe', 'factorise', 'egal', 'nombre'];
+const VERIFICATIONS = ['fraction', 'developpe', 'factorise', 'egal', 'nombre', 'decomposition', 'puissance', 'scientifique', 'racine', 'liste', 'ensemble', 'inequation', 'duree'];
 function lireRevision(texte, f) {
   const exercices = [];
   for (const l of lireCsv(texte).lignes) {

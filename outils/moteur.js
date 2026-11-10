@@ -13,6 +13,8 @@ var Algebre = (function () {
     var g = pgcd(n, d) || 1;
     return [n / g, d / g];
   }
+  function carres(n) { var k = 1; for (var f = 2; f * f <= n; f++) while (n % (f * f) === 0) { n /= f * f; k *= f; } return [k, n]; }
+  function estPremier(n) { if (n < 2 || n % 1) return false; for (var f = 2; f * f <= n; f++) if (n % f === 0) return false; return true; }
   function radd(a, b) { return rat(a[0] * b[1] + b[0] * a[1], a[1] * b[1]); }
   function rmul(a, b) { return rat(a[0] * b[0], a[1] * b[1]); }
   function rinv(a) { return rat(a[1], a[0]); }
@@ -22,7 +24,7 @@ var Algebre = (function () {
     return String(s == null ? '' : s)
       .replace(/[−–—]/g, '-')
       .replace(/[×·∙⋅]/g, '*')
-      .replace(/÷/g, '/')
+      .replace(/[÷:]/g, '/')
       .replace(/²/g, '^2').replace(/³/g, '^3')
       .replace(/[\[{]/g, '(').replace(/[\]}]/g, ')')
       .replace(/\s+/g, '')
@@ -39,6 +41,8 @@ var Algebre = (function () {
         t.push({ k: 'n', v: v, dec: p !== -1, txt: txt });
         i += m[0].length; continue;
       }
+      if (ch === '√') { t.push({ k: 'rac' }); i++; continue; }
+      if ((m = /^(sqrt|rac)/.exec(s.slice(i)))) { t.push({ k: 'rac' }); i += m[0].length; continue; }
       if (/[a-z]/.test(ch)) { t.push({ k: 'v', v: ch }); i++; continue; }
       if ('+-*/^()'.indexOf(ch) !== -1) { t.push({ k: ch }); i++; continue; }
       throw new Error('Caractère non reconnu : « ' + ch + ' ».');
@@ -62,7 +66,7 @@ var Algebre = (function () {
       var k = this.voir().k;
       if (k === '*') { this.prendre(); n = { t: 'mul', a: n, b: this.unaire(), x: true }; }
       else if (k === '/') { this.prendre(); n = { t: 'div', a: n, b: this.unaire() }; }
-      else if (k === 'v' || k === '(') { n = { t: 'mul', a: n, b: this.puissance(), x: false }; }
+      else if (k === 'v' || k === '(' || k === 'rac') { n = { t: 'mul', a: n, b: this.puissance(), x: false }; }
       else if (k === 'n' && (n.t === 'par' || (n.t === 'pow' && n.b.t === 'par'))) { n = { t: 'mul', a: n, b: this.puissance(), x: false }; }
       else return n;
     }
@@ -77,15 +81,18 @@ var Algebre = (function () {
     var base = this.atome();
     if (this.voir().k !== '^') return base;
     this.prendre();
+    var signe = 1;
+    if (this.voir().k === '-') { this.prendre(); signe = -1; }
     var e = this.atome();
-    while (e.t === 'par') e = e.e;
-    if (e.t !== 'num' || e.v[1] !== 1 || e.v[0] > 12) throw new Error('L’exposant doit être un entier positif.');
-    return { t: 'pow', b: base, n: e.v[0] };
+    while (e.t === 'par' || e.t === 'neg') { if (e.t === 'neg') signe = -signe; e = e.e; }
+    if (e.t !== 'num' || e.v[1] !== 1 || e.v[0] > 15) throw new Error('L’exposant doit être un nombre entier.');
+    return { t: 'pow', b: base, n: signe * e.v[0] };
   };
   Lecteur.prototype.atome = function () {
     var tk = this.prendre();
     if (tk.k === 'n') return { t: 'num', v: tk.v, dec: tk.dec, txt: tk.txt };
     if (tk.k === 'v') return { t: 'var', n: tk.v };
+    if (tk.k === 'rac') return { t: 'rac', e: this.atome() };
     if (tk.k === '(') {
       if (this.voir().k === ')') throw new Error('Parenthèses vides.');
       var e = this.somme();
@@ -131,7 +138,10 @@ var Algebre = (function () {
     for (var a in p) for (var b in q) {
       var oa = cleVersObj(a), ob = cleVersObj(b);
       for (var v in ob) oa[v] = (oa[v] || 0) + ob[v];
-      var c = objVersCle(oa), v2 = rmul(p[a], q[b]);
+      var R = 1, mult = 1;
+      for (var w in oa) if (w.charAt(0) === '√') { for (var z = 0; z < oa[w]; z++) R *= Number(w.slice(1)); delete oa[w]; }
+      if (R > 1) { var dr = carres(R); mult = dr[0]; if (dr[1] > 1) oa['√' + dr[1]] = 1; }
+      var c = objVersCle(oa), v2 = rmul(rmul(p[a], q[b]), [mult, 1]);
       r[c] = r[c] ? radd(r[c], v2) : v2;
     }
     return nettoyer(r);
@@ -147,14 +157,31 @@ var Algebre = (function () {
       case 'add': return n.a.reduce(function (p, t) { return padd(p, polynome(t.e), t.s); }, {});
       case 'mul': return pmul(polynome(n.a), polynome(n.b));
       case 'div':
-        var d = constante(polynome(n.b));
+        var pd = polynome(n.b), d = constante(pd), kd = Object.keys(pd);
+        if (!d && kd.length === 1 && /^√\d+$/.test(kd[0])) {
+          var inv = {}; inv[kd[0]] = rinv(rmul(pd[kd[0]], [Number(kd[0].slice(1)), 1]));
+          return pmul(polynome(n.a), inv);
+        }
         if (!d) throw new Error('Division par une expression contenant une lettre.');
         if (d[0] === 0) throw new Error('Division par zéro.');
         return pmul(polynome(n.a), { '': rinv(d) });
       case 'pow':
-        var r = { '': [1, 1] }, b = polynome(n.b);
-        for (var k = 0; k < n.n; k++) r = pmul(r, b);
+        var r = { '': [1, 1] }, b = polynome(n.b), ex = n.n;
+        if (ex < 0) {
+          var cb = constante(b);
+          if (!cb) throw new Error('Exposant négatif sur une expression contenant une lettre.');
+          if (cb[0] === 0) throw new Error('Division par zéro.');
+          b = { '': rinv(cb) }; ex = -ex;
+        }
+        for (var k = 0; k < ex; k++) r = pmul(r, b);
         return r;
+      case 'rac':
+        var cr = constante(polynome(n.e));
+        if (!cr) throw new Error('Racine carrée d’une expression contenant une lettre.');
+        if (cr[0] < 0) throw new Error('Racine carrée d’un nombre négatif.');
+        var dc = carres(cr[0] * cr[1]), res = {};
+        res[dc[1] > 1 ? '√' + dc[1] : ''] = rat(dc[0], cr[1]);
+        return nettoyer(res);
     }
     throw new Error('Expression inconnue.');
   }
@@ -175,6 +202,7 @@ var Algebre = (function () {
     switch (n.t) {
       case 'num': return nombreLatex(n);
       case 'var': return n.n;
+      case 'rac': return '\\sqrt{' + latex(sansPar(n.e)) + '}';
       case 'par': return entourer(latex(n.e));
       case 'neg': return '-' + latex(n.e);
       case 'add': return n.a.map(function (t, k) {
@@ -189,7 +217,7 @@ var Algebre = (function () {
       case 'div':
         if (n.a.t === 'neg') return '-' + latex({ t: 'div', a: n.a.e, b: n.b });
         return '\\dfrac{' + latex(sansPar(n.a)) + '}{' + latex(sansPar(n.b)) + '}';
-      case 'pow': return latex(n.b) + (n.n < 10 ? '^' + n.n : '^{' + n.n + '}');
+      case 'pow': return (n.b.t === 'rac' ? entourer(latex(n.b)) : latex(n.b)) + (n.n >= 0 && n.n < 10 ? '^' + n.n : '^{' + n.n + '}');
     }
     return '';
   }
@@ -328,10 +356,151 @@ var Algebre = (function () {
     developpe: 'Développer et réduire l’expression.',
     factorise: 'Factoriser l’expression.',
     egal: 'Calculer.',
-    nombre: 'Calculer et donner le résultat sous la forme d’un seul nombre.'
+    nombre: 'Calculer et donner le résultat sous la forme d’un seul nombre.',
+    decomposition: 'Décomposer en produit de facteurs premiers.',
+    puissance: 'Écrire sous la forme d’une seule puissance.',
+    scientifique: 'Donner l’écriture scientifique.',
+    racine: 'Simplifier.',
+    liste: 'Donner les valeurs demandées, séparées par des points-virgules.',
+    ensemble: 'Résoudre l’équation.',
+    inequation: 'Résoudre l’inéquation.',
+    duree: 'Donner la durée en heures et minutes.'
   };
 
+  function parcourir(n, f) {
+    if (!n || typeof n !== 'object') return;
+    f(n);
+    if (n.t === 'add') n.a.forEach(function (t) { parcourir(t.e, f); });
+    else { parcourir(n.e, f); parcourir(n.a, f); parcourir(n.b, f); }
+  }
+  function contientRac(n) { var oui = false; parcourir(n, function (x) { if (x.t === 'rac') oui = true; }); return oui; }
+  var FAUX = { etat: 'faux', message: 'Ce n’est pas le bon résultat.' }, JUSTE = { etat: 'juste', message: '' };
+  function presque(m) { return { etat: 'presque', message: m }; }
+  function faux(m) { return { etat: 'faux', message: m }; }
+
+  // Racines : chaque racine simplifiée, termes regroupés
+  function controleRacine(arbre, p) {
+    var msg = '';
+    parcourir(arbre, function (n) {
+      if (n.t !== 'rac' || msg) return;
+      var c = constante(polynome(n.e));
+      if (!c || c[1] !== 1) { msg = 'La valeur est juste, mais il faut écrire la racine carrée d’un nombre entier.'; return; }
+      if (c[0] < 2 || carres(c[0])[0] > 1) msg = 'La valeur est juste, mais on peut encore simplifier $\\sqrt{' + c[0] + '}$.';
+    });
+    if (msg) return msg;
+    var ts = termes(arbre);
+    if (ts.length > (Object.keys(p).length || 1)) return 'La valeur est juste, mais il reste des termes à regrouper.';
+    var trop = false;
+    ts.forEach(function (t) { var k = 0; parcourir(t.e, function (n) { if (n.t === 'rac') k++; if (n.t === 'pow' && contientRac(n.b)) k += 2; }); if (k > 1) trop = true; });
+    return trop ? 'La valeur est juste, mais le produit de racines carrées peut encore être calculé.' : '';
+  }
+  // Un seul nombre : entier, décimal, fraction irréductible ou racine simplifiée
+  function controleNombre(arbre, p) {
+    if (contientRac(arbre)) return controleRacine(arbre, p);
+    var seul = arbre;
+    while (seul.t === 'neg' || seul.t === 'par') seul = seul.e;
+    if (seul.t === 'num') return '';
+    var fr = lireFraction(arbre);
+    if (!fr) return 'La valeur est juste, mais le calcul n’est pas terminé : donner un seul nombre.';
+    if (fr.denNegatif) return 'La valeur est juste, mais le signe − se place devant la fraction ou au numérateur.';
+    if (fr.d === 1) return 'La valeur est juste : une fraction de dénominateur $1$ s’écrit simplement comme un entier.';
+    if (pgcd(fr.n, fr.d) !== 1) return 'La valeur est juste, mais la fraction $\\dfrac{' + Math.abs(fr.n) + '}{' + fr.d + '}$ n’est pas irréductible.';
+    return '';
+  }
+
+  var VIDE = /^(aucun|aucune|aucunesolution|pasdesolution|∅|vide|impossible)$/;
+  function lireListe(texte) {
+    var s = String(texte == null ? '' : texte).replace(/[−–—]/g, '-').toLowerCase().replace(/\s+/g, '').replace(/^s=/, '').replace(/[{}\[\]]/g, '');
+    if (!s) return { ok: false, vide: true, erreur: 'Aucune réponse saisie.' };
+    if (VIDE.test(s)) return { ok: true, items: [] };
+    var items = [], erreur = '';
+    s.replace(/ou|et/g, ';').split(';').forEach(function (m) {
+      m = m.replace(/^[a-z]=/, '');
+      if (!m) { erreur = erreur || 'Séparer les valeurs par un point-virgule.'; return; }
+      var a = analyser(m);
+      if (!a.ok) { erreur = erreur || a.erreur; return; }
+      items.push({ arbre: a.arbre, p: polynome(a.arbre) });
+    });
+    return erreur ? { ok: false, erreur: erreur } : { ok: true, items: items };
+  }
+  function verifierListe(ordonnee) {
+    return function (saisie, attendu) {
+      var lu = lireListe(saisie);
+      if (!lu.ok) return { etat: 'illisible', message: lu.erreur };
+      var ref = lireListe(attendu);
+      if (!ref.ok) return { etat: 'illisible', message: 'Réponse attendue mal écrite dans le fichier.' };
+      var a = lu.items, b = ref.items;
+      var dans = function (x, L) { return L.some(function (y) { return egaux(x.p, y.p); }); };
+      if (!ordonnee) { var u = []; a.forEach(function (x) { if (!dans(x, u)) u.push(x); }); a = u; }
+      var tousBons = a.every(function (x) { return dans(x, b); }), complet = b.every(function (y) { return dans(y, a); });
+      if (ordonnee) {
+        if (a.length !== b.length) return faux(b.length + ' valeurs sont attendues, séparées par des points-virgules.');
+        var mal = a.filter(function (x, i) { return !egaux(x.p, b[i].p); }).length;
+        if (mal && tousBons && complet) return faux('Les valeurs sont les bonnes, mais pas dans le bon ordre.');
+        if (mal) return faux(mal === 1 ? 'Une des valeurs est à revoir.' : mal + ' valeurs sont à revoir.');
+      } else {
+        if (!b.length && a.length) return faux('Ce n’est pas la bonne réponse.');
+        if (b.length && !a.length) return faux('Il y a pourtant au moins une valeur qui convient.');
+        if (!tousBons) return faux(a.length > 1 ? 'Au moins une des valeurs ne convient pas.' : 'Cette valeur ne convient pas.');
+        if (!complet) return faux('Ce qui est donné convient, mais il manque au moins une valeur.');
+      }
+      var msg = '';
+      a.forEach(function (x) { msg = msg || controleNombre(x.arbre, x.p); });
+      return msg ? presque(msg) : JUSTE;
+    };
+  }
+
+  var RETOURNE = { '<': '>', '>': '<', '≤': '≥', '≥': '≤' };
+  var SYMBOLE = { '<': ' < ', '>': ' > ', '≤': ' \\leqslant ', '≥': ' \\geqslant ' };
+  function lireIneq(texte) {
+    var s = String(texte == null ? '' : texte).replace(/\s+/g, '').replace(/<=|=<|⩽/g, '≤').replace(/>=|=>|⩾/g, '≥');
+    if (!s) return { ok: false, vide: true, erreur: 'Aucune réponse saisie.' };
+    var forme = 'Écrire la réponse sous la forme x < 3 ou x ≥ -2.';
+    var m = /^([^<>≤≥]+)([<>≤≥])([^<>≤≥]+)$/.exec(s);
+    if (!m) return { ok: false, erreur: forme };
+    var g = analyser(m[1]), d = analyser(m[3]);
+    if (!g.ok || !d.ok) return { ok: false, erreur: (g.ok ? d : g).erreur || forme };
+    var pg = polynome(g.arbre), pd = polynome(d.arbre);
+    var seule = function (q) { var k = Object.keys(q); return k.length === 1 && /^[a-z]$/.test(k[0]) && q[k[0]][0] === 1 && q[k[0]][1] === 1; };
+    var tex = latex(g.arbre) + SYMBOLE[m[2]] + latex(d.arbre);
+    if (seule(pg) && constante(pd)) return { ok: true, op: m[2], v: constante(pd), arbre: d.arbre, p: pd, latex: tex };
+    if (seule(pd) && constante(pg)) return { ok: true, op: RETOURNE[m[2]], v: constante(pg), arbre: g.arbre, p: pg, latex: tex };
+    return { ok: false, erreur: 'La lettre doit être seule d’un côté et un nombre de l’autre, par exemple x < 3.' };
+  }
+  function verifierIneq(saisie, attendu) {
+    var lu = lireIneq(saisie);
+    if (!lu.ok) return { etat: 'illisible', message: lu.erreur };
+    var ref = lireIneq(attendu);
+    if (!ref.ok) return { etat: 'illisible', message: 'Réponse attendue mal écrite dans le fichier.' };
+    var borne = lu.v[0] === ref.v[0] && lu.v[1] === ref.v[1];
+    if (!borne) return FAUX;
+    if (lu.op === ref.op) { var msg = controleNombre(lu.arbre, lu.p); return msg ? presque(msg) : JUSTE; }
+    if (lu.op === RETOURNE[ref.op] || RETOURNE[lu.op] === ref.op || (/[<≤]/.test(lu.op) !== /[<≤]/.test(ref.op)))
+      return faux('La borne est juste, mais pas le sens de l’inégalité. On change de sens quand on multiplie ou divise par un nombre négatif.');
+    return faux('La borne est juste : vérifier si l’inégalité est stricte ou large.');
+  }
+
+  function lireDuree(texte) {
+    var s = String(texte == null ? '' : texte).toLowerCase().replace(/\s+/g, '').replace(/heures?/g, 'h').replace(/minutes?|mn/g, 'min');
+    if (!s) return { ok: false, vide: true, erreur: 'Aucune réponse saisie.' };
+    var m = /^(?:(\d+)h)?(?:(\d+)(?:min)?)?$/.exec(s);
+    if (!m || (m[1] === undefined && !/min$/.test(s))) return { ok: false, erreur: 'Écrire la durée sous la forme 2h15 ou 45min.' };
+    var h = Number(m[1] || 0), mn = Number(m[2] || 0);
+    return { ok: true, h: h, min: mn, total: 60 * h + mn, latex: (h ? h + '\\text{ h }' : '') + (mn || !h ? mn + '\\text{ min}' : '') };
+  }
+  function verifierDuree(saisie, attendu) {
+    var lu = lireDuree(saisie);
+    if (!lu.ok) return { etat: 'illisible', message: lu.erreur };
+    var ref = lireDuree(attendu);
+    if (!ref.ok) return { etat: 'illisible', message: 'Réponse attendue mal écrite dans le fichier.' };
+    if (lu.total !== ref.total) return FAUX;
+    if (lu.min >= 60) return presque('La durée est juste, mais il reste à convertir : $60$ min $= 1$ h.');
+    return JUSTE;
+  }
+  var SPECIAUX = { liste: verifierListe(true), ensemble: verifierListe(false), inequation: verifierIneq, duree: verifierDuree };
+
   function verifier(type, saisie, attendu, enonce) {
+    if (SPECIAUX[type]) return SPECIAUX[type](saisie, attendu, enonce);
     var lu = analyser(saisie);
     if (!lu.ok) return { etat: 'illisible', message: lu.vide ? 'Aucune réponse saisie.' : lu.erreur };
     var ref = analyser(attendu);
@@ -355,6 +524,45 @@ var Algebre = (function () {
         return { etat: 'presque', message: 'La valeur est juste, mais la fraction n’est pas irréductible : $' + Math.abs(f.n) + '$ et $' + f.d + '$ sont tous deux divisibles par $' + pgcd(f.n, f.d) + '$.' };
       }
       return { etat: 'juste', message: '' };
+    }
+
+    if (type === 'decomposition') {
+      if (!juste) return faux('Ce produit ne redonne pas le nombre de départ.');
+      var pb = '';
+      facteurs(sansPar(lu.arbre)).forEach(function (f) {
+        f = sansPar(f);
+        var base = f.t === 'pow' ? sansPar(f.b) : f;
+        if (pb) return;
+        if (!estEntierEcrit(base) || (f.t === 'pow' && f.n < 1)) { pb = 'La valeur est juste, mais il faut écrire un produit de nombres premiers.'; return; }
+        if (base.v[0] === 1) pb = 'Le nombre $1$ n’est pas premier : il ne s’écrit pas dans la décomposition.';
+        else if (!estPremier(base.v[0])) pb = 'Le produit est juste, mais $' + base.v[0] + '$ n’est pas un nombre premier : la décomposition n’est pas terminée.';
+      });
+      return pb ? presque(pb) : JUSTE;
+    }
+
+    if (type === 'puissance') {
+      if (!juste) return FAUX;
+      var pu = sansPar(lu.arbre), simple = pu.t === 'pow';
+      if (simple) parcourir(pu.b, function (x) { if (x.t === 'pow' || x.t === 'mul' || x.t === 'add') simple = false; });
+      return simple ? JUSTE : presque('La valeur est juste, mais le résultat est demandé sous la forme d’une seule puissance, par exemple $2^7$.');
+    }
+
+    if (type === 'scientifique') {
+      if (!juste) return FAUX;
+      var sc = sansPar(lu.arbre), bon = false;
+      while (sc.t === 'neg' || sc.t === 'par') sc = sc.e;
+      var entre = function (x) { while (x.t === 'neg' || x.t === 'par') x = x.e; return x.t === 'num' && x.v[0] >= x.v[1] && x.v[0] < 10 * x.v[1]; };
+      var dix = function (x) { x = sansPar(x); if (x.t === 'pow') x = sansPar(x.b); return x.t === 'num' && x.v[0] === 10 && x.v[1] === 1; };
+      if (sc.t === 'mul') bon = entre(sc.a) && dix(sc.b);
+      else if (sc.t === 'pow') bon = dix(sc);
+      else bon = entre(sc);
+      return bon ? JUSTE : presque('La valeur est juste, mais ce n’est pas une écriture scientifique : écrire $a\\times 10^n$ avec $a$ compris entre $1$ et $10$ ($10$ exclu).');
+    }
+
+    if (type === 'racine') {
+      if (!juste) return FAUX;
+      var mr = controleRacine(lu.arbre, p);
+      return mr ? presque(mr) : JUSTE;
     }
 
     if (type === 'nombre') {
@@ -429,7 +637,14 @@ var Algebre = (function () {
     return nettoyer({ '': rat(num, den) });
   }
 
-  function apercu(saisie) {
+  function apercu(saisie, type) {
+    if (type === 'liste' || type === 'ensemble') {
+      var l = lireListe(saisie);
+      if (!l.ok) return l;
+      return { ok: true, latex: l.items.length ? l.items.map(function (x) { return latex(x.arbre); }).join('\\;;\\;') : '\\text{aucune valeur}' };
+    }
+    if (type === 'inequation') return lireIneq(saisie);
+    if (type === 'duree') return lireDuree(saisie);
     var lu = analyser(saisie);
     if (!lu.ok) return lu;
     return { ok: true, latex: latex(lu.arbre) };
@@ -437,7 +652,7 @@ var Algebre = (function () {
 
   return {
     analyser: analyser, polynome: polynome, egaux: egaux, latex: latex, latexPolynome: latexPolynome,
-    depuisLatex: depuisLatex, verifier: verifier, apercu: apercu, CONSIGNES: CONSIGNES
+    depuisLatex: depuisLatex, verifier: verifier, apercu: apercu, CONSIGNES: CONSIGNES, carres: carres, pgcd: pgcd, estPremier: estPremier
   };
 })();
 if (typeof module !== 'undefined') module.exports = Algebre;
