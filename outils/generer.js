@@ -266,7 +266,7 @@ function exercice(th, brut) {
     mb.forEach((x, i) => { if (!A.egaux(v(x), v(mb[0]))) ko(`correction : étape ${i + 1} fausse (${x})`); });
     if (POLY.includes(type) && !A.egaux(v(mb[mb.length - 1]), v(r))) ko('correction : la chaîne n’aboutit pas à la réponse ' + r);
     return '$' + mb.map(rendu).join(' = ') + '$';
-  }) : note(o.n) + (res ? res.texte : '');
+  }) : note(o.n) + (res ? (o.n && !/ = /.test(res.texte) ? 'Réponse : ' + res.texte + '.' : res.texte) : '');
   if (!c) ko('correction manquante');
   return { consigne: o.consigne, enonce: o.t || o.el || res.enonce, r, type, c };
 }

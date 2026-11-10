@@ -18,6 +18,52 @@ module.exports = (H) => {
   const expr = (a, b) => { const ax = cmp(a, [1, 1]) === 0 ? 'x' : cmp(a, [-1, 1]) === 0 ? '-x' : txt(a) + 'x'; return b[0] === 0 ? ax : ax + (b[0] > 0 ? '+' : '') + txt(b); };
 
   return (th, o) => {
+    /* --- Lecture graphique : { gr: [[x, y], …], lire: ['img', 2] } --- */
+    if (o.gr) {
+      const pts = [...o.gr].sort((a, b) => a[0] - b[0]), [quoi, k] = o.lire, fig = `[[courbe:${pts.map((q) => q.join(',')).join(' ')}]] `;
+      const C = 'Courbe de la fonction $f$. ', xs = pts.map((q) => q[0]), ys = pts.map((q) => q[1]);
+      if (quoi === 'coef' || quoi === 'ord' || quoi === 'expr') {
+        if (pts.length !== 2) throw new Error('une droite se donne par deux points');
+        const [[x1, y1], [x2, y2]] = pts, a = R(y2 - y1, x2 - x1), b = add([y1, 1], neg(mul(a, [x1, 1]))), P = (v) => (v < 0 ? '(' + v + ')' : v), Dt = 'Droite représentant une fonction affine $f$.';
+        if (b[1] !== 1) throw new Error('ordonnée à l’origine non lisible');
+        const ca = `La droite passe par les points $(${x1}\\,;${y1})$ et $(${x2}\\,;${y2})$ : $a = \\dfrac{${y2}-${P(y1)}}{${x2}-${P(x1)}} = ${fr(a)}$.`, cb = `La droite coupe l’axe des ordonnées au point d’ordonnée $${b[0]}$ : $b = f(0) = ${b[0]}$.`;
+        if (quoi === 'coef') return { consigne: 'Lire graphiquement le coefficient directeur.', enonce: fig + Dt, r: txt(a), type: 'nombre', c: ca };
+        if (quoi === 'ord') return { consigne: 'Lire graphiquement l’ordonnée à l’origine.', enonce: fig + Dt, r: String(b[0]), type: 'nombre', c: cb };
+        const r = expr(a, b);
+        return { consigne: 'Donner l’expression de $f(x)$.', enonce: fig + Dt, r, type: 'developpe', c: `${cb} ${ca} Donc $f(x) = ${tex(r)}$.` };
+      }
+      for (let i = 0; i < pts.length - 1; i++) if (ys[i] === ys[i + 1]) throw new Error('palier dans la courbe');
+      if (quoi === 'img') { const q = pts.find((z) => z[0] === k); if (!q) throw new Error('image non lisible'); return { consigne: 'Lire graphiquement l’image demandée.', enonce: fig + C + `Image de $${k}$ ?`, r: String(q[1]), type: 'nombre', c: `Le point de la courbe d’abscisse $${k}$ a pour ordonnée $${q[1]}$ : $f(${k}) = ${q[1]}$.` }; }
+      if (quoi === 'ant' || quoi === 'nb') {
+        const coupe = xs.filter((x, i) => ys[i] === k); let entre = 0;
+        for (let i = 0; i < pts.length - 1; i++) if ((ys[i] - k) * (ys[i + 1] - k) < 0) entre++;
+        const n = coupe.length + entre;
+        if (quoi === 'nb') return { consigne: 'Répondre par un nombre.', enonce: fig + C + `Combien d’antécédents le nombre $${k}$ a-t-il ?`, r: String(n), type: 'nombre', c: n ? `La droite horizontale d’ordonnée $${k}$ coupe la courbe en $${n}$ point${n > 1 ? 's' : ''} : $${k}$ a $${n}$ antécédent${n > 1 ? 's' : ''}.` : `La droite horizontale d’ordonnée $${k}$ ne coupe pas la courbe : $${k}$ n’a aucun antécédent.` };
+        if (entre) throw new Error('antécédent non lisible pour ' + k);
+        return { consigne: 'Lire graphiquement le ou les antécédents (répondre « aucun » s’il n’y en a pas).', enonce: fig + C + `Antécédent(s) de $${k}$ ?`, r: coupe.join(';') || 'aucun', type: 'ensemble', c: coupe.length ? `La droite horizontale d’ordonnée $${k}$ coupe la courbe ${coupe.length > 1 ? 'aux points d’abscisses' : 'au point d’abscisse'} ${coupe.map((x) => '$' + x + '$').join(' ; ')}.` : `La droite horizontale d’ordonnée $${k}$ ne coupe pas la courbe : $${k}$ n’a pas d’antécédent.` };
+      }
+      const haut = quoi === 'max' || quoi === 'argmax', v = haut ? Math.max(...ys) : Math.min(...ys), ou = xs.filter((x, i) => ys[i] === v), nom = haut ? 'maximum' : 'minimum';
+      if (ou.length !== 1) throw new Error('extremum atteint plusieurs fois');
+      const ce = `Le point le plus ${haut ? 'haut' : 'bas'} de la courbe a pour coordonnées $(${ou[0]}\\,;${v})$ : le ${nom} de $f$ est $${v}$, atteint en $x = ${ou[0]}$.`;
+      if (quoi === 'max' || quoi === 'min') return { consigne: 'Répondre par un nombre.', enonce: fig + C + `Quel est le ${nom} de $f$ sur l’intervalle représenté ?`, r: String(v), type: 'nombre', c: ce };
+      return { consigne: 'Répondre par un nombre.', enonce: fig + C + `Pour quelle valeur de $x$ le ${nom} de $f$ est-il atteint ?`, r: String(ou[0]), type: 'nombre', c: ce };
+    }
+    /* --- Lecture d'un tableau de valeurs : { tb: [xs, ys], lire: ['img', '2'] } --- */
+    if (o.tb) {
+      let [xs, ys] = o.tb; const [quoi, k, f] = o.lire, L2 = (l) => l.map((v) => (v === '?' ? '?' : '$' + N(v) + '$')).join(';');
+      const fig = (a, b) => `[[tableau:$x$;${L2(a)}|$f(x)$;${L2(b)}]] `;
+      if (quoi === 'val' || quoi === 'xval') { // k = rang de la case manquante, f = expression
+        xs = xs.map(String); ys = xs.map((x) => dec(cst(substituer(f, x)))); const F = `$f(x) = ${tex(f)}$. Quelle est la valeur manquante ?`, i = k;
+        if (quoi === 'val') return { consigne: 'Compléter le tableau de valeurs.', enonce: fig(xs, ys.map((y, j) => (j === i ? '?' : y))) + F, r: ys[i], type: 'nombre', c: `C’est l’image de $${N(xs[i])}$ : $f(${N(xs[i])}) = ${tex(substituer(f, xs[i]))} = ${N(ys[i])}$.` };
+        const e = equation(th, { eq: f + '=' + ys[i] });
+        if (e.r !== xs[i]) throw new Error('antécédent non unique dans le tableau : ' + e.r);
+        return { consigne: 'Compléter le tableau de valeurs.', enonce: fig(xs.map((x, j) => (j === i ? '?' : x)), ys) + F, r: xs[i], type: 'nombre', c: `On cherche $x$ tel que $f(x) = ${N(ys[i])}$, c’est-à-dire $${tex(f)} = ${N(ys[i])}$. ${e.c}` };
+      }
+      xs = xs.map(String); ys = ys.map(String);
+      if (quoi === 'img') { const i = xs.indexOf(String(k)); if (i < 0) throw new Error('valeur absente du tableau'); return { consigne: 'Lire dans le tableau l’image demandée.', enonce: fig(xs, ys) + `Image de $${N(k)}$ ?`, r: ys[i], type: 'nombre', c: `Dans la colonne où $x = ${N(k)}$, on lit $f(x) = ${N(ys[i])}$ : l’image de $${N(k)}$ est $${N(ys[i])}$.` }; }
+      const a = xs.filter((x, i) => ys[i] === String(k));
+      return { consigne: 'Lire dans le tableau le ou les antécédents (répondre « aucun » si le tableau n’en donne pas).', enonce: fig(xs, ys) + `Antécédent(s) de $${N(k)}$ ?`, r: a.join(';') || 'aucun', type: 'ensemble', c: a.length ? `On cherche $${N(k)}$ dans la ligne $f(x)$ : on le trouve pour ${a.map((x) => '$x = ' + N(x) + '$').join(' et ')}. Attention à ne pas confondre avec la ligne des $x$.` : `Le nombre $${N(k)}$ n’apparaît pas dans la ligne $f(x)$ : le tableau ne donne aucun antécédent.` };
+    }
     /* --- Pourcentages et évolutions --- */
     if (o.pc) { const [p, v, u] = o.pc, c = ch(`${p}*${v}:100`); return { consigne: 'Calculer.', enonce: `${pc(p)} de $${nb(v)}$${u ? ' ' + u : ''}`, r: c.r, type: 'nombre', c: `Prendre ${pc(p)} d’une quantité, c’est la multiplier par $\\dfrac{${nb(p)}}{100}$. ${c.texte}` }; }
     if (o.part) { const [a, b, quoi] = o.part, r = dec(mul(div(cst(a), cst(b)), [100, 1])); return { consigne: 'Exprimer la proportion en pourcentage (répondre sans le signe %).', enonce: o.t || `$${nb(a)}$ ${quoi || ''} sur $${nb(b)}$`.replace('  ', ' '), r, type: 'nombre', c: `$\\dfrac{${nb(a)}}{${nb(b)}}\\times 100 = ${nb(r)}$, soit ${pc(r)}.` }; }
@@ -67,14 +113,14 @@ module.exports = (H) => {
     /* --- Aires, périmètres et volumes --- */
     const u = o.u || 'cm';
     if (o.rect || o.carre || o.tri || o.para || o.trap) {
-      const aire = o.q !== 'perim', cons = aire ? `Calculer l’aire, en ${u}².` : `Calculer le périmètre, en ${u}.`;
+      const aire = !o.perim, cons = aire ? `Calculer l’aire, en ${u}².` : `Calculer le périmètre, en ${u}.`;
       if (o.rect) { const [a, b] = o.rect, c = ch(aire ? `${a}*${b}` : `2*(${a}+${b})`); return { consigne: cons, enonce: `Rectangle de longueur $${nb(a)}$ ${u} et de largeur $${nb(b)}$ ${u}`, r: c.r, type: 'nombre', c: (aire ? 'Aire $=$ longueur $\\times$ largeur. ' : 'Périmètre $= 2\\times($longueur $+$ largeur$)$. ') + c.texte }; }
       if (o.carre) { const [a] = o.carre, c = ch(aire ? `${a}*${a}` : `4*${a}`); return { consigne: cons, enonce: `Carré de côté $${nb(a)}$ ${u}`, r: c.r, type: 'nombre', c: (aire ? 'Aire $=$ côté $\\times$ côté. ' : 'Périmètre $= 4\\times$ côté. ') + c.texte }; }
       if (o.tri) { const [b, h] = o.tri, c = ch(`${b}*${h}:2`); return { consigne: cons, enonce: `Triangle de base $${nb(b)}$ ${u} et de hauteur associée $${nb(h)}$ ${u}`, r: c.r, type: 'nombre', c: 'Aire $=$ base $\\times$ hauteur $\\div 2$. ' + c.texte }; }
       if (o.para) { const [b, h] = o.para, c = ch(`${b}*${h}`); return { consigne: cons, enonce: `Parallélogramme de base $${nb(b)}$ ${u} et de hauteur associée $${nb(h)}$ ${u}`, r: c.r, type: 'nombre', c: 'Aire $=$ base $\\times$ hauteur. ' + c.texte }; }
       const [B, b, h] = o.trap, c = ch(`(${B}+${b})*${h}:2`); return { consigne: cons, enonce: `Trapèze de bases $${nb(B)}$ ${u} et $${nb(b)}$ ${u}, de hauteur $${nb(h)}$ ${u}`, r: c.r, type: 'nombre', c: 'Aire $=($grande base $+$ petite base$)\\times$ hauteur $\\div 2$. ' + c.texte };
     }
-    if (o.disque) { const d = o.diam, ray = d ? fl(o.disque[0]) / 2 : fl(o.disque[0]), aire = o.q !== 'perim', val = aire ? Math.PI * ray * ray : 2 * Math.PI * ray, r = arr1(val), rs = nb(String(ray).replace('.', ',')); return { consigne: (aire ? `Calculer l’aire, en ${u}²` : `Calculer le périmètre, en ${u}`) + ', en arrondissant au dixième.', enonce: `Disque de ${d ? 'diamètre' : 'rayon'} $${nb(o.disque[0])}$ ${u}`, r, type: 'nombre', c: (d ? `Le rayon vaut $${rs}$ ${u}. ` : '') + (aire ? `Aire $= \\pi\\times r^2 = \\pi\\times ${rs}^2 \\approx ${nb(r)}$` : `Périmètre $= 2\\times\\pi\\times r = 2\\times\\pi\\times ${rs} \\approx ${nb(r)}$`) }; }
+    if (o.disque) { const d = o.diam, ray = d ? fl(o.disque[0]) / 2 : fl(o.disque[0]), aire = !o.perim, val = aire ? Math.PI * ray * ray : 2 * Math.PI * ray, r = arr1(val), rs = nb(String(ray).replace('.', ',')); return { consigne: (aire ? `Calculer l’aire, en ${u}²` : `Calculer le périmètre, en ${u}`) + ', en arrondissant au dixième.', enonce: `Disque de ${d ? 'diamètre' : 'rayon'} $${nb(o.disque[0])}$ ${u}`, r, type: 'nombre', c: (d ? `Le rayon vaut $${rs}$ ${u}. ` : '') + (aire ? `Aire $= \\pi\\times r^2 = \\pi\\times ${rs}^2 \\approx ${nb(r)}$` : `Périmètre $= 2\\times\\pi\\times r = 2\\times\\pi\\times ${rs} \\approx ${nb(r)}$`) }; }
     if (o.pave || o.cube || o.pyr || o.prisme) {
       const cons = `Calculer le volume, en ${u}³.`;
       if (o.pave) { const [a, b, c0] = o.pave, c = ch(`${a}*${b}*${c0}`); return { consigne: cons, enonce: `Pavé droit de dimensions $${nb(a)}$ ${u}, $${nb(b)}$ ${u} et $${nb(c0)}$ ${u}`, r: c.r, type: 'nombre', c: 'Volume $=$ longueur $\\times$ largeur $\\times$ hauteur. ' + c.texte }; }
