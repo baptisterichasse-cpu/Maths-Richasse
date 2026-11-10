@@ -1,0 +1,107 @@
+// Lot « Équations et inéquations » : 7 thèmes de 30 exercices
+const D = '04 - Équations et inéquations';
+const P = (eq, ...parmi) => ({ eq, parmi });
+const NB = 'Répondre par un nombre.';
+module.exports = [
+  {
+    dossier: D, ordre: 1, titre: 'Tester si un nombre est solution', type: 'ensemble',
+    consigne: 'Parmi les valeurs proposées, lesquelles sont solutions de l’équation ? (Répondre « aucune » s’il n’y en a pas.)',
+    exercices: [
+      P('x+3=7', '2', '4', '5'), P('2x=10', '2', '5', '8'), P('x-4=1', '3', '5'), P('3x+1=10', '2', '3', '4'), P('5x=0', '0', '1', '5'),
+      P('2x+3=11', '3', '4', '7'), P('x^2=9', '3', '-3', '9'), P('4x-2=6', '1', '2', '3'), P('x+5=2x', '2', '5', '10'), P('3x=x+8', '2', '4', '8'),
+      P('2x+1=x-3', '-4', '-2', '4'), P('x^2+x=2', '-2', '0', '1', '3'), P('3(x-1)=2x+4', '1', '5', '7'), P('x^2=2x', '0', '1', '2'), P('5-2x=9', '-2', '2', '7'),
+      P('x^2-5x+6=0', '1', '2', '3', '6'), P('4x+7=3', '-1', '1', '0'), P('x(x+1)=12', '-4', '3', '4'), P('2x-5=x^2-8', '-1', '1', '3'), P('(x-2)(x+5)=0', '-5', '-2', '2', '5'),
+      P('2x=1', '1/2', '2', '-1/2'), P('3x+2=4', '2/3', '3/2', '-2/3'), P('x^2=x+2', '-1', '1', '2', '-2'), P('4x^2=1', '1/2', '-1/2', '1/4', '2'), P('x^3=x', '-1', '0', '1', '2'),
+      P('(2x-1)(x+3)=0', '1/2', '-3', '3', '-1/2'), P('x^2+1=0', '-1', '0', '1'), P('6x^2-5x+1=0', '1/2', '1/3', '1', '-1/2'), P('x/2+x/3=5', '5', '6', '30'), P('(x+1)^2=x^2+2x+1', '-1', '0', '7'),
+    ],
+  },
+  {
+    dossier: D, ordre: 2, titre: 'Équations du premier degré simples', type: 'ensemble', forme: 'eq',
+    exercices: [
+      'x+5=12', 'x-3=7', '3x=12', 'x+9=4', '5x=35', '2x=7', 'x-8=-3', '4x=-20', '7+x=7', '-x=6',
+      '2x+3=11', '3x-5=10', '5x+2=2', '4x-7=13', '6+2x=0', '-3x+4=10', '10-x=3', '2x+9=4', '7x-1=-15', '3x+1=x+9',
+      '5x-2=3x+8', '4x+6=x-9', '2x-7=5x+2', '8-3x=2x-7', 'x+1,5=4', '0,5x=7', '3x-2=7x+10', '9x+4=4x', '-2x+5=-6x-3', '12-5x=x',
+    ],
+  },
+  {
+    dossier: D, ordre: 3, titre: 'Équations avec parenthèses ou fractions', type: 'ensemble', forme: 'eq',
+    exercices: [
+      '2(x+3)=10', '3(x-1)=12', '5(x+2)=3x', '4(x-2)=2x+6', '2(x+1)+3=11', 'x/2=5', 'x/3+1=4', '(x+1)/2=3', '3(2x-1)=9', '-(x-4)=7',
+      '2(x-3)=5x+1', '3(x+2)=2(x-1)', '4-(x+1)=2x', '5(x-1)-2(x+3)=4', 'x/2+x/3=5', '2x/3=4', '(2x-1)/3=5', 'x/4-1=x/2', '3(x-2)+2(x+1)=x', '7-2(x+3)=3x-4',
+      '(x+1)/2=(x-1)/3', 'x/2-x/5=3', '(3x-1)/4=(x+2)/3', '2(3x-1)-3(x+2)=4(x-1)', '(x-2)/3+1=x/2', 'x/3+1/2=x/2-1/3', '3(x+1)=3x+5', '(2x+3)/5-(x-1)/2=1', '0,2(x+3)=0,5x',
+      ['(x+1)(x+2)=x^2+8', '#Les termes en $x^2$ s’éliminent.'],
+    ],
+  },
+  {
+    dossier: D, ordre: 4, titre: 'Équations produit nul', type: 'ensemble', forme: 'eq',
+    exercices: [
+      '(x-2)(x+3)=0', '(x+1)(x-5)=0', 'x(x-4)=0', '(x-7)(x+7)=0', '(2x-6)(x+1)=0', '(x+4)(3x-9)=0', '3x(x+2)=0', '(x-1)^2=0', '(5x+10)(x-3)=0', '(x+6)(x+8)=0',
+      '(2x-1)(x+3)=0', '(3x+1)(2x-5)=0', '(4x+3)(x-2)=0', 'x(2x+7)=0', '(5-x)(2+x)=0', '(3x-2)(3x+2)=0', '(2x+5)^2=0', '-2x(3x-4)=0', '(6x-3)(4x+8)=0', '(7-2x)(3x+9)=0',
+      { eq: 'x^2-9=0', c: 'On factorise : $x^2-9=(x-3)(x+3)$. Un produit est nul si l’un de ses facteurs est nul : $x=3$ ou $x=-3$.' },
+      { eq: 'x^2-5x=0', c: 'On factorise par $x$ : $x(x-5)=0$, donc $x=0$ ou $x=5$.' },
+      { eq: 'x^2=7x', c: 'On regroupe tout dans un membre : $x^2-7x=0$, soit $x(x-7)=0$. Donc $x=0$ ou $x=7$. Attention : diviser par $x$ ferait perdre la solution $0$.' },
+      { eq: '4x^2-25=0', c: '$4x^2-25=(2x-5)(2x+5)$, donc $x=\\dfrac{5}{2}$ ou $x=-\\dfrac{5}{2}$.' },
+      { eq: 'x^2+6x+9=0', c: '$x^2+6x+9=(x+3)^2$, donc $x+3=0$ : $x=-3$.' },
+      { eq: '(x+1)(x-2)+(x+1)(2x+3)=0', c: 'On factorise par $(x+1)$ : $(x+1)(3x+1)=0$, donc $x=-1$ ou $x=-\\dfrac{1}{3}$.' },
+      { eq: '(2x-3)(x+4)=(2x-3)(3x-1)', c: 'On regroupe : $(2x-3)(x+4)-(2x-3)(3x-1)=0$, soit $(2x-3)(-2x+5)=0$. Donc $x=\\dfrac{3}{2}$ ou $x=\\dfrac{5}{2}$.' },
+      { eq: '3x^2=12x', c: '$3x^2-12x=0$, soit $3x(x-4)=0$. Donc $x=0$ ou $x=4$.' },
+      { eq: '(x-3)^2-16=0', c: '$a^2-b^2$ avec $a=x-3$ et $b=4$ : $(x-3-4)(x-3+4)=(x-7)(x+1)=0$. Donc $x=7$ ou $x=-1$.' },
+      { eq: '9x^2-12x+4=0', c: '$9x^2-12x+4=(3x-2)^2$, donc $3x-2=0$ : $x=\\dfrac{2}{3}$.' },
+    ],
+  },
+  {
+    dossier: D, ordre: 5, titre: 'Équations du type x² = a', type: 'ensemble', forme: 'eq',
+    exercices: [
+      'x^2=49', 'x^2=1', 'x^2=100', 'x^2=0', 'x^2=-4', 'x^2=36', 'x^2=81', 'x^2=-1', 'x^2=144', 'x^2=5',
+      'x^2=1/4', 'x^2=0,09', 'x^2=2', 'x^2=12', 'x^2-16=0', '2x^2=18', 'x^2+9=0', '3x^2=75', 'x^2-7=0', '5x^2=20',
+      '4x^2=9', 'x^2+5=30', '2x^2-36=0', '9x^2=4', 'x^2=50', '3x^2+1=1',
+      { eq: '(x-1)^2=9', c: '$x-1=3$ ou $x-1=-3$, donc $x=4$ ou $x=-2$.' },
+      { eq: '(x+2)^2=25', c: '$x+2=5$ ou $x+2=-5$, donc $x=3$ ou $x=-7$.' },
+      { eq: '(2x-1)^2=49', c: '$2x-1=7$ ou $2x-1=-7$, donc $x=4$ ou $x=-3$.' },
+      { eq: '(x-3)^2=-1', c: 'Un carré n’est jamais négatif : l’équation n’a pas de solution.' },
+    ],
+  },
+  {
+    dossier: D, ordre: 6, titre: 'Inéquations du premier degré', type: 'inequation', forme: 'ineq',
+    exercices: [
+      'x+3<7', 'x-2>5', '2x<=10', '3x>12', 'x+5>=2', '4x<-8', 'x-7<=-3', '5x>=0', 'x+1>1', '2x<7',
+      '2x+1<9', '3x-2<=7', '4x+5>1', '-x<3', '-2x>=6', '5-x>2', '-3x+1<10', '2x+3>=x+7', '6x-1<4x+5', '7-2x<=1',
+      '3x+4>5x-2', '2(x-1)<x+3', '-4(x+2)>=8', 'x/2>3', '-x/3<=2', '3(x+1)-2x>5-x', '(x+1)/2<(x-1)/3', '5-3(x-1)<2x-7', '0,5x+1>=2x-2', '2x-(5x+1)<=3-x',
+    ],
+  },
+  {
+    dossier: D, ordre: 7, titre: 'Mettre un problème en équation', type: 'nombre', consigne: NB,
+    exercices: [
+      { t: 'Je pense à un nombre. Je lui ajoute $7$ et j’obtiens $19$. Quel est ce nombre ?', v: 'x+7=19' },
+      { t: 'Le triple d’un nombre vaut $42$. Quel est ce nombre ?', v: '3x=42' },
+      { t: 'Je pense à un nombre. Je le double, puis j’ajoute $3$ : j’obtiens $15$. Quel est ce nombre ?', v: '2x+3=15' },
+      { t: 'En retirant $9$ à un nombre, on obtient $-4$. Quel est ce nombre ?', v: 'x-9=-4' },
+      { t: 'Le périmètre d’un carré est $36$ cm. Quelle est la longueur de son côté, en cm ?', x: 'la longueur du côté', v: '4x=36' },
+      { t: 'Trois cahiers identiques et un stylo à $2$ € coûtent $11$ € en tout. Quel est le prix d’un cahier, en € ?', x: 'le prix d’un cahier', v: '3x+2=11' },
+      { t: 'La moitié d’un nombre vaut $13$. Quel est ce nombre ?', v: 'x/2=13' },
+      { t: 'Un rectangle a pour longueur $8$ cm et pour périmètre $26$ cm. Quelle est sa largeur, en cm ?', x: 'la largeur', v: '2(x+8)=26' },
+      { t: 'Je pense à un nombre. Je lui retire $4$, puis je multiplie par $5$ : j’obtiens $30$. Quel est ce nombre ?', v: '5(x-4)=30' },
+      { t: 'Dans $6$ ans, Léa aura $20$ ans. Quel âge a-t-elle aujourd’hui ?', x: 'l’âge de Léa', v: 'x+6=20' },
+      { t: 'Le double d’un nombre augmenté de $5$ est égal à ce nombre augmenté de $12$. Quel est ce nombre ?', v: '2x+5=x+12' },
+      { t: 'Un père a $40$ ans, soit $4$ ans de plus que le triple de l’âge de son fils. Quel âge a le fils ?', x: 'l’âge du fils', v: '3x+4=40' },
+      { t: 'La somme de deux nombres entiers consécutifs est $47$. Quel est le plus petit ?', x: 'le plus petit nombre', v: 'x+(x+1)=47' },
+      { t: 'La somme de trois nombres entiers consécutifs est $72$. Quel est le plus petit ?', x: 'le plus petit nombre', v: 'x+(x+1)+(x+2)=72' },
+      { t: 'La longueur d’un rectangle mesure $3$ cm de plus que sa largeur. Son périmètre est $34$ cm. Quelle est sa largeur, en cm ?', x: 'la largeur', v: '2(x+x+3)=34' },
+      { t: 'Tom a $5$ € de plus que Zoé. À eux deux, ils ont $31$ €. Combien a Zoé, en € ?', x: 'la somme que possède Zoé', v: 'x+(x+5)=31' },
+      { t: 'Un taxi facture $3$ € de prise en charge, puis $2$ € par kilomètre. Une course a coûté $27$ €. Quelle distance a été parcourue, en km ?', x: 'la distance parcourue', v: '3+2x=27' },
+      { t: 'Le tiers d’un nombre, augmenté de $4$, vaut $10$. Quel est ce nombre ?', v: 'x/3+4=10' },
+      { t: 'Le triple d’un nombre diminué de $8$ est égal à son double. Quel est ce nombre ?', v: '3x-8=2x' },
+      { t: 'Un triangle isocèle a un périmètre de $29$ cm et sa base mesure $9$ cm. Combien mesure chacun des deux autres côtés, en cm ?', x: 'la longueur d’un des deux côtés égaux', v: '2x+9=29' },
+      { t: 'Formule A : $20$ € d’abonnement, puis $3$ € par séance. Formule B : $7$ € par séance. Pour combien de séances paie-t-on le même prix ?', x: 'le nombre de séances', v: '20+3x=7x' },
+      { t: 'Marc a $30$ ans et sa fille $4$ ans. Dans combien d’années Marc aura-t-il le triple de l’âge de sa fille ?', x: 'le nombre d’années', v: '30+x=3(4+x)' },
+      { t: 'On partage $100$ € entre deux personnes : la première reçoit $16$ € de plus que la seconde. Combien reçoit la seconde, en € ?', x: 'la part de la seconde personne', v: 'x+(x+16)=100' },
+      { t: 'Dans un triangle, le deuxième angle mesure le double du premier, et le troisième mesure $20°$ de plus que le premier. Combien mesure le premier angle, en degrés ?', x: 'la mesure du premier angle', v: 'x+2x+(x+20)=180' },
+      { t: 'La moitié et le tiers d’un nombre ont pour somme $25$. Quel est ce nombre ?', v: 'x/2+x/3=25' },
+      { t: 'Pour un spectacle, $120$ billets ont été vendus : des billets adultes à $8$ € et des billets enfants à $5$ €. La recette est de $810$ €. Combien de billets adultes ont été vendus ?', x: 'le nombre de billets adultes', v: '8x+5(120-x)=810' },
+      { t: 'Un carré a un côté de $x$ cm. Si on augmente son côté de $3$ cm, son aire augmente de $39$ cm². Combien vaut $x$ ?', x: 'la longueur du côté', v: '(x+3)^2=x^2+39' },
+      { t: 'Deux nombres ont pour somme $50$. Le plus grand vaut le triple du plus petit, augmenté de $2$. Quel est le plus petit ?', x: 'le plus petit nombre', v: 'x+(3x+2)=50' },
+      { t: 'On ajoute $12$ € à un prix, puis on divise le résultat par $4$ : on obtient $15$ €. Quel était le prix de départ, en € ?', x: 'le prix de départ', v: '(x+12)/4=15' },
+      { t: 'Une tirelire contient $20$ pièces, de $1$ € ou de $2$ €, pour un total de $33$ €. Combien y a-t-il de pièces de $2$ € ?', x: 'le nombre de pièces de $2$ €', v: '2x+(20-x)=33' },
+    ],
+  },
+];

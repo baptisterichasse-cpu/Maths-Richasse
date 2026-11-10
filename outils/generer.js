@@ -84,7 +84,7 @@ function etapesLineaires(g, d, sym, lettre) {
   const dens = [...Object.values(pl), ...Object.values(pr)].map((q) => q[1]), D = dens.reduce(ppcm, 1), parts = [];
   const S = sym || ' = ';
   if (D > 1) { pl = echelle(pl, [D, 1]); pr = echelle(pr, [D, 1]); parts.push(`On multiplie les deux membres par $${D}$ : $${LP(pl)}${S}${LP(pr)}$.`); }
-  else if (tex(g) !== LP(pl) || tex(d) !== LP(pr)) parts.push(`On développe et on réduit : $${LP(pl)}${S}${LP(pr)}$.`);
+  else if ([g, d].some((m) => /[()]/.test(m) || (arbre(m).t === 'add' ? arbre(m).a.length : 1) > (Object.keys(poly(m)).length || 1))) parts.push(`On développe et on réduit : $${LP(pl)}${S}${LP(pr)}$.`);
   const a1 = pl[lettre] || [0, 1], a2 = pr[lettre] || [0, 1], b1 = pl[''] || [0, 1], b2 = pr[''] || [0, 1];
   const Aa = add(a1, neg(a2)), B = add(b2, neg(b1));
   if (a2[0] !== 0 || b1[0] !== 0) parts.push(`On regroupe les $${lettre}$ dans un membre et les nombres dans l’autre : $${LP({ [lettre]: Aa })}${S}${fr(B)}$.`);
@@ -139,7 +139,7 @@ function inequation(th, o) {
   const { parts, Aa, B } = etapesLineaires(g, d, sym, lettre);
   if (Aa[0] === 0) throw new Error('inéquation sans inconnue');
   const borne = div(B, Aa), opF = Aa[0] < 0 ? INV[op] : op, symF = Object.values(OPS).find((x) => x[0] === opF)[1];
-  if (cmp(Aa, [1, 1]) !== 0) parts.push(`On divise par $${fr(Aa)}$${Aa[0] < 0 ? ', qui est négatif : le sens de l’inégalité change' : ''} : $${lettre}${symF}${fr(borne)}$.`);
+  if (cmp(Aa, [1, 1]) !== 0) parts.push(`On divise par $${fr(Aa)}$${Aa[0] < 0 ? ', qui est négatif, donc le sens de l’inégalité change' : ''} : $${lettre}${symF}${fr(borne)}$.`);
   return { enonce: '$' + tex(g) + sym + tex(d) + '$', r: lettre + opF + txt(borne), type: 'inequation', c: note(o.n) + parts.join(' ') };
 }
 
@@ -247,6 +247,11 @@ function exercice(th, brut) {
     return { consigne: o.max ? 'Quel est le plus grand de ces nombres ?' : 'Quel est le plus petit de ces nombres ?', enonce: vals.map((v) => '$' + N(v) + '$').join(' ; '), r: (o.max ? tri[tri.length - 1] : tri[0]).v, type: 'nombre', c };
   }
   if (o.q) { const [f, Q, u] = o.q, q = cst(f), simple = Number(Q) % q[1] === 0; const ch = chaine({ mode: 'lin', decimal: true }, 'nombre', `${f}*${Q}`, [simple ? `${q[0]}*${Number(Q) / q[1]}` : `(${q[0]}*${Q})/(${q[1]})`]); return { enonce: `${q[0] === 1 ? 'Le' : 'Les'} $${fr(q)}$ de $${nb(Q)}$${u ? ' ' + u : ''}`, r: ch.r, type: 'nombre', c: `Prendre une fraction d’une quantité, c’est multiplier par cette fraction. ${ch.texte}` }; }
+  if (o.v) { // problème à mettre en équation : v = équation en x
+    const [g, d] = o.v.split('='), sols = resoudre(g, d);
+    if (sols.length !== 1) throw new Error('problème sans solution unique');
+    return { enonce: o.t, r: o.r || sols[0], type: 'nombre', c: `On note $x$ ${o.x || 'le nombre cherché'}. On obtient l’équation $${tex(g)} = ${tex(d)}$, dont la solution est $x = ${N(sols[0])}$.${o.fin ? ' ' + o.fin : ''}` };
+  }
   // Forme générale : énoncé calculé (e) ou texte (t), étapes (s), note (n), correction rédigée (c)
   let res;
   if (o.e) res = chaine(th, type, o.e, o.s || [], o.r);
