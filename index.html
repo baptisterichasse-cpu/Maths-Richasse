@@ -1484,20 +1484,27 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     c.chapitres.forEach(function (ch) {
       var cle0 = c.dossier + '~' + ch.id;
       ch.revisions.forEach(function (t) {
-        var b = bilanRev(cle0 + '~' + idTheme(t), t);
-        r.revisions.push({ chapitre: ch.titre, titre: t.titre, total: t.exercices.length, reussis: b.ok, aRetravailler: b.ko });
+        var cle = cle0 + '~' + idTheme(t), b = bilanRev(cle, t), m = memoRev(cle), ok = [], ko = [];
+        t.exercices.forEach(function (x) { var st = m[idExo(x)]; if (st) (st.s === 'ok' ? ok : ko).push(idExo(x)); });
+        r.revisions.push({ chapitre: ch.titre, titre: t.titre, total: t.exercices.length, reussis: b.ok, aRetravailler: b.ko, ok: ok, ko: ko });
       });
       ch.qcms.forEach(function (q, k) {
         var m = lire('qcm:' + cle0 + '~q' + k + '~' + hachage(q.titre));
         r.qcm.push({ chapitre: ch.titre, titre: q.titre, total: q.questions.length, meilleur: typeof m === 'number' ? m : null });
       });
       ch.paquets.forEach(function (p, k) {
-        var memo = lire('fc:' + cle0 + '~f' + k + '~' + hachage(p.titre)) || {}, sues = 0;
-        p.cartes.forEach(function (carte) { if ((memo[hachage(carte.q)] || 0) >= 2) sues++; });
-        r.flashcards.push({ chapitre: ch.titre, titre: p.titre, total: p.cartes.length, sues: sues });
+        var memo = lire('fc:' + cle0 + '~f' + k + '~' + hachage(p.titre)) || {}, ids = [];
+        p.cartes.forEach(function (carte) { if ((memo[hachage(carte.q)] || 0) >= 2) ids.push(hachage(carte.q)); });
+        r.flashcards.push({ chapitre: ch.titre, titre: p.titre, total: p.cartes.length, sues: ids.length, ids: ids });
       });
     });
     return r;
+  }
+  // Identifiant de cet appareil, pour réunir les envois du téléphone et de l'ordinateur d'un même élève
+  function idAppareil() {
+    var id = lire('appareil');
+    if (!id) { id = Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); ecrire('appareil', id); }
+    return id;
   }
   function carteEnvoi(c) {
     if (!D.reglages.envoi) return '';
@@ -1533,7 +1540,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     ecrire('eleve:numero', num);
     envoiEtat[dossier] = { statut: 'encours', message: 'Envoi en cours…' };
     rendre(true);
-    var donnees = { numero: num, classe: c.nom, dossier: dossier, envoye: new Date().toISOString(), progression: progressionClasse(c) };
+    var donnees = { numero: num, classe: c.nom, dossier: dossier, appareil: idAppareil(), envoye: new Date().toISOString(), progression: progressionClasse(c) };
     fetch(D.reglages.envoi, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(donnees) })
       .then(function (r) { return r.json(); })
       .then(function (rep) {
