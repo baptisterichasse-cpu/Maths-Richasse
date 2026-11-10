@@ -2,6 +2,8 @@
   "matiere": "Mathématiques",
   "etablissement": "Lycée Exemple, Ville",
   "email": "prenom.nom@ac-academie.fr",
+  "professeur": "M. Richasse",
+  "envoi_progression": "",
   "classes": [
     { "dossier": "seconde", "nom": "Seconde", "description": "Seconde générale et technologique" },
     { "dossier": "terminale", "nom": "Terminale", "description": "Spécialité mathématiques" }

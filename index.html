@@ -310,6 +310,21 @@ a.doc:hover { border-color: var(--c); }
 .bouton:disabled:hover { border-color: var(--bord-fort); color: var(--encre); }
 .bouton.plein:disabled:hover { color: var(--sur-rouge); }
 
+/* Envoi de la progression */
+.cote { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+.envoi { padding: 22px; display: flex; flex-direction: column; gap: 10px; }
+.envoi h3 { font-size: 20px; }
+.envoi-resume { margin: 0; font-size: 15px; color: var(--encre-2); }
+.envoi-resume b { color: var(--encre); }
+.envoi-libelle { font-size: 14px; font-weight: 700; color: var(--encre-2); }
+.envoi-ligne { display: flex; flex-wrap: wrap; gap: 8px; }
+.envoi-numero { flex: 1 1 110px; min-width: 0; font: 500 18px var(--f-mono); padding: 8px 12px; min-height: 44px; border-radius: 10px; border: 1px solid var(--bord-fort); background: var(--carte); color: var(--encre); }
+.envoi-numero:focus { outline: none; border-color: var(--rouge); box-shadow: 0 0 0 3px var(--rouge-doux); }
+.envoi-ligne .bouton { flex: 1 1 auto; }
+.envoi-msg { margin: 0; font-size: 14px; color: var(--encre-2); }
+.envoi-msg.ok { color: var(--vert); font-weight: 700; }
+.envoi-msg.erreur { color: var(--rouge-texte); font-weight: 700; }
+
 /* Recherche */
 .resultats { display: flex; flex-direction: column; gap: 10px; }
 .resultat { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; padding: 12px 16px; text-decoration: none; color: var(--encre); }
@@ -700,9 +715,10 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       ? '<aside class="carte progression" aria-label="Progression de l’année">' + md(c.progression) +
         '<div class="legende"><span class="l-fait">Traité</span><span class="l-encours">En cours</span><span>À venir</span></div></aside>'
       : '';
-    var corps = '<div class="classe-grille"' + (prog ? '' : ' style="grid-template-columns:minmax(0,1fr)"') + '>' +
+    var envoi = carteEnvoi(c), cote = prog || envoi ? '<div class="cote">' + prog + envoi + '</div>' : '';
+    var corps = '<div class="classe-grille"' + (cote ? '' : ' style="grid-template-columns:minmax(0,1fr)"') + '>' +
         (chap ? '<div class="chapitres">' + chap + '</div>' : '<p class="carte vide">Aucun chapitre pour l’instant.</p>') +
-        prog + '</div>';
+        cote + '</div>';
     return { tete: t, corps: corps };
   }
 
@@ -1400,7 +1416,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       '<button class="bouton' + (resolu ? ' plein' : '') + '" type="button" data-action="suivant"' + (e.i === n - 1 ? ' disabled' : '') + '>Suivant →</button></span></div>' +
       '</section>';
 
-    return { tete: tt, corps: '<div class="rev" data-rev="' + esc(cle) + '">' + exo + bilanHtml + '</div>' };
+    return { tete: tt, corps: '<div class="rev" data-rev="' + esc(cle) + '">' + exo + bilanHtml + '</div>' + carteEnvoi(c) };
   }
   function saisieRev(champSaisie) {
     var bloc = champSaisie.closest('[data-rev]'), e = bloc && revs[bloc.getAttribute('data-rev')];
@@ -1457,6 +1473,80 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     rendre(true);
     if (defiler) { var ex = document.getElementById('rev-exo'); if (ex) ex.scrollIntoView({ block: 'start' }); }
     if (focus) { var cible = document.querySelector(focus); if (cible && !cible.disabled) cible.focus({ preventScroll: !defiler }); }
+  }
+
+  /* ---------- Envoi de la progression au professeur ---------- */
+  var envoiEtat = {};
+  function isoAujourdhui() { var d = new Date(); return d.getFullYear() + '-' + deuxChiffres(d.getMonth() + 1) + '-' + deuxChiffres(d.getDate()); }
+  function nomProf() { return D.reglages.professeur || 'mon professeur'; }
+  function progressionClasse(c) {
+    var r = { revisions: [], qcm: [], flashcards: [] };
+    c.chapitres.forEach(function (ch) {
+      var cle0 = c.dossier + '~' + ch.id;
+      ch.revisions.forEach(function (t) {
+        var b = bilanRev(cle0 + '~' + idTheme(t), t);
+        r.revisions.push({ chapitre: ch.titre, titre: t.titre, total: t.exercices.length, reussis: b.ok, aRetravailler: b.ko });
+      });
+      ch.qcms.forEach(function (q, k) {
+        var m = lire('qcm:' + cle0 + '~q' + k + '~' + hachage(q.titre));
+        r.qcm.push({ chapitre: ch.titre, titre: q.titre, total: q.questions.length, meilleur: typeof m === 'number' ? m : null });
+      });
+      ch.paquets.forEach(function (p, k) {
+        var memo = lire('fc:' + cle0 + '~f' + k + '~' + hachage(p.titre)) || {}, sues = 0;
+        p.cartes.forEach(function (carte) { if ((memo[hachage(carte.q)] || 0) >= 2) sues++; });
+        r.flashcards.push({ chapitre: ch.titre, titre: p.titre, total: p.cartes.length, sues: sues });
+      });
+    });
+    return r;
+  }
+  function carteEnvoi(c) {
+    if (!D.reglages.envoi) return '';
+    var p = progressionClasse(c), e = envoiEtat[c.dossier] || {};
+    var num = e.saisie != null ? e.saisie : (lire('eleve:numero') || ''), dernier = lire('envoi:' + c.dossier);
+    var rev = 0, qcm = 0, fc = 0;
+    p.revisions.forEach(function (x) { rev += x.reussis; });
+    p.qcm.forEach(function (x) { if (x.meilleur != null) qcm++; });
+    p.flashcards.forEach(function (x) { fc += x.sues; });
+    var resume = [];
+    if (p.revisions.length) resume.push('<b>' + rev + '</b> exercice' + (rev > 1 ? 's' : '') + ' de révision réussi' + (rev > 1 ? 's' : ''));
+    if (p.qcm.length) resume.push('<b>' + qcm + '</b> QCM fait' + (qcm > 1 ? 's' : ''));
+    if (p.flashcards.length) resume.push('<b>' + fc + '</b> flashcard' + (fc > 1 ? 's' : '') + ' sue' + (fc > 1 ? 's' : ''));
+    var message = e.message
+      ? '<p class="envoi-msg ' + (e.statut || '') + '" role="status">' + esc(e.message) + '</p>'
+      : (dernier ? '<p class="envoi-msg">Dernier envoi : ' + esc(dateLongue(dernier)) + '.</p>' : '');
+    return '<section class="carte envoi" data-envoi="' + esc(c.dossier) + '" aria-labelledby="titre-envoi">' +
+      '<h3 id="titre-envoi">Ma progression · ' + esc(c.nom) + '</h3>' +
+      (resume.length ? '<p class="envoi-resume">' + resume.join(' · ') + '</p>' : '') +
+      '<label class="envoi-libelle" for="envoi-numero">Mon numéro (donné par ' + esc(nomProf()) + ')</label>' +
+      '<div class="envoi-ligne"><input id="envoi-numero" class="envoi-numero" type="text" inputmode="numeric" autocomplete="off" maxlength="12" value="' + esc(num) + '">' +
+      '<button class="bouton plein" type="button" data-action="envoyer"' + (e.statut === 'encours' ? ' disabled' : '') + '>Envoyer ma progression à ' + esc(nomProf()) + '</button></div>' +
+      message + '</section>';
+  }
+  function envoyer(bloc) {
+    var dossier = bloc.getAttribute('data-envoi'), c = trouverClasse(dossier), champNum = document.getElementById('envoi-numero');
+    if (!c || !champNum) return;
+    var num = champNum.value.trim();
+    if (!/^[A-Za-z0-9-]{1,12}$/.test(num)) {
+      envoiEtat[dossier] = { statut: 'erreur', saisie: champNum.value, message: 'Saisir le numéro donné par ' + nomProf() + ' : des chiffres ou des lettres, sans espace.' };
+      rendre(true); return;
+    }
+    ecrire('eleve:numero', num);
+    envoiEtat[dossier] = { statut: 'encours', message: 'Envoi en cours…' };
+    rendre(true);
+    var donnees = { numero: num, classe: c.nom, dossier: dossier, envoye: new Date().toISOString(), progression: progressionClasse(c) };
+    fetch(D.reglages.envoi, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(donnees) })
+      .then(function (r) { return r.json(); })
+      .then(function (rep) {
+        if (!rep || !rep.ok) throw new Error((rep && rep.erreur) || 'refus');
+        var jour = isoAujourdhui();
+        ecrire('envoi:' + dossier, jour);
+        envoiEtat[dossier] = { statut: 'ok', message: 'Progression envoyée à ' + nomProf() + ' le ' + dateLongue(jour) + '. Merci !' };
+        rendre(true);
+      })
+      .catch(function () {
+        envoiEtat[dossier] = { statut: 'erreur', message: 'L’envoi n’a pas abouti. Vérifier la connexion internet, puis réessayer.' };
+        rendre(true);
+      });
   }
 
   /* ---------- Impression ---------- */
@@ -1618,7 +1708,9 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     }
     var b = e.target.closest('[data-action]');
     if (!b) return;
-    var bloc = b.closest('[data-paquet]');
+    var bloc = b.closest('[data-envoi]');
+    if (bloc) { envoyer(bloc); return; }
+    bloc = b.closest('[data-paquet]');
     if (bloc) { actionPaquet(bloc, b.getAttribute('data-action')); return; }
     bloc = b.closest('[data-qcm]');
     if (bloc) { actionQcm(bloc, b.getAttribute('data-action'), b); return; }
@@ -1629,6 +1721,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     if (e.target.id === 'rev-saisie') saisieRev(e.target);
   });
   contenu.addEventListener('keydown', function (e) {
+    if (e.target.id === 'envoi-numero' && e.key === 'Enter') { e.preventDefault(); envoyer(e.target.closest('[data-envoi]')); return; }
     if (e.target.id === 'rev-saisie' && e.key === 'Enter') { e.preventDefault(); var bloc = e.target.closest('[data-rev]'); if (bloc) actionRev(bloc, 'verifier'); }
   });
 
