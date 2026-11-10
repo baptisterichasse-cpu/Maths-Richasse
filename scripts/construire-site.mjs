@@ -125,6 +125,22 @@ function lireQcm(texte) {
   return questions;
 }
 
+// Révisions : consigne, énoncé, réponse, vérification, correction
+// (vérification = fraction, developpe, factorise ou egal)
+const VERIFICATIONS = ['fraction', 'developpe', 'factorise', 'egal'];
+function lireRevision(texte, f) {
+  const exercices = [];
+  for (const l of lireCsv(texte).lignes) {
+    if (norm(l[0]) === 'consigne') continue;
+    const [consigne, enonce, reponse, verif, correction] = l;
+    const type = norm(verif || '').replace(/[^a-z]/g, '');
+    if (!enonce || !reponse) continue;
+    if (!VERIFICATIONS.includes(type)) { console.warn(`Attention : vérification « ${verif} » inconnue dans « ${f} » (ligne ignorée).`); continue; }
+    exercices.push({ consigne: consigne || '', enonce, reponse, type, correction: correction || '' });
+  }
+  return exercices;
+}
+
 // Date d'ajout de chaque fichier, lue dans l'historique GitHub.
 function datesAjout() {
   const dates = new Map();
@@ -178,7 +194,7 @@ async function main() {
     classes: [],
   };
 
-  let nbPublies = 0, nbEnAttente = 0, nbCartes = 0, nbQcm = 0;
+  let nbPublies = 0, nbEnAttente = 0, nbCartes = 0, nbQcm = 0, nbRevisions = 0;
   for (const classe of reglages.classes) {
     const dossierClasse = path.join(RACINE, 'documents', classe.dossier);
     const c = {
@@ -195,7 +211,7 @@ async function main() {
       while (ids.has(id)) id += '-2';
       ids.add(id);
       const dossierChap = path.join(dossierClasse, nomChap);
-      const ch = { id, numero, titre, essentiel: await lireTexte(path.join(dossierChap, '_essentiel.md')), documents: [], paquets: [], qcms: [] };
+      const ch = { id, numero, titre, essentiel: await lireTexte(path.join(dossierChap, '_essentiel.md')), documents: [], paquets: [], qcms: [], revisions: [] };
 
       for (const f of await fichiers(dossierChap)) {
         const source = path.join(dossierChap, f);
@@ -214,6 +230,13 @@ async function main() {
           const questions = lireQcm(await readFile(source, 'utf8'));
           if (questions.length) { ch.qcms.push({ titre: titreApresTiret(info.base, 'QCM du chapitre'), questions, ajoute }); nbQcm++; }
           else console.warn(`Attention : aucune question lue dans « ${f} ».`);
+          continue;
+        }
+
+        if ((info.ext === 'csv' || info.ext === 'txt') && nf.startsWith('revision')) {
+          const exercices = lireRevision(await readFile(source, 'utf8'), f);
+          if (exercices.length) { ch.revisions.push({ titre: titreApresTiret(info.base, 'Révisions'), exercices, ajoute }); nbRevisions += exercices.length; }
+          else console.warn(`Attention : aucun exercice lu dans « ${f} ».`);
           continue;
         }
 
@@ -240,7 +263,7 @@ async function main() {
 
   await copier(path.join(RACINE, 'index.html'), path.join(SORTIE, 'index.html'));
   await writeFile(path.join(SORTIE, 'donnees.json'), JSON.stringify(donnees));
-  console.log(`Site construit (${AUJOURDHUI}) : ${nbPublies} document(s) publié(s), ${nbEnAttente} corrigé(s) en attente, ${nbCartes} flashcard(s), ${nbQcm} QCM.`);
+  console.log(`Site construit (${AUJOURDHUI}) : ${nbPublies} document(s) publié(s), ${nbEnAttente} corrigé(s) en attente, ${nbCartes} flashcard(s), ${nbQcm} QCM, ${nbRevisions} exercice(s) de révision.`);
 }
 
 main().catch((e) => { console.error('Erreur :', e.message); process.exit(1); });

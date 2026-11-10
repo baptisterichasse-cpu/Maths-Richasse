@@ -27,6 +27,7 @@
   --t-fla: #0c6582; --t-fla-bg: #ddf2f8;
   --t-qcm: #a8215f; --t-qcm-bg: #fbe6f0;
   --t-aut: #565e70; --t-aut-bg: #eceef3;
+  --t-rev: #4b6b0a; --t-rev-bg: #edf5da;
   --f-titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --f-texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
   --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
@@ -41,6 +42,7 @@
     --t-cours: #ff8292; --t-cours-bg: #3a1a21; --t-met: #f2b35e; --t-met-bg: #3a2a13; --t-exo: #93b2ff; --t-exo-bg: #1c2747;
     --t-cor: #62d2a8; --t-cor-bg: #12352a; --t-dia: #bc9eff; --t-dia-bg: #2a2147; --t-fla: #62c9e3; --t-fla-bg: #12313b;
     --t-qcm: #f28dbd; --t-qcm-bg: #3a1a2c; --t-aut: #a3a9b8; --t-aut-bg: #262a34;
+    --t-rev: #b3d96b; --t-rev-bg: #232d10;
     color-scheme: dark;
   }
 }
@@ -52,6 +54,7 @@
   --t-cours: #ff8292; --t-cours-bg: #3a1a21; --t-met: #f2b35e; --t-met-bg: #3a2a13; --t-exo: #93b2ff; --t-exo-bg: #1c2747;
   --t-cor: #62d2a8; --t-cor-bg: #12352a; --t-dia: #bc9eff; --t-dia-bg: #2a2147; --t-fla: #62c9e3; --t-fla-bg: #12313b;
   --t-qcm: #f28dbd; --t-qcm-bg: #3a1a2c; --t-aut: #a3a9b8; --t-aut-bg: #262a34;
+    --t-rev: #b3d96b; --t-rev-bg: #232d10;
   color-scheme: dark;
 }
 
@@ -130,6 +133,7 @@ main.chevauche { margin-top: -72px; }
 [data-type="flashcards"] { --c: var(--t-fla); --cb: var(--t-fla-bg); }
 [data-type="qcm"] { --c: var(--t-qcm); --cb: var(--t-qcm-bg); }
 [data-type="autres"] { --c: var(--t-aut); --cb: var(--t-aut-bg); }
+[data-type="revision"] { --c: var(--t-rev); --cb: var(--t-rev-bg); }
 [data-type="chapitre"] { --c: var(--rouge-texte); --cb: var(--rouge-doux); }
 .bouton { font: 700 15px var(--f-texte); display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 16px; min-height: 42px; border-radius: 999px; border: 1px solid var(--bord-fort); background: var(--carte); color: var(--encre); cursor: pointer; text-decoration: none; }
 .bouton:hover { border-color: var(--rouge); color: var(--rouge-texte); }
@@ -267,6 +271,45 @@ a.doc:hover { border-color: var(--c); }
 .score { padding: 26px 20px; border-radius: 12px; background: var(--t-qcm-bg); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .score-note { font: 800 44px/1 var(--f-titre); color: var(--t-qcm); font-variant-numeric: tabular-nums; }
 
+/* Révisions */
+.themes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 12px; }
+.theme { padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; text-decoration: none; color: var(--encre); transition: border-color .15s, transform .15s; }
+.theme:hover { border-color: var(--c); transform: translateY(-2px); }
+.theme h3 { font-size: 19px; }
+.theme-lien { font-weight: 700; font-size: 15px; color: var(--c); }
+.rev { display: flex; flex-direction: column; gap: 16px; }
+.rev-bilan { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.rev-grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(42px, 1fr)); gap: 6px; }
+.rev-num { font: 500 14px var(--f-mono); height: 40px; border-radius: 8px; border: 1px solid var(--bord-fort); background: var(--carte); color: var(--encre-2); cursor: pointer; font-variant-numeric: tabular-nums; }
+.rev-num:hover { border-color: var(--t-rev); }
+.rev-num.ok { background: var(--vert); border-color: var(--vert); color: var(--carte); }
+.rev-num.ko { background: var(--rouge-doux); border-color: var(--rouge); color: var(--rouge-texte); }
+.rev-num[aria-current="true"] { outline: 3px solid var(--t-rev); outline-offset: 2px; }
+.rev-exo { padding: 22px; display: flex; flex-direction: column; gap: 16px; scroll-margin-top: 90px; }
+.rev-consigne { font-weight: 700; }
+.rev-enonce { font-size: clamp(21px, 4vw, 28px); text-align: center; padding: 18px 12px; border-radius: 12px; background: var(--t-rev-bg); overflow-x: auto; }
+.rev-libelle { font-size: 14px; font-weight: 700; color: var(--encre-2); margin-bottom: -10px; }
+.rev-champ { display: flex; gap: 8px; flex-wrap: wrap; }
+.rev-saisie { flex: 1 1 150px; min-width: 0; font: 500 19px var(--f-mono); padding: 10px 14px; min-height: 48px; border-radius: 10px; border: 1px solid var(--bord-fort); background: var(--carte); color: var(--encre); }
+.rev-saisie:focus { outline: none; border-color: var(--t-rev); box-shadow: 0 0 0 3px var(--t-rev-bg); }
+.rev-saisie[readonly] { background: var(--vert-doux); border-color: var(--vert); }
+.rev-outils { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.rev-touches { display: flex; flex-wrap: wrap; gap: 6px; }
+.rev-touche { font: 500 15px var(--f-mono); min-width: 44px; height: 38px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--bord); background: var(--fond); color: var(--encre); cursor: pointer; }
+.rev-touche:hover { border-color: var(--t-rev); }
+.rev-aide { font-size: 13px; color: var(--encre-2); }
+.rev-apercu { min-height: 30px; font-size: 18px; overflow-x: auto; }
+.rev-apercu .lu { font-size: 13px; color: var(--encre-2); margin-right: 6px; }
+.rev-apercu .rev-erreur { font-size: 15px; color: var(--rouge-texte); }
+.verdict.presque strong { color: var(--t-met); }
+.rev-correction { padding: 12px 16px; border-radius: 10px; border: 1px dashed var(--bord-fort); display: flex; flex-direction: column; gap: 6px; overflow-x: auto; }
+.rev-correction strong { font-family: var(--f-titre); }
+.rev-bas { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; }
+.rev-nav { display: flex; gap: 8px; margin-left: auto; }
+.bouton:disabled { opacity: .45; cursor: default; }
+.bouton:disabled:hover { border-color: var(--bord-fort); color: var(--encre); }
+.bouton.plein:disabled:hover { color: var(--sur-rouge); }
+
 /* Recherche */
 .resultats { display: flex; flex-direction: column; gap: 10px; }
 .resultat { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; padding: 12px 16px; text-decoration: none; color: var(--encre); }
@@ -368,6 +411,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     cours:      { label: 'Cours',            court: 'Cours' },
     methode:    { label: 'Fiches méthode',   court: 'Méthode' },
     exercices:  { label: 'Exercices',        court: 'Exercices' },
+    revision:   { label: 'Révisions',        court: 'Révisions' },
     corriges:   { label: 'Corrigés',         court: 'Corrigés' },
     diaporama:  { label: 'Diaporamas',       court: 'Diapos' },
     flashcards: { label: 'Flashcards',       court: 'Flashcards' },
@@ -551,7 +595,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     for (var i = 0; i < c.chapitres.length; i++) if (c.chapitres[i].id === id) return c.chapitres[i];
     return null;
   }
-  function nomChapitre(ch) { return (ch.numero || ch.numero === 0 ? 'Chapitre ' + deuxChiffres(ch.numero) : 'Chapitre'); }
+  function nomChapitre(ch) { return ch.numero === 0 ? 'Toute l’année' : (ch.numero ? 'Chapitre ' + deuxChiffres(ch.numero) : 'Chapitre'); }
 
   /* ---------- Vues ---------- */
   function compter(ch) {
@@ -559,6 +603,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     ch.documents.forEach(function (d) { c[d.type] = (c[d.type] || 0) + 1; });
     if (ch.paquets.length) c.flashcards = ch.paquets.length;
     if (ch.qcms.length) c.qcm = ch.qcms.length;
+    if (ch.revisions.length) c.revision = ch.revisions.length;
     return c;
   }
   function puces(ch) {
@@ -587,6 +632,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
         ch.documents.forEach(function (d) { if (d.disponible) res.push({ type: d.type, titre: d.titre, ajoute: d.ajoute, lieu: lieu, cible: cible, lien: d.fichier }); });
         ch.paquets.forEach(function (p) { res.push({ type: 'flashcards', titre: p.titre, ajoute: p.ajoute, lieu: lieu, cible: cible }); });
         ch.qcms.forEach(function (q) { res.push({ type: 'qcm', titre: q.titre, ajoute: q.ajoute, lieu: lieu, cible: cible }); });
+        ch.revisions.forEach(function (t) { res.push({ type: 'revision', titre: t.titre, ajoute: t.ajoute, lieu: lieu, cible: cible + '~' + idTheme(t) }); });
       });
     });
     return res;
@@ -605,7 +651,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
 
     var html = '<section class="grille-2" aria-label="Classes">' + D.classes.map(function (c) {
       var nbDocs = 0;
-      c.chapitres.forEach(function (ch) { nbDocs += ch.documents.filter(function (d) { return d.disponible; }).length + ch.paquets.length + ch.qcms.length; });
+      c.chapitres.forEach(function (ch) { nbDocs += ch.documents.filter(function (d) { return d.disponible; }).length + ch.paquets.length + ch.qcms.length + ch.revisions.length; });
       return '<a class="carte classe" href="#' + esc(c.dossier) + '" data-vue="' + esc(c.dossier) + '">' +
         '<span class="classe-chiffres">' + pluriel(c.chapitres.length, 'chapitre') + ' · ' + pluriel(nbDocs, 'ressource') + '</span>' +
         '<h2>' + esc(c.nom) + '</h2>' +
@@ -825,6 +871,594 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
   function cssEsc(s) { return window.CSS && CSS.escape ? CSS.escape(s) : s.replace(/["\\]/g, '\\$&'); }
   function remplacer(bloc, html) { var d = document.createElement('div'); d.innerHTML = html; bloc.replaceWith(d.firstChild); }
 
+  /* ---------- Moteur de correction des révisions ----------
+     Lit une réponse tapée au clavier (fractions, expressions littérales),
+     la compare à la réponse attendue et vérifie sa forme. */
+  var Algebre = (function () {
+    'use strict';
+
+    /* Nombres rationnels [numérateur, dénominateur] */
+    function pgcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = a % b; a = b; b = t; } return a; }
+    function rat(n, d) {
+      if (d === undefined) d = 1;
+      if (d === 0) throw new Error('Division par zéro.');
+      if (d < 0) { n = -n; d = -d; }
+      var g = pgcd(n, d) || 1;
+      return [n / g, d / g];
+    }
+    function radd(a, b) { return rat(a[0] * b[1] + b[0] * a[1], a[1] * b[1]); }
+    function rmul(a, b) { return rat(a[0] * b[0], a[1] * b[1]); }
+    function rinv(a) { return rat(a[1], a[0]); }
+
+    /* ---------- Lecture ---------- */
+    function normaliser(s) {
+      return String(s == null ? '' : s)
+        .replace(/[−–—]/g, '-')
+        .replace(/[×·∙⋅]/g, '*')
+        .replace(/÷/g, '/')
+        .replace(/²/g, '^2').replace(/³/g, '^3')
+        .replace(/[\[{]/g, '(').replace(/[\]}]/g, ')')
+        .replace(/\s+/g, '')
+        .replace(/^=+/, '')
+        .toLowerCase();
+    }
+    function decouper(s) {
+      var t = [], i = 0, m;
+      while (i < s.length) {
+        var ch = s.charAt(i);
+        if ((m = /^\d+(?:[.,]\d+)?/.exec(s.slice(i)))) {
+          var txt = m[0].replace(',', '.'), p = txt.indexOf('.');
+          var v = p === -1 ? rat(Number(txt)) : rat(Number(txt.replace('.', '')), Math.pow(10, txt.length - p - 1));
+          t.push({ k: 'n', v: v, dec: p !== -1, txt: txt });
+          i += m[0].length; continue;
+        }
+        if (/[a-z]/.test(ch)) { t.push({ k: 'v', v: ch }); i++; continue; }
+        if ('+-*/^()'.indexOf(ch) !== -1) { t.push({ k: ch }); i++; continue; }
+        throw new Error('Caractère non reconnu : « ' + ch + ' ».');
+      }
+      return t;
+    }
+    function Lecteur(t) { this.t = t; this.i = 0; }
+    Lecteur.prototype.voir = function () { return this.t[this.i] || { k: 'fin' }; };
+    Lecteur.prototype.prendre = function () { return this.t[this.i++] || { k: 'fin' }; };
+    Lecteur.prototype.somme = function () {
+      var termes = [{ s: 1, e: this.produit() }];
+      while (this.voir().k === '+' || this.voir().k === '-') {
+        var op = this.prendre().k;
+        termes.push({ s: op === '+' ? 1 : -1, e: this.produit() });
+      }
+      return termes.length === 1 ? termes[0].e : { t: 'add', a: termes };
+    };
+    Lecteur.prototype.produit = function () {
+      var n = this.unaire();
+      for (;;) {
+        var k = this.voir().k;
+        if (k === '*') { this.prendre(); n = { t: 'mul', a: n, b: this.unaire(), x: true }; }
+        else if (k === '/') { this.prendre(); n = { t: 'div', a: n, b: this.unaire() }; }
+        else if (k === 'v' || k === '(') { n = { t: 'mul', a: n, b: this.puissance(), x: false }; }
+        else if (k === 'n' && (n.t === 'par' || (n.t === 'pow' && n.b.t === 'par'))) { n = { t: 'mul', a: n, b: this.puissance(), x: false }; }
+        else return n;
+      }
+    };
+    Lecteur.prototype.unaire = function () {
+      var k = this.voir().k;
+      if (k === '-') { this.prendre(); return { t: 'neg', e: this.unaire() }; }
+      if (k === '+') { this.prendre(); return this.unaire(); }
+      return this.puissance();
+    };
+    Lecteur.prototype.puissance = function () {
+      var base = this.atome();
+      if (this.voir().k !== '^') return base;
+      this.prendre();
+      var e = this.atome();
+      while (e.t === 'par') e = e.e;
+      if (e.t !== 'num' || e.v[1] !== 1 || e.v[0] > 12) throw new Error('L’exposant doit être un entier positif.');
+      return { t: 'pow', b: base, n: e.v[0] };
+    };
+    Lecteur.prototype.atome = function () {
+      var tk = this.prendre();
+      if (tk.k === 'n') return { t: 'num', v: tk.v, dec: tk.dec, txt: tk.txt };
+      if (tk.k === 'v') return { t: 'var', n: tk.v };
+      if (tk.k === '(') {
+        if (this.voir().k === ')') throw new Error('Parenthèses vides.');
+        var e = this.somme();
+        if (this.prendre().k !== ')') throw new Error('Une parenthèse n’est pas fermée.');
+        return { t: 'par', e: e };
+      }
+      if (tk.k === ')') throw new Error('Parenthèse fermante en trop.');
+      throw new Error('Expression incomplète.');
+    };
+    function analyser(texte) {
+      var s = normaliser(texte);
+      if (!s) return { ok: false, vide: true, erreur: '' };
+      try {
+        var l = new Lecteur(decouper(s));
+        var arbre = l.somme();
+        if (l.voir().k !== 'fin') throw new Error(l.voir().k === ')' ? 'Parenthèse fermante en trop.' : 'Expression mal écrite.');
+        polynome(arbre); // vérifie aussi les divisions
+        return { ok: true, arbre: arbre };
+      } catch (e) {
+        return { ok: false, erreur: e.message };
+      }
+    }
+
+    /* ---------- Polynômes : { "x^2": [3, 1], "": [5, 1] } ---------- */
+    function cleVersObj(c) {
+      var o = {};
+      if (c) c.split('.').forEach(function (m) { var p = m.split('^'); o[p[0]] = p[1] ? Number(p[1]) : 1; });
+      return o;
+    }
+    function objVersCle(o) {
+      return Object.keys(o).filter(function (v) { return o[v]; }).sort().map(function (v) { return o[v] === 1 ? v : v + '^' + o[v]; }).join('.');
+    }
+    function degre(c) { var o = cleVersObj(c), d = 0; for (var v in o) d += o[v]; return d; }
+    function nettoyer(p) { var q = {}; for (var c in p) if (p[c][0] !== 0) q[c] = p[c]; return q; }
+    function padd(p, q, s) {
+      var r = {}, c;
+      for (c in p) r[c] = p[c];
+      for (c in q) { var v = s < 0 ? [-q[c][0], q[c][1]] : q[c]; r[c] = r[c] ? radd(r[c], v) : v; }
+      return nettoyer(r);
+    }
+    function pmul(p, q) {
+      var r = {};
+      for (var a in p) for (var b in q) {
+        var oa = cleVersObj(a), ob = cleVersObj(b);
+        for (var v in ob) oa[v] = (oa[v] || 0) + ob[v];
+        var c = objVersCle(oa), v2 = rmul(p[a], q[b]);
+        r[c] = r[c] ? radd(r[c], v2) : v2;
+      }
+      return nettoyer(r);
+    }
+    function constante(p) { var cles = Object.keys(p); if (!cles.length) return [0, 1]; if (cles.length === 1 && cles[0] === '') return p['']; return null; }
+    function polynome(n) {
+      var o;
+      switch (n.t) {
+        case 'num': return nettoyer({ '': n.v });
+        case 'var': o = {}; o[n.n] = [1, 1]; return o;
+        case 'par': return polynome(n.e);
+        case 'neg': return pmul(polynome(n.e), { '': [-1, 1] });
+        case 'add': return n.a.reduce(function (p, t) { return padd(p, polynome(t.e), t.s); }, {});
+        case 'mul': return pmul(polynome(n.a), polynome(n.b));
+        case 'div':
+          var d = constante(polynome(n.b));
+          if (!d) throw new Error('Division par une expression contenant une lettre.');
+          if (d[0] === 0) throw new Error('Division par zéro.');
+          return pmul(polynome(n.a), { '': rinv(d) });
+        case 'pow':
+          var r = { '': [1, 1] }, b = polynome(n.b);
+          for (var k = 0; k < n.n; k++) r = pmul(r, b);
+          return r;
+      }
+      throw new Error('Expression inconnue.');
+    }
+    function egaux(p, q) {
+      var a = Object.keys(p), b = Object.keys(q);
+      if (a.length !== b.length) return false;
+      return a.every(function (c) { return q[c] && q[c][0] === p[c][0] && q[c][1] === p[c][1]; });
+    }
+
+    /* ---------- Affichage LaTeX ---------- */
+    function nombreLatex(n) {
+      if (n.txt) return n.txt.replace('.', '{,}');
+      return n.v[1] === 1 ? String(n.v[0]) : '\\dfrac{' + n.v[0] + '}{' + n.v[1] + '}';
+    }
+    function entourer(s) { return s.indexOf('\\dfrac') !== -1 ? '\\left(' + s + '\\right)' : '(' + s + ')'; }
+    function sansPar(n) { while (n.t === 'par') n = n.e; return n; }
+    function latex(n) {
+      switch (n.t) {
+        case 'num': return nombreLatex(n);
+        case 'var': return n.n;
+        case 'par': return entourer(latex(n.e));
+        case 'neg': return '-' + latex(n.e);
+        case 'add': return n.a.map(function (t, k) {
+          var s = latex(t.e);
+          return (t.s < 0 ? '-' : (k ? '+' : '')) + s;
+        }).join('');
+        case 'mul':
+          var g = latex(n.a), d = latex(n.b);
+          if (n.b.t === 'neg') d = entourer(d);
+          if (n.x || (/\d$/.test(g) && /^\d/.test(d))) return g + '\\times ' + d;
+          return g + d;
+        case 'div':
+          if (n.a.t === 'neg') return '-' + latex({ t: 'div', a: n.a.e, b: n.b });
+          return '\\dfrac{' + latex(sansPar(n.a)) + '}{' + latex(sansPar(n.b)) + '}';
+        case 'pow': return latex(n.b) + (n.n < 10 ? '^' + n.n : '^{' + n.n + '}');
+      }
+      return '';
+    }
+    function latexPolynome(p) {
+      var cles = Object.keys(p).sort(function (a, b) { return degre(b) - degre(a) || (a < b ? -1 : 1); });
+      if (!cles.length) return '0';
+      return cles.map(function (c, k) {
+        var v = p[c], neg = v[0] < 0, a = [Math.abs(v[0]), v[1]];
+        var coef = a[1] === 1 ? String(a[0]) : '\\dfrac{' + a[0] + '}{' + a[1] + '}';
+        var mono = c.split('.').map(function (m) { var q = m.split('^'); return q[0] + (q[1] ? '^{' + q[1] + '}' : ''); }).join('');
+        var corps = c === '' ? coef : ((a[0] === 1 && a[1] === 1) ? '' : coef) + mono;
+        return (neg ? '-' : (k ? '+' : '')) + corps;
+      }).join('');
+    }
+    function nomTerme(c) {
+      if (c === '') return 'le terme constant';
+      return 'le terme en $' + c.split('.').map(function (m) { var q = m.split('^'); return q[0] + (q[1] ? '^{' + q[1] + '}' : ''); }).join('') + '$';
+    }
+
+    /* Énoncé écrit en LaTeX → écriture « clavier » (pour repérer les erreurs classiques) */
+    function depuisLatex(s) {
+      s = String(s).replace(/\$/g, '').replace(/\\left|\\right/g, '').replace(/\\[,;! ]/g, '').replace(/\{,\}/g, ',')
+        .replace(/\\times|\\cdot/g, '*');
+      var sortie = '', i = 0;
+      function groupe() {
+        while (s.charAt(i) === ' ') i++;
+        if (s.charAt(i) !== '{') { var c = s.charAt(i); i++; return c; }
+        var prof = 0, debut = ++i;
+        for (; i < s.length; i++) {
+          if (s.charAt(i) === '{') prof++;
+          else if (s.charAt(i) === '}') { if (!prof) break; prof--; }
+        }
+        var g = s.slice(debut, i); i++;
+        return depuisLatex(g);
+      }
+      while (i < s.length) {
+        var m = /^\\[dt]?frac/.exec(s.slice(i));
+        if (m) { i += m[0].length; var a = groupe(), b = groupe(); sortie += '((' + a + ')/(' + b + '))'; continue; }
+        if (s.charAt(i) === '{' || s.charAt(i) === '}') { i++; continue; }
+        if (s.charAt(i) === '^') { i++; sortie += '^(' + groupe() + ')'; continue; }
+        sortie += s.charAt(i); i++;
+      }
+      return sortie;
+    }
+
+    /* ---------- Analyse de la forme ---------- */
+    function termes(n) { n = sansPar(n); return n.t === 'add' ? n.a : [{ s: 1, e: n }]; }
+    function facteurs(n, liste) {
+      liste = liste || [];
+      while (n.t === 'neg') n = n.e;
+      if (n.t === 'mul') { facteurs(n.a, liste); facteurs(n.b, liste); }
+      else liste.push(n);
+      return liste;
+    }
+    function estEntierEcrit(n) { return n.t === 'num' && !n.dec && n.v[1] === 1; }
+    function contientDecimal(n) {
+      if (!n || typeof n !== 'object') return false;
+      if (n.t === 'num') return !!n.dec;
+      if (n.t === 'add') return n.a.some(function (t) { return contientDecimal(t.e); });
+      return contientDecimal(n.e) || contientDecimal(n.a) || contientDecimal(n.b);
+    }
+
+    // Une seule fraction (ou un entier), sans opération restante
+    function lireFraction(n) {
+      var s = 1;
+      while (n.t === 'neg' || n.t === 'par') { if (n.t === 'neg') s = -s; n = n.e; }
+      if (estEntierEcrit(n)) return { n: s * n.v[0], d: 1, entier: true };
+      if (n.t !== 'div') return null;
+      var a = n.a, b = n.b, sb = 1;
+      while (a.t === 'neg' || a.t === 'par') { if (a.t === 'neg') s = -s; a = a.e; }
+      while (b.t === 'neg' || b.t === 'par') { if (b.t === 'neg') sb = -sb; b = b.e; }
+      if (!estEntierEcrit(a) || !estEntierEcrit(b)) return null;
+      return { n: s * a.v[0], d: b.v[0], denNegatif: sb < 0 };
+    }
+
+    // Développée réduite : somme de monômes, sans parenthèses, sans termes semblables
+    function formeDeveloppee(n) {
+      var vus = {}, reduite = true;
+      var ok = termes(n).every(function (t) {
+        var nb = 0, lettres = {}, simple = true;
+        (function visiter(f) {
+          if (!simple) return;
+          if (f.t === 'neg') return visiter(f.e);
+          if (f.t === 'mul') { visiter(f.a); visiter(f.b); return; }
+          if (f.t === 'div') { if (estEntierEcrit(sansPar(f.b))) { visiter(f.a); nb++; } else simple = false; return; }
+          if (f.t === 'num') { nb++; return; }
+          if (f.t === 'var') { if (lettres[f.n]) reduite = false; lettres[f.n] = 1; return; }
+          if (f.t === 'pow' && f.b.t === 'var') { if (lettres[f.b.n]) reduite = false; lettres[f.b.n] = 1; return; }
+          simple = false;
+        })(t.e);
+        if (!simple) return false;
+        if (nb > 1) reduite = false;
+        var p = polynome(t.e), cles = Object.keys(p);
+        if (!cles.length && termes(n).length > 1) reduite = false;
+        cles.forEach(function (c) { if (vus[c]) reduite = false; vus[c] = 1; });
+        return true;
+      });
+      return { developpee: ok, reduite: ok && reduite };
+    }
+
+    // Produit : constante éventuelle × facteurs non constants
+    function infosProduit(n) {
+      n = sansPar(n);
+      var tete = n;
+      while (tete.t === 'neg' || tete.t === 'par') tete = tete.e;
+      if (tete.t !== 'mul' && !(tete.t === 'pow' && sansPar(tete.b).t === 'add')) return null;
+      var cst = [1, 1], nonCst = [], ok = false;
+      facteurs(tete).forEach(function (f) {
+        var base = f, mult = 1;
+        if (f.t === 'pow') { base = f.b; mult = f.n; }
+        var p = polynome(base), c = constante(p);
+        if (c) { for (var k = 0; k < mult; k++) cst = rmul(cst, c); return; }
+        if (sansPar(base).t === 'add') ok = true;
+        for (var j = 0; j < mult; j++) nonCst.push(p);
+      });
+      if (!nonCst.length || (nonCst.length < 2 && !ok && Math.abs(cst[0]) === 1)) return null;
+      return { cst: cst, facteurs: nonCst };
+    }
+    function contenu(p) {
+      var g = 0, entiers = true;
+      for (var c in p) { if (p[c][1] !== 1) entiers = false; g = pgcd(g, p[c][0]); }
+      return entiers ? g : 1;
+    }
+    function lettreCommune(p) {
+      var cles = Object.keys(p);
+      if (cles.length < 2) return null;
+      var communs = cleVersObj(cles[0]);
+      cles.forEach(function (c) { var o = cleVersObj(c); for (var v in communs) if (!o[v]) delete communs[v]; });
+      var l = Object.keys(communs);
+      return l.length ? l[0] : null;
+    }
+
+    /* ---------- Correction ---------- */
+    var CONSIGNES = {
+      fraction: 'Calculer et donner le résultat sous forme d’une fraction irréductible.',
+      developpe: 'Développer et réduire l’expression.',
+      factorise: 'Factoriser l’expression.',
+      egal: 'Calculer.'
+    };
+
+    function verifier(type, saisie, attendu, enonce) {
+      var lu = analyser(saisie);
+      if (!lu.ok) return { etat: 'illisible', message: lu.vide ? 'Aucune réponse saisie.' : lu.erreur };
+      var ref = analyser(attendu);
+      if (!ref.ok) return { etat: 'illisible', message: 'Réponse attendue mal écrite dans le fichier : ' + ref.erreur };
+      var p = polynome(lu.arbre), q = polynome(ref.arbre);
+      var juste = egaux(p, q);
+
+      if (type === 'fraction') {
+        var f = lireFraction(lu.arbre);
+        if (!juste) {
+          var naif = erreurDenominateurs(enonce);
+          if (naif && egaux(p, naif)) return { etat: 'faux', message: 'Attention : on n’additionne jamais les dénominateurs. Il faut d’abord mettre les fractions au même dénominateur.' };
+          if (!Object.keys(p).every(function (c) { return c === ''; })) return { etat: 'faux', message: 'Le résultat ne doit pas contenir de lettre.' };
+          return { etat: 'faux', message: 'Ce n’est pas le bon résultat.' };
+        }
+        if (contientDecimal(lu.arbre)) return { etat: 'presque', message: 'La valeur est juste, mais le résultat est attendu sous forme de fraction.' };
+        if (!f) return { etat: 'presque', message: 'La valeur est juste, mais le calcul n’est pas terminé : écrire une seule fraction.' };
+        if (f.denNegatif) return { etat: 'presque', message: 'La valeur est juste, mais le signe − se place devant la fraction ou au numérateur.' };
+        if (!f.entier && f.d === 1) return { etat: 'presque', message: 'La valeur est juste : une fraction de dénominateur $1$ s’écrit simplement comme un entier.' };
+        if (!f.entier && pgcd(f.n, f.d) !== 1) {
+          return { etat: 'presque', message: 'La valeur est juste, mais la fraction n’est pas irréductible : $' + Math.abs(f.n) + '$ et $' + f.d + '$ sont tous deux divisibles par $' + pgcd(f.n, f.d) + '$.' };
+        }
+        return { etat: 'juste', message: '' };
+      }
+
+      if (type === 'developpe') {
+        if (!juste) {
+          var diff = Object.keys(padd(p, q, -1));
+          var lettres = {};
+          Object.keys(p).concat(Object.keys(q)).forEach(function (c) { Object.keys(cleVersObj(c)).forEach(function (v) { lettres[v] = 1; }); });
+          if (Object.keys(lettres).length === 1 && diff.length && diff.length <= 2) {
+            diff.sort(function (a, b) { return degre(b) - degre(a); });
+            return { etat: 'faux', message: 'Ce n’est pas le bon résultat : vérifier ' + diff.map(nomTerme).join(' et ') + '.' };
+          }
+          return { etat: 'faux', message: 'Ce n’est pas le bon résultat.' };
+        }
+        var fd = formeDeveloppee(lu.arbre);
+        if (!fd.developpee) return { etat: 'presque', message: 'L’expression est égale, mais elle n’est pas encore développée : il reste des parenthèses ou une puissance à développer.' };
+        if (!fd.reduite) return { etat: 'presque', message: 'Le développement est juste, mais il n’est pas réduit : regrouper les termes semblables.' };
+        return { etat: 'juste', message: '' };
+      }
+
+      if (type === 'factorise') {
+        if (!juste) return { etat: 'faux', message: 'En redéveloppant cette réponse, on ne retrouve pas l’expression de départ.' };
+        var e = infosProduit(lu.arbre), a = infosProduit(ref.arbre);
+        if (!e) return { etat: 'presque', message: 'L’expression est égale, mais ce n’est pas un produit.' };
+        if (a) {
+          var degMax = Math.max.apply(null, a.facteurs.map(function (x) { return Math.max.apply(null, Object.keys(x).map(degre)); }));
+          var encore = e.facteurs.some(function (x) {
+            return Math.max.apply(null, Object.keys(x).map(degre)) > degMax || lettreCommune(x);
+          }) || e.facteurs.length < a.facteurs.length;
+          if (encore) return { etat: 'presque', message: 'C’est bien un produit, mais un des facteurs peut encore être factorisé.' };
+          var ke = Math.abs(e.cst[0] / e.cst[1]), ka = Math.abs(a.cst[0] / a.cst[1]);
+          if (ke < ka) {
+            var reste = 1;
+            e.facteurs.forEach(function (x) { reste *= contenu(x); });
+            return { etat: 'presque', message: 'C’est bien un produit, mais on peut encore mettre un nombre en facteur' + (reste > 1 ? ' (par exemple $' + reste + '$)' : '') + '.' };
+          }
+        }
+        return { etat: 'juste', message: '' };
+      }
+
+      return juste ? { etat: 'juste', message: '' } : { etat: 'faux', message: 'Ce n’est pas le bon résultat.' };
+    }
+
+    // Erreur classique : (a/b) + (c/d) = (a+c)/(b+d)
+    function erreurDenominateurs(enonce) {
+      if (!enonce) return null;
+      var lu = analyser(depuisLatex(enonce));
+      if (!lu.ok) return null;
+      var t = termes(lu.arbre);
+      if (t.length < 2) return null;
+      var num = 0, den = 0;
+      for (var k = 0; k < t.length; k++) {
+        var f = lireFraction(t[k].e);
+        if (!f || f.entier) return null;
+        num += t[k].s * f.n; den += f.d;
+      }
+      return nettoyer({ '': rat(num, den) });
+    }
+
+    function apercu(saisie) {
+      var lu = analyser(saisie);
+      if (!lu.ok) return lu;
+      return { ok: true, latex: latex(lu.arbre) };
+    }
+
+    return {
+      analyser: analyser, polynome: polynome, egaux: egaux, latex: latex, latexPolynome: latexPolynome,
+      depuisLatex: depuisLatex, verifier: verifier, apercu: apercu, CONSIGNES: CONSIGNES
+    };
+  })();
+
+  /* ---------- Révisions : exercices corrigés automatiquement ---------- */
+  var EXEMPLES = { fraction: '7/12', developpe: '3x^2-5x+2', factorise: '(x+1)(x-3)', egal: '' };
+  var TOUCHES = {
+    fraction: [['/', '/'], ['−', '-'], ['(', '('], [')', ')']],
+    developpe: [['x', 'x'], ['x²', '^2'], ['(', '('], [')', ')']],
+    factorise: [['x', 'x'], ['x²', '^2'], ['(', '('], [')', ')']],
+    egal: [['x', 'x'], ['x²', '^2'], ['/', '/'], ['(', '('], [')', ')']]
+  };
+  var AIDES = {
+    fraction: 'Écrire 7/12 pour la fraction sept douzièmes.',
+    developpe: 'Écrire x^2 pour x².',
+    factorise: 'Écrire x^2 pour x², (x+1)(x-3) pour un produit.',
+    egal: 'Écrire x^2 pour x², / pour une fraction.'
+  };
+  var revs = {};
+  function idTheme(t) { return 'r-' + hachage(t.titre); }
+  function trouverTheme(ch, id) {
+    for (var i = 0; i < ch.revisions.length; i++) if (idTheme(ch.revisions[i]) === id) return ch.revisions[i];
+    return null;
+  }
+  function idExo(x) { return hachage(x.enonce + '|' + x.reponse); }
+  function memoRev(cle) { return lire('rev:' + cle) || {}; }
+  function bilanRev(cle, t) {
+    var m = memoRev(cle), b = { ok: 0, ko: 0, vide: 0 };
+    t.exercices.forEach(function (x) { var s = m[idExo(x)]; if (s && s.s === 'ok') b.ok++; else if (s) b.ko++; else b.vide++; });
+    return b;
+  }
+  function jaugeRev(b, n) {
+    var pc = function (x) { return (100 * x / n).toFixed(1) + '%'; };
+    return '<div class="jauge"><div class="jauge-barre" aria-hidden="true"><span class="jauge-sues" style="width:' + pc(b.ok) + '"></span><span class="jauge-revoir" style="width:' + pc(b.ko) + '"></span></div>' +
+      '<div class="jauge-texte"><span><b>' + b.ok + '</b> / ' + n + ' réussi' + (b.ok > 1 ? 's' : '') + '</span><span><b>' + b.ko + '</b> à retravailler</span><span><b>' + b.vide + '</b> pas encore fait' + (b.vide > 1 ? 's' : '') + '</span></div></div>';
+  }
+  function carteTheme(c, ch, t) {
+    var cle = c.dossier + '~' + ch.id + '~' + idTheme(t), b = bilanRev(cle, t), n = t.exercices.length;
+    var action = b.ok === n ? 'Tout est réussi · revoir →' : (b.ok + b.ko ? 'Continuer →' : 'Commencer →');
+    return '<a class="carte theme" data-type="revision" href="#' + esc(cle) + '" data-vue="' + esc(cle) + '">' +
+      '<h3>' + esc(t.titre) + badgeNouveau(t.ajoute) + '</h3>' + jaugeRev(b, n) +
+      '<span class="theme-lien">' + action + '</span></a>';
+  }
+  function etatRev(cle, t) {
+    var e = revs[cle];
+    if (!e) {
+      var m = memoRev(cle), i = 0;
+      for (var k = 0; k < t.exercices.length; k++) { var s = m[idExo(t.exercices[k])]; if (!s || s.s !== 'ok') { i = k; break; } }
+      e = revs[cle] = { t: t, i: i, saisie: '', verdict: null, correction: false, confirmer: false };
+    }
+    return e;
+  }
+  function apercuRev(saisie) {
+    if (!String(saisie).trim()) return '';
+    var a = Algebre.apercu(saisie);
+    return a.ok ? '<span class="lu">Lu :</span>' + formules('$' + a.latex + '$') : '<span class="rev-erreur">' + esc(a.erreur) + '</span>';
+  }
+  var VERDICTS = { juste: ['ok', 'Bonne réponse !'], presque: ['presque', 'Presque !'], faux: ['ko', 'Pas tout à fait.'], illisible: ['ko', 'Réponse illisible'] };
+  function vueRevision(c, ch, t) {
+    var cle = c.dossier + '~' + ch.id + '~' + idTheme(t), cleChap = c.dossier + '~' + ch.id;
+    var e = etatRev(cle, t), n = t.exercices.length, m = memoRev(cle), b = bilanRev(cle, t);
+    var x = t.exercices[e.i], s = m[idExo(x)], resolu = e.verdict && e.verdict.etat === 'juste';
+
+    var tt = filAriane([['Accueil', ''], [c.nom, c.dossier], [ch.titre, cleChap], [t.titre]]) +
+      '<span class="surtitre">Révisions · ' + pluriel(n, 'exercice') + '</span><h1>' + esc(t.titre) + '</h1>';
+
+    var grille = t.exercices.map(function (y, k) {
+      var st = m[idExo(y)], cls = st ? (st.s === 'ok' ? ' ok' : ' ko') : '';
+      var etiquette = 'Exercice ' + (k + 1) + (st ? (st.s === 'ok' ? ', réussi' : ', à retravailler') : '');
+      return '<button type="button" class="rev-num' + cls + '" data-action="aller" data-k="' + k + '" aria-label="' + etiquette + '"' + (k === e.i ? ' aria-current="true"' : '') + '>' + (k + 1) + '</button>';
+    }).join('');
+    var bilanHtml = '<section class="carte rev-bilan" aria-label="Ma progression">' +
+      '<div class="paquet-haut"><h2 class="titre-section">Ma progression</h2>' +
+      '<button class="bouton discret" type="button" data-action="reinitialiser">' + (e.confirmer ? 'Confirmer l’effacement ?' : 'Recommencer à zéro') + '</button></div>' +
+      jaugeRev(b, n) + '<div class="rev-grille">' + grille + '</div>' +
+      (b.ok === n ? '<div class="bravo"><strong>Bravo !</strong><span>Les ' + n + ' exercices de ce thème sont réussis.</span></div>' : '') +
+      '</section>';
+
+    var exo = '<section class="carte rev-exo" id="rev-exo" aria-labelledby="rev-titre">' +
+      '<div class="paquet-haut"><span class="qcm-num" id="rev-titre">Exercice ' + (e.i + 1) + ' / ' + n + '</span>' +
+        (s ? '<span class="etat-carte ' + (s.s === 'ok' ? 'sue' : 'revoir') + '" style="position:static">' + (s.s === 'ok' ? 'Déjà réussi' : 'À retravailler') + '</span>' : '') + '</div>' +
+      '<div class="rev-consigne">' + formules(x.consigne || Algebre.CONSIGNES[x.type] || '') + '</div>' +
+      '<div class="rev-enonce">' + formules(x.enonce) + '</div>' +
+      '<label class="rev-libelle" for="rev-saisie">Réponse</label>' +
+      '<div class="rev-champ"><input id="rev-saisie" class="rev-saisie" type="text" inputmode="text" enterkeyhint="done" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"' +
+        (EXEMPLES[x.type] ? ' placeholder="Exemple : ' + esc(EXEMPLES[x.type]) + '"' : '') + ' value="' + esc(e.saisie) + '"' + (resolu ? ' readonly' : '') + '>' +
+        '<button class="bouton plein" type="button" data-action="verifier"' + (resolu ? ' disabled' : '') + '>Vérifier</button></div>' +
+      (resolu ? '' : '<div class="rev-outils"><span class="rev-touches" role="group" aria-label="Aide à la saisie">' + (TOUCHES[x.type] || TOUCHES.egal).map(function (tc) {
+          return '<button type="button" class="rev-touche" data-action="inserer" data-texte="' + esc(tc[1]) + '">' + esc(tc[0]) + '</button>';
+        }).join('') + '</span><span class="rev-aide">' + esc(AIDES[x.type] || '') + '</span></div>') +
+      '<div class="rev-apercu" id="rev-apercu" aria-live="polite">' + apercuRev(e.saisie) + '</div>';
+    if (e.verdict) {
+      var vd = VERDICTS[e.verdict.etat];
+      exo += '<div class="verdict ' + vd[0] + '" role="status"><strong>' + vd[1] + '</strong>' + formules(e.verdict.message || '') + '</div>';
+    }
+    if (e.correction || resolu) {
+      var attendu = Algebre.apercu(x.reponse);
+      exo += '<div class="rev-correction"><strong>Correction</strong>' +
+        (x.correction ? '<div>' + formules(x.correction) + '</div>' : '') +
+        (attendu.ok ? '<div>Réponse attendue : ' + formules('$' + attendu.latex + '$') + '</div>' : '') + '</div>';
+    }
+    exo += '<div class="rev-bas">' +
+      (!e.correction && !resolu ? '<button class="bouton discret" type="button" data-action="correction">Voir la correction</button>' : '') +
+      '<span class="rev-nav"><button class="bouton" type="button" data-action="precedent"' + (e.i === 0 ? ' disabled' : '') + '>← Précédent</button>' +
+      '<button class="bouton' + (resolu ? ' plein' : '') + '" type="button" data-action="suivant"' + (e.i === n - 1 ? ' disabled' : '') + '>Suivant →</button></span></div>' +
+      '</section>';
+
+    return { tete: tt, corps: '<div class="rev" data-rev="' + esc(cle) + '">' + exo + bilanHtml + '</div>' };
+  }
+  function saisieRev(champSaisie) {
+    var bloc = champSaisie.closest('[data-rev]'), e = bloc && revs[bloc.getAttribute('data-rev')];
+    if (!e) return;
+    e.saisie = champSaisie.value;
+    var ap = document.getElementById('rev-apercu');
+    if (ap) ap.innerHTML = apercuRev(e.saisie);
+  }
+  function actionRev(bloc, action, bouton) {
+    var cle = bloc.getAttribute('data-rev'), e = revs[cle];
+    if (!e) return;
+    var t = e.t, x = t.exercices[e.i], champSaisie = document.getElementById('rev-saisie');
+    if (champSaisie) e.saisie = champSaisie.value;
+    var focus = null, defiler = false;
+
+    if (action === 'inserer') {
+      if (!champSaisie || champSaisie.readOnly) return;
+      var txt = bouton.getAttribute('data-texte'), a = champSaisie.selectionStart, z = champSaisie.selectionEnd;
+      if (a == null) { a = z = champSaisie.value.length; }
+      champSaisie.value = champSaisie.value.slice(0, a) + txt + champSaisie.value.slice(z);
+      champSaisie.focus();
+      try { champSaisie.setSelectionRange(a + txt.length, a + txt.length); } catch (err) {}
+      saisieRev(champSaisie);
+      return;
+    }
+    if (action !== 'reinitialiser') e.confirmer = false;
+    var m = memoRev(cle), id = idExo(x);
+
+    if (action === 'verifier') {
+      var v = Algebre.verifier(x.type, e.saisie, x.reponse, x.enonce);
+      e.verdict = v;
+      if (v.etat !== 'illisible') {
+        var st = m[id] || { s: 'ko', e: 0 };
+        st.e = (st.e || 0) + 1;
+        if (v.etat === 'juste' && !e.correction) st.s = 'ok';
+        else if (st.s !== 'ok') st.s = e.correction ? 'aide' : 'ko';
+        st.d = new Date().toISOString().slice(0, 10);
+        m[id] = st;
+        ecrire('rev:' + cle, m);
+      }
+      focus = v.etat === 'juste' ? '[data-action="suivant"]' : '#rev-saisie';
+    } else if (action === 'correction') {
+      e.correction = true;
+      if (!m[id] || m[id].s !== 'ok') { m[id] = { s: 'aide', e: (m[id] && m[id].e) || 0, d: new Date().toISOString().slice(0, 10) }; ecrire('rev:' + cle, m); }
+    } else if (action === 'suivant' || action === 'precedent' || action === 'aller') {
+      var k = action === 'aller' ? Number(bouton.getAttribute('data-k')) : e.i + (action === 'suivant' ? 1 : -1);
+      if (k < 0 || k >= t.exercices.length) return;
+      e.i = k; e.saisie = ''; e.verdict = null; e.correction = false;
+      focus = '#rev-saisie'; defiler = action === 'aller';
+    } else if (action === 'reinitialiser') {
+      if (!e.confirmer) e.confirmer = true;
+      else { effacer('rev:' + cle); delete revs[cle]; etatRev(cle, t); }
+    }
+    rendre(true);
+    if (defiler) { var ex = document.getElementById('rev-exo'); if (ex) ex.scrollIntoView({ block: 'start' }); }
+    if (focus) { var cible = document.querySelector(focus); if (cible && !cible.disabled) cible.focus({ preventScroll: !defiler }); }
+  }
+
   /* ---------- Impression ---------- */
   var zoneImpression = document.getElementById('impression');
   function imprimer(html) {
@@ -866,6 +1500,12 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
           '<div class="docs larges">' + ch.paquets.map(function (p, k) { return cartePaquet(cle0 + '~f' + k + '~' + hachage(p.titre), p); }).join('') + '</div></section>';
         return;
       }
+      if (t === 'revision') {
+        if (!ch.revisions.length) return;
+        html += '<section class="groupe" data-type="revision"><h2 class="groupe-titre"><span class="pastille" aria-hidden="true"></span>Révisions</h2>' +
+          '<div class="themes">' + ch.revisions.map(function (th) { return carteTheme(c, ch, th); }).join('') + '</div></section>';
+        return;
+      }
       if (t === 'qcm') {
         if (!ch.qcms.length) return;
         html += '<section class="groupe" data-type="qcm"><h2 class="groupe-titre"><span class="pastille" aria-hidden="true"></span>QCM</h2>' +
@@ -876,7 +1516,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       html += '<section class="groupe" data-type="' + t + '"><h2 class="groupe-titre"><span class="pastille" aria-hidden="true"></span>' + TYPES[t].label + '</h2>' +
         '<div class="docs">' + groupes[t].map(carteDoc).join('') + '</div></section>';
     });
-    if (!ch.documents.length && !ch.paquets.length && !ch.qcms.length) html += '<p class="carte vide">Les documents de ce chapitre arrivent bientôt.</p>';
+    if (!ch.documents.length && !ch.paquets.length && !ch.qcms.length && !ch.revisions.length) html += '<p class="carte vide">Les documents de ce chapitre arrivent bientôt.</p>';
     return { tete: t, corps: html + '</div>' };
   }
 
@@ -900,6 +1540,9 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
         });
         ch.paquets.forEach(function (p) {
           if (test('flashcards ' + p.titre + ' ' + lieu + ' ' + p.cartes.map(function (k) { return k.q + ' ' + k.r; }).join(' '))) res.push({ type: 'flashcards', titre: p.titre, lieu: lieu, cible: cible });
+        });
+        ch.revisions.forEach(function (x) {
+          if (test('revisions exercices ' + x.titre + ' ' + lieu)) res.push({ type: 'revision', titre: x.titre, lieu: lieu, cible: cible + '~' + idTheme(x) });
         });
         ch.qcms.forEach(function (x) {
           if (test('qcm quiz ' + x.titre + ' ' + lieu + ' ' + x.questions.map(function (k) { return k.q; }).join(' '))) res.push({ type: 'qcm', titre: x.titre, lieu: lieu, cible: cible });
@@ -933,6 +1576,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     var parts = vue.split('~');
     var c = trouverClasse(parts[0]);
     var ch = c && parts[1] ? trouverChapitre(c, parts[1]) : null;
+    var th = ch && parts[2] ? trouverTheme(ch, parts[2]) : null;
 
     Array.prototype.forEach.call(document.querySelectorAll('#nav a'), function (a) {
       var v = a.getAttribute('data-vue');
@@ -941,17 +1585,20 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
 
     var titre = D.reglages.matiere, r;
     if (q.length >= 2) r = vueRecherche(q);
+    else if (c && ch && th) { r = vueRevision(c, ch, th); titre = th.titre + ' · Révisions · ' + c.nom; }
     else if (c && ch) { r = vueChapitre(c, ch); titre = ch.titre + ' · ' + c.nom; }
     else if (c) { r = vueClasse(c); titre = c.nom + ' · ' + D.reglages.matiere; }
     else if (vue === 'methodologie' && D.textes.methodologie.trim()) { r = vueMethodologie(); titre = 'Méthodologie · ' + D.reglages.matiere; }
     else r = vueAccueil();
 
-    var y = window.scrollY;
+    var y = window.scrollY, actif = document.activeElement, curseur = null;
+    if (actif && actif.id === 'rev-saisie') { try { curseur = actif.selectionStart; } catch (e) {} }
     tete.innerHTML = r.tete;
     tete.className = 'enveloppe tete' + (r.haute ? ' haute' : '');
     contenu.className = 'enveloppe' + (r.haute ? ' chevauche' : '');
     contenu.innerHTML = r.corps;
     if (garderPosition === true) window.scrollTo(0, y);
+    if (curseur != null) { var nv = document.getElementById('rev-saisie'); if (nv && !nv.readOnly) { nv.focus({ preventScroll: true }); try { nv.setSelectionRange(curseur, curseur); } catch (e) {} } }
     document.title = titre + ' · ' + D.reglages.etablissement;
   }
 
@@ -974,12 +1621,20 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     var bloc = b.closest('[data-paquet]');
     if (bloc) { actionPaquet(bloc, b.getAttribute('data-action')); return; }
     bloc = b.closest('[data-qcm]');
-    if (bloc) actionQcm(bloc, b.getAttribute('data-action'), b);
+    if (bloc) { actionQcm(bloc, b.getAttribute('data-action'), b); return; }
+    bloc = b.closest('[data-rev]');
+    if (bloc) actionRev(bloc, b.getAttribute('data-action'), b);
+  });
+  contenu.addEventListener('input', function (e) {
+    if (e.target.id === 'rev-saisie') saisieRev(e.target);
+  });
+  contenu.addEventListener('keydown', function (e) {
+    if (e.target.id === 'rev-saisie' && e.key === 'Enter') { e.preventDefault(); var bloc = e.target.closest('[data-rev]'); if (bloc) actionRev(bloc, 'verifier'); }
   });
 
   function demarrer(donnees) {
     D = donnees;
-    D.classes.forEach(function (c) { c.chapitres.forEach(function (ch) { ch.paquets = ch.paquets || []; ch.qcms = ch.qcms || []; ch.essentiel = ch.essentiel || ''; }); c.progression = c.progression || ''; });
+    D.classes.forEach(function (c) { c.chapitres.forEach(function (ch) { ch.paquets = ch.paquets || []; ch.qcms = ch.qcms || []; ch.revisions = ch.revisions || []; ch.essentiel = ch.essentiel || ''; }); c.progression = c.progression || ''; });
     D.textes.methodologie = D.textes.methodologie || '';
     var r = D.reglages;
     document.getElementById('nom-site').textContent = r.matiere;
