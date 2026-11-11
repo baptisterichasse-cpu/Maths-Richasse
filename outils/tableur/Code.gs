@@ -1,18 +1,20 @@
 /**
- * Boîte aux lettres des progressions — site de mathématiques de M. Richasse
+ * Suivi des élèves — site de mathématiques de M. Richasse
  *
- * Onglet « Élèves » : une ligne par élève.
- *   A Numéro (facultatif, ex. A07)  B Nom  C Classe (Seconde, Maths expertes…)  D Code d'accès
- *   Menu Progression > Créer les codes manquants remplit la colonne D.
- *   Seuls les codes de cet onglet sont acceptés par le site.
- * Onglets « Synthèse … » : une ligne par élève, mis à jour à chaque envoi.
- *   vert   = maîtrisé (au moins 80 % réussi)
- *   orange = commencé, à retravailler
- *   gris   = pas encore commencé
+ * UN ONGLET PAR CLASSE (menu Progression > Ajouter une classe), par exemple « Seconde 5 ».
+ *   Colonnes A à C, à remplir à partir de la ligne 3 :
+ *     A Numéro (facultatif)   B Nom   C Code d'accès (menu Progression > Créer les codes manquants)
+ *   Colonnes D et suivantes : remplies automatiquement à chaque envoi d'un élève.
+ *     D Dernier envoi, puis une colonne par activité commencée dans la classe.
+ *     vert   = maîtrisé (au moins 80 % réussi)
+ *     orange = commencé, à retravailler
+ *     gris   = pas encore commencé
+ *   Ne rien écrire à la main à partir de la colonne D : c'est effacé à chaque mise à jour.
  * Onglet « Envois » : la trace de chaque envoi (ne pas le modifier).
  *
- * Un élève qui travaille sur plusieurs appareils (téléphone, ordinateur) utilise
- * le même code partout : ses exercices réussis sont réunis dans la synthèse.
+ * Seuls les codes présents dans un onglet de classe sont acceptés par le site.
+ * Un élève qui travaille sur plusieurs appareils utilise le même code partout :
+ * ses exercices réussis sont réunis.
  */
 
 // Part réussie à partir de laquelle une case devient verte (0,8 = 80 %).
@@ -22,30 +24,73 @@ var JOURS_SANS_ENVOI = 8;
 
 var COULEURS = { vert: '#c6ebd4', orange: '#fde2b3', gris: '#eeeff2', blanc: '#ffffff', entete: '#1c2232', texteEntete: '#ffffff', groupe: '#dfe3ec' };
 var LETTRES_CODE = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // sans I, L, O, 0, 1 pour éviter les confusions
+var PREMIERE_LIGNE = 3; // première ligne d'élève
+var COL_FIXES = 3;      // Numéro, Nom, Code
 
 /* ---------- Menu du tableur ---------- */
 
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('Progression')
+    .addItem('Ajouter une classe', 'ajouterClasse')
     .addItem('Créer les codes manquants', 'creerCodes')
-    .addItem('Mettre à jour les synthèses', 'majSyntheses')
+    .addItem('Mettre à jour la progression', 'majProgression')
     .addToUi();
 }
 
-function creerCodes() {
-  var classeur = SpreadsheetApp.getActiveSpreadsheet();
-  var f = feuilleEleves(classeur), n = f.getLastRow() - 1;
-  if (n < 1) { SpreadsheetApp.getUi().alert('Ajoutez d’abord les élèves dans l’onglet « Élèves » (au moins le nom ou le numéro).'); return; }
-  var lignes = f.getRange(2, 1, n, 4).getValues(), existants = {}, crees = 0;
-  lignes.forEach(function (l) { if (l[3]) existants[normaliserCode(l[3])] = true; });
-  lignes.forEach(function (l) {
-    if (l[3] || !(String(l[0]).trim() || String(l[1]).trim())) return;
-    var code;
-    do { code = nouveauCode(String(l[0]).trim()); } while (existants[code]);
-    existants[code] = true; l[3] = code; crees++;
+function ajouterClasse() {
+  var ui = SpreadsheetApp.getUi(), classeur = SpreadsheetApp.getActiveSpreadsheet();
+  var rep = ui.prompt('Ajouter une classe', 'Nom de la classe (par exemple : Seconde 5)', ui.ButtonSet.OK_CANCEL);
+  if (rep.getSelectedButton() !== ui.Button.OK) return;
+  var nom = String(rep.getResponseText()).trim();
+  if (!nom) return;
+  if (classeur.getSheetByName(nom)) { ui.alert('Un onglet « ' + nom + ' » existe déjà.'); return; }
+  var f = classeur.insertSheet(nom, 0);
+  f.getRange(1, 1, 2, COL_FIXES + 1).setValues([['Élève', '', '', ''], ['Numéro', 'Nom', 'Code', 'Dernier envoi']]);
+  f.getRange('A:A').setNumberFormat('@');
+  f.getRange('C:C').setNumberFormat('@');
+  miseEnFormeEntetes(f, COL_FIXES + 1);
+  f.setColumnWidth(1, 80); f.setColumnWidth(2, 200); f.setColumnWidth(3, 110); f.setColumnWidth(4, 110);
+  f.setActiveSelection('A3');
+  ui.alert('Onglet « ' + nom + ' » créé. Saisissez les élèves à partir de la ligne 3 (numéro facultatif, nom), puis lancez Progression > Créer les codes manquants.');
+}
+
+function miseEnFormeEntetes(f, nbC) {
+  f.getRange(1, 1, 1, nbC).setBackground(COULEURS.entete).setFontColor(COULEURS.texteEntete).setFontWeight('bold').setHorizontalAlignment('center');
+  f.getRange(2, 1, 1, nbC).setBackground(COULEURS.groupe).setFontWeight('bold').setHorizontalAlignment('center').setVerticalAlignment('middle').setWrap(true);
+  f.getRange(1, 1, 1, COL_FIXES).merge();
+  f.setFrozenRows(2);
+  f.setFrozenColumns(COL_FIXES);
+  f.setRowHeight(2, 48);
+}
+
+// Un onglet de classe se reconnaît à ses en-têtes « Numéro » (A2) et « Code » (C2).
+function ongletsClasses(classeur) {
+  return classeur.getSheets().filter(function (f) {
+    return String(f.getRange(2, 1).getValue()).trim() === 'Numéro' && String(f.getRange(2, 3).getValue()).trim().indexOf('Code') === 0;
   });
-  f.getRange(2, 1, n, 4).setValues(lignes);
-  SpreadsheetApp.getUi().alert(crees ? crees + ' code(s) créé(s) dans la colonne D.' : 'Tous les élèves ont déjà un code.');
+}
+
+function lignesEleves(f) {
+  var n = f.getLastRow() - PREMIERE_LIGNE + 1;
+  return n > 0 ? f.getRange(PREMIERE_LIGNE, 1, n, COL_FIXES).getValues() : [];
+}
+
+function creerCodes() {
+  var ui = SpreadsheetApp.getUi(), classeur = SpreadsheetApp.getActiveSpreadsheet(), onglets = ongletsClasses(classeur);
+  if (!onglets.length) { ui.alert('Ajoutez d’abord une classe : Progression > Ajouter une classe.'); return; }
+  var existants = {}, crees = 0, tout = onglets.map(function (f) { return { f: f, lignes: lignesEleves(f) }; });
+  tout.forEach(function (t) { t.lignes.forEach(function (l) { if (l[2]) existants[normaliserCode(l[2])] = true; }); });
+  tout.forEach(function (t) {
+    var change = false;
+    t.lignes.forEach(function (l) {
+      if (l[2] || !(String(l[0]).trim() || String(l[1]).trim())) return;
+      var code;
+      do { code = nouveauCode(String(l[0]).trim()); } while (existants[code]);
+      existants[code] = true; l[2] = code; crees++; change = true;
+    });
+    if (change) t.f.getRange(PREMIERE_LIGNE, 1, t.lignes.length, COL_FIXES).setValues(t.lignes);
+  });
+  ui.alert(crees ? crees + ' code(s) créé(s) dans la colonne C.' : 'Aucun code à créer : chaque élève saisi a déjà le sien.');
 }
 
 function nouveauCode(numero) {
@@ -57,14 +102,23 @@ function nouveauCode(numero) {
 
 function normaliserCode(c) { return String(c || '').toUpperCase().replace(/[^A-Z0-9-]/g, ''); }
 
+// Tous les codes valides : { CODE: nom de la classe }
+function lireCodes(classeur) {
+  var codes = {};
+  ongletsClasses(classeur).forEach(function (f) {
+    lignesEleves(f).forEach(function (l) { var c = normaliserCode(l[2]); if (c) codes[c] = f.getName(); });
+  });
+  return codes;
+}
+
 /* ---------- Réception ---------- */
 
 // Vérification d'un code par le site : ?code=A07-K4PZ
 function doGet(e) {
   var code = normaliserCode(e && e.parameter && e.parameter.code);
   if (!code) return ContentService.createTextOutput('La boîte aux lettres fonctionne. Les élèves peuvent envoyer leur progression.');
-  var el = lireEleves(SpreadsheetApp.getActiveSpreadsheet())[code];
-  return repondre(el ? { ok: true, classe: el.classe } : { ok: false });
+  var classe = lireCodes(SpreadsheetApp.getActiveSpreadsheet())[code];
+  return repondre(classe ? { ok: true, classe: classe } : { ok: false });
 }
 
 function doPost(e) {
@@ -74,10 +128,10 @@ function doPost(e) {
     var d = JSON.parse(e.postData.contents);
     var code = normaliserCode(d && d.code);
     if (!code || !d.progression) throw new Error('Envoi incomplet');
-    var classeur = SpreadsheetApp.getActiveSpreadsheet();
-    if (!lireEleves(classeur)[code]) return repondre({ ok: false, erreur: 'code inconnu' });
-    feuilleEnvois(classeur).appendRow([new Date(), code, String(d.classe || '').slice(0, 40), String(d.appareil || '').slice(0, 20), JSON.stringify(d.progression)]);
-    majSyntheses(classeur);
+    var classeur = SpreadsheetApp.getActiveSpreadsheet(), classe = lireCodes(classeur)[code];
+    if (!classe) return repondre({ ok: false, erreur: 'code inconnu' });
+    feuilleEnvois(classeur).appendRow([new Date(), code, classe, String(d.appareil || '').slice(0, 20), JSON.stringify(d.progression)]);
+    majProgression(classeur);
     return repondre({ ok: true });
   } catch (err) {
     return repondre({ ok: false, erreur: String(err && err.message || err) });
@@ -90,12 +144,10 @@ function repondre(objet) {
   return ContentService.createTextOutput(JSON.stringify(objet)).setMimeType(ContentService.MimeType.JSON);
 }
 
-/* ---------- Onglets ---------- */
-
 function feuilleEnvois(classeur) {
   var f = classeur.getSheetByName('Envois');
   if (f) return f;
-  f = classeur.insertSheet('Envois');
+  f = classeur.insertSheet('Envois', classeur.getNumSheets());
   f.appendRow(['Date', 'Code', 'Classe', 'Appareil', 'Progression (données brutes)']);
   f.getRange('A:A').setNumberFormat('dd/mm/yyyy hh:mm');
   f.getRange('B:B').setNumberFormat('@');
@@ -104,142 +156,101 @@ function feuilleEnvois(classeur) {
   return f;
 }
 
-function feuilleEleves(classeur) {
-  var f = classeur.getSheetByName('Élèves');
-  if (f) return f;
-  f = classeur.insertSheet('Élèves', 0);
-  f.appendRow(['Numéro (facultatif)', 'Nom', 'Classe', 'Code d’accès']);
-  f.getRange('A:A').setNumberFormat('@');
-  f.getRange('D:D').setNumberFormat('@');
-  f.getRange(1, 1, 1, 4).setFontWeight('bold').setBackground(COULEURS.groupe);
-  f.setFrozenRows(1);
-  f.setColumnWidth(1, 130); f.setColumnWidth(2, 220); f.setColumnWidth(3, 140); f.setColumnWidth(4, 130);
-  return f;
-}
+/* ---------- Mise à jour des onglets de classe ---------- */
 
-function lireEleves(classeur) {
-  var f = classeur.getSheetByName('Élèves'), eleves = {};
-  if (!f || f.getLastRow() < 2) return eleves;
-  f.getRange(2, 1, f.getLastRow() - 1, 4).getValues().forEach(function (l) {
-    var code = normaliserCode(l[3]);
-    if (code) eleves[code] = { code: code, numero: String(l[0]).trim(), nom: String(l[1]).trim(), classe: String(l[2]).trim() };
-  });
-  return eleves;
-}
-
-/* ---------- Mise à jour des synthèses ---------- */
-
-function majSyntheses(classeur) {
+function majProgression(classeur) {
   classeur = classeur && classeur.getSheetByName ? classeur : SpreadsheetApp.getActiveSpreadsheet();
-  var f = feuilleEnvois(classeur);
-  var lignes = f.getLastRow() > 1 ? f.getRange(2, 1, f.getLastRow() - 1, 5).getValues() : [];
+  var fe = feuilleEnvois(classeur);
+  var brut = fe.getLastRow() > 1 ? fe.getRange(2, 1, fe.getLastRow() - 1, 5).getValues() : [];
   var envois = [];
-  lignes.forEach(function (l) {
-    try { envois.push({ date: new Date(l[0]), code: String(l[1]), classe: String(l[2]), appareil: String(l[3]), progression: JSON.parse(l[4]) }); } catch (err) {}
+  brut.forEach(function (l) {
+    try { envois.push({ date: new Date(l[0]), code: normaliserCode(l[1]), appareil: String(l[3]), progression: JSON.parse(l[4]) }); } catch (err) {}
   });
-  construireSyntheses(envois, new Date(), lireEleves(classeur)).forEach(function (s) { ecrireSynthese(classeur, s); });
+  ongletsClasses(classeur).forEach(function (f) {
+    var codes = lignesEleves(f).map(function (l) { return normaliserCode(l[2]); });
+    ecrireClasse(f, calculerClasse(codes, envois, new Date()));
+  });
 }
 
-function ecrireSynthese(classeur, s) {
-  var nom = 'Synthèse ' + s.classe;
-  var f = classeur.getSheetByName(nom) || classeur.insertSheet(nom, 1);
-  f.clear();
-  f.getRange(1, 1, f.getMaxRows(), f.getMaxColumns()).breakApart();
-  var nbL = s.valeurs.length, nbC = s.valeurs[0].length, dc = s.colonneDate;
-  f.getRange(1, 1, nbL, nbC).setValues(s.valeurs).setBackgrounds(s.couleurs).setVerticalAlignment('middle');
-  f.getRange(1, 1, 2, nbC).setFontWeight('bold');
-  f.getRange(1, 1, 1, nbC).setFontColor(COULEURS.texteEntete).setHorizontalAlignment('center');
-  f.getRange(2, 1, 1, nbC).setWrap(true).setHorizontalAlignment('center');
-  if (nbL > 2) {
-    f.getRange(3, dc, nbL - 2, nbC - dc + 1).setHorizontalAlignment('center');
-    f.getRange(3, dc, nbL - 2, 1).setNumberFormat('dd/mm/yyyy');
+function ecrireClasse(f, t) {
+  var debut = COL_FIXES + 1, nbC = t.entetes1.length, nbL = t.lignes.length;
+  var aEffacer = Math.max(f.getLastColumn() - COL_FIXES, nbC);
+  if (f.getMaxColumns() < COL_FIXES + aEffacer) f.insertColumnsAfter(f.getMaxColumns(), COL_FIXES + aEffacer - f.getMaxColumns());
+  var zone = f.getRange(1, debut, f.getMaxRows(), aEffacer);
+  zone.breakApart(); zone.clearContent(); zone.setBackground(null); zone.clearNote();
+  f.getRange(1, debut, 2, nbC).setValues([t.entetes1, t.entetes2]);
+  f.getRange(1, 1, 1, COL_FIXES).breakApart();
+  miseEnFormeEntetes(f, COL_FIXES + nbC);
+  t.groupes.forEach(function (g) { if (g.largeur > 1) f.getRange(1, debut + g.colonne, 1, g.largeur).merge(); });
+  if (nbL) {
+    var plage = f.getRange(PREMIERE_LIGNE, debut, nbL, nbC);
+    plage.setValues(t.lignes).setBackgrounds(t.couleurs).setHorizontalAlignment('center').setVerticalAlignment('middle');
+    f.getRange(PREMIERE_LIGNE, debut, nbL, 1).setNumberFormat('dd/mm/yyyy');
   }
-  s.groupes.forEach(function (g) { if (g.largeur > 1) f.getRange(1, g.colonne, 1, g.largeur).merge(); });
-  f.setFrozenRows(2);
-  f.setFrozenColumns(dc);
-  f.setColumnWidth(1, 90); f.setColumnWidth(2, 200); f.setColumnWidth(3, 110);
-  for (var c = dc + 1; c <= nbC; c++) f.setColumnWidth(c, 130);
-  f.setRowHeight(2, 48);
-  f.getRange(nbL + 2, 1, 1, Math.min(nbC, 6)).merge()
-    .setValue('Vert : maîtrisé (au moins ' + Math.round(SEUIL * 100) + ' %)  ·  Orange : à retravailler  ·  Gris : pas commencé  ·  Date en orange : aucun envoi depuis plus de ' + JOURS_SANS_ENVOI + ' jours')
-    .setFontStyle('italic').setFontColor('#5a6172');
+  for (var c = 1; c < nbC; c++) f.setColumnWidth(debut + c, 130);
+  f.getRange(2, debut).setNote('Vert : maîtrisé (au moins ' + Math.round(SEUIL * 100) + ' %). Orange : à retravailler. Gris : pas commencé. Date en orange : aucun envoi depuis plus de ' + JOURS_SANS_ENVOI + ' jours.');
 }
 
 /* ---------- Calcul (sans Google, testable) ---------- */
 
-function construireSyntheses(envois, maintenant, eleves) {
-  eleves = eleves || {};
+// codes : le code de chaque ligne de l'onglet, dans l'ordre ('' si la ligne n'en a pas)
+function calculerClasse(codes, envois, maintenant) {
   // Dernier envoi de chaque appareil, puis réunion des appareils de chaque élève
-  var parAppareil = {};
+  var parAppareil = {}, parCode = {}, present = {};
+  codes.forEach(function (c) { if (c) present[c] = true; });
   envois.forEach(function (e) {
-    if (!eleves[e.code]) return; // code retiré de la liste
-    e.classe = eleves[e.code].classe || e.classe || 'Sans classe';
-    var cle = e.code + '|' + e.classe + '|' + (e.appareil || '');
+    if (!present[e.code]) return;
+    var cle = e.code + '|' + (e.appareil || '');
     if (!parAppareil[cle] || parAppareil[cle].date <= e.date) parAppareil[cle] = e;
   });
-  var parClasse = {};
   Object.keys(parAppareil).forEach(function (k) {
-    var e = parAppareil[k], c = parClasse[e.classe] = parClasse[e.classe] || {};
-    c[e.code] = c[e.code] ? reunir(c[e.code], e) : e;
-  });
-  // Élèves de la liste qui n'ont encore rien envoyé
-  Object.keys(eleves).forEach(function (code) {
-    var el = eleves[code];
-    if (!el.classe) return;
-    var classe = Object.keys(parClasse).filter(function (c) { return c.toLowerCase() === el.classe.toLowerCase(); })[0] || el.classe;
-    var c = parClasse[classe] = parClasse[classe] || {};
-    if (!c[code]) c[code] = { code: code, classe: classe, date: null, progression: { revisions: [], qcm: [], flashcards: [] } };
+    var e = parAppareil[k];
+    parCode[e.code] = parCode[e.code] ? reunir(parCode[e.code], e) : e;
   });
 
-  return Object.keys(parClasse).sort().map(function (classe) {
-    var lignesEleves = Object.keys(parClasse[classe]).map(function (k) { return parClasse[classe][k]; });
-    var info = function (e) { return eleves[e.code] || { numero: '', nom: '' }; };
-    lignesEleves.sort(function (a, b) {
-      var na = info(a).numero || info(a).nom || a.code, nb = info(b).numero || info(b).nom || b.code;
-      return na.localeCompare(nb, 'fr', { numeric: true, sensitivity: 'base' });
-    });
-
-    // Colonnes : toutes les activités rencontrées, révisions puis QCM puis flashcards
-    var colonnes = [], vues = {};
-    [['revisions', 'Révisions'], ['qcm', 'QCM'], ['flashcards', 'Flashcards']].forEach(function (g) {
-      lignesEleves.forEach(function (e) {
-        (e.progression[g[0]] || []).forEach(function (x) {
-          var cle = g[0] + '|' + x.chapitre + '|' + x.titre;
-          if (vues[cle]) return;
-          vues[cle] = true;
-          colonnes.push({ genre: g[0], groupe: g[1], chapitre: x.chapitre, titre: x.titre, cle: cle });
-        });
+  // Colonnes : les activités commencées par au moins un élève de la classe
+  var colonnes = [], vues = {};
+  [['revisions', 'Révisions'], ['qcm', 'QCM'], ['flashcards', 'Flashcards']].forEach(function (g) {
+    codes.forEach(function (code) {
+      var e = parCode[code];
+      if (!e) return;
+      (e.progression[g[0]] || []).forEach(function (x) {
+        var cle = g[0] + '|' + x.chapitre + '|' + x.titre;
+        if (vues[cle] || cellule(g[0], x).couleur === 'gris') return;
+        vues[cle] = true;
+        colonnes.push({ genre: g[0], groupe: g[1], chapitre: x.chapitre, titre: x.titre, cle: cle });
       });
     });
+  });
 
-    var l1 = ['Élève', '', ''], l2 = ['Numéro', 'Nom', 'Dernier envoi'], depart = 3, groupes = [{ nom: 'Élève', colonne: 1, largeur: depart }];
-    var c1 = [COULEURS.entete, COULEURS.entete, COULEURS.entete], c2 = [COULEURS.groupe, COULEURS.groupe, COULEURS.groupe];
-    colonnes.forEach(function (col, k) {
-      var nouveau = !colonnes[k - 1] || colonnes[k - 1].groupe !== col.groupe;
-      if (nouveau) groupes.push({ nom: col.groupe, colonne: k + depart + 1, largeur: 0 });
-      groupes[groupes.length - 1].largeur++;
-      l1.push(nouveau ? col.groupe : '');
-      l2.push(col.genre === 'revisions' ? col.titre : col.chapitre + ' · ' + col.titre);
-      c1.push(COULEURS.entete); c2.push(COULEURS.groupe);
-    });
+  var entetes1 = [''], entetes2 = ['Dernier envoi'], groupes = [];
+  colonnes.forEach(function (col, k) {
+    var nouveau = !k || colonnes[k - 1].groupe !== col.groupe;
+    if (nouveau) groupes.push({ nom: col.groupe, colonne: k + 1, largeur: 0 });
+    groupes[groupes.length - 1].largeur++;
+    entetes1.push(nouveau ? col.groupe : '');
+    entetes2.push(col.genre === 'revisions' ? col.titre : col.chapitre + ' · ' + col.titre);
+  });
 
-    var valeurs = [l1, l2], couleurs = [c1, c2];
-    lignesEleves.forEach(function (e) {
+  var lignes = [], couleurs = [];
+  codes.forEach(function (code) {
+    var e = parCode[code], ligne, teintes;
+    if (!code) { ligne = colonnes.map(function () { return ''; }); ligne.unshift(''); teintes = ligne.map(function () { return COULEURS.blanc; }); }
+    else {
       var index = {};
-      ['revisions', 'qcm', 'flashcards'].forEach(function (g) {
+      if (e) ['revisions', 'qcm', 'flashcards'].forEach(function (g) {
         (e.progression[g] || []).forEach(function (x) { index[g + '|' + x.chapitre + '|' + x.titre] = x; });
       });
-      var alerte = !e.date || (maintenant - e.date) / 86400000 > JOURS_SANS_ENVOI;
-      var ligne = [info(e).numero || e.code, info(e).nom, e.date || 'jamais'];
-      var teintes = [COULEURS.blanc, COULEURS.blanc, alerte ? COULEURS.orange : COULEURS.blanc];
+      var alerte = !e || (maintenant - e.date) / 86400000 > JOURS_SANS_ENVOI;
+      ligne = [e ? e.date : 'jamais']; teintes = [alerte ? COULEURS.orange : COULEURS.blanc];
       colonnes.forEach(function (col) {
         var cel = cellule(col.genre, index[col.cle]);
         ligne.push(cel.texte); teintes.push(COULEURS[cel.couleur]);
       });
-      valeurs.push(ligne); couleurs.push(teintes);
-    });
-    return { classe: classe, valeurs: valeurs, couleurs: couleurs, groupes: groupes, colonneDate: depart };
+    }
+    lignes.push(ligne); couleurs.push(teintes);
   });
+  return { entetes1: entetes1, entetes2: entetes2, groupes: groupes, lignes: lignes, couleurs: couleurs };
 }
 
 // Réunit deux envois d'un même élève venant d'appareils différents
@@ -261,7 +272,7 @@ function reunir(a, b) {
       else y.sues = Math.max(y.sues, x.sues);
     });
   });
-  return { date: a.date > b.date ? a.date : b.date, code: a.code, classe: a.classe, progression: p };
+  return { date: a.date > b.date ? a.date : b.date, code: a.code, progression: p };
 }
 
 function union(a, b) {
@@ -289,4 +300,4 @@ function cellule(genre, x) {
   return { texte: texte, couleur: !fait ? 'gris' : (part >= SEUIL ? 'vert' : 'orange') };
 }
 
-if (typeof module !== 'undefined') module.exports = { construireSyntheses: construireSyntheses, cellule: cellule, nouveauCode: nouveauCode, normaliserCode: normaliserCode };
+if (typeof module !== 'undefined') module.exports = { calculerClasse: calculerClasse, cellule: cellule, nouveauCode: nouveauCode, normaliserCode: normaliserCode };

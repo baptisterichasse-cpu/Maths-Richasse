@@ -1932,7 +1932,8 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
   function classeDeLEleve() {
     var n = norm(lire('eleve:classe') || '');
     if (!n) return null;
-    return D.classes.filter(function (c) { return c.type !== 'revisions' && (norm(c.nom) === n || norm(c.dossier) === n); })[0] || null;
+    // « Seconde 5 » dans le tableur correspond à la classe « Seconde » du site
+    return D.classes.filter(function (c) { return c.type !== 'revisions' && (n.indexOf(norm(c.nom)) === 0 || n.indexOf(norm(c.dossier)) === 0); })[0] || null;
   }
   // Révisions de toutes les classes + QCM et flashcards de la classe de l'élève
   function progressionEleve(cPage) {
