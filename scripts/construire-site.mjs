@@ -205,7 +205,7 @@ async function main() {
   const donnees = {
     genere: new Date().toISOString(),
     aujourdhui: AUJOURDHUI,
-    reglages: { matiere: reglages.matiere, etablissement: reglages.etablissement, email: reglages.email || '', professeur: reglages.professeur || '', envoi: reglages.envoi_progression || '' },
+    reglages: { matiere: reglages.matiere, titre: reglages.titre || reglages.matiere, etablissement: reglages.etablissement, email: reglages.email || '', professeur: reglages.professeur || '', envoi: reglages.envoi_progression || '' },
     textes: {
       presentation: await lireTexte(path.join(RACINE, 'textes', 'presentation.md')),
       annonces: await lireTexte(path.join(RACINE, 'textes', 'annonces.md')),

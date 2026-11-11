@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Cours de mathématiques</title>
+<title>Mathématiques avec M. Richasse</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Cours, exercices, corrigés, fiches méthode, flashcards et QCM de mathématiques.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -429,7 +429,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       <a class="marque" href="#" data-vue="">
         <span class="logo" aria-hidden="true">f(x)</span>
         <span class="marque-texte">
-          <span class="marque-nom" id="nom-site">Mathématiques</span>
+          <span class="marque-nom" id="nom-site">Mathématiques avec M. Richasse</span>
           <span class="marque-lieu" id="lieu-site"></span>
         </span>
       </a>
@@ -2154,7 +2154,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       if ((c && v === c.dossier) || (!c && v === vue && v)) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
 
-    var titre = D.reglages.matiere, r;
+    var titre = D.reglages.titre || D.reglages.matiere, r;
     if (q.length >= 2) r = vueRecherche(q);
     else if (c && ch && th) { r = vueRevision(c, ch, th); titre = th.titre + ' · Révisions · ' + c.nom; }
     else if (c && ch) { r = vueChapitre(c, ch); titre = ch.titre + ' · ' + c.nom; }
@@ -2216,7 +2216,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     D.classes.forEach(function (c) { c.chapitres.forEach(function (ch) { ch.paquets = ch.paquets || []; ch.qcms = ch.qcms || []; ch.revisions = ch.revisions || []; ch.essentiel = ch.essentiel || ''; }); c.progression = c.progression || ''; });
     D.textes.methodologie = D.textes.methodologie || '';
     var r = D.reglages;
-    document.getElementById('nom-site').textContent = r.matiere;
+    document.getElementById('nom-site').textContent = r.titre || r.matiere;
     document.getElementById('lieu-site').textContent = r.etablissement;
     document.getElementById('nav').innerHTML = D.classes.map(function (c) {
       return '<a href="#' + esc(c.dossier) + '" data-vue="' + esc(c.dossier) + '">' + esc(c.nom) + '</a>';
