@@ -1,0 +1,269 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1.5cm,top=1.3cm,bottom=1.3cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage{titlesec}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\D}{\mathbb{D}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\renewcommand{\S}{\mathcal{S}}
+\renewcommand{\iff}{\Longleftrightarrow}
+
+\titleformat{\paragraph}{\normalfont\bfseries}{}{0em}{}
+\titlespacing*{\paragraph}{0pt}{0.8em}{0.35em}
+\newcommand{\exo}[3]{\paragraph{Exercice #1 --- #2 \hfill\normalfont\small(#3 points)}}
+\newcommand{\rep}[1]{\textbf{#1}}
+
+\newcommand{\entete}[1]{%
+  \begin{center}
+    {\Large\bfseries Contrôle n°1 --- Nombres, intervalles et valeur absolue}\\[0.4em]
+    {\large\bfseries Corrigé du sujet #1}
+  \end{center}
+  \vspace{0.2em}
+  \hrule
+  \vspace{0.3em}
+}
+
+\newcommand{\tableauintervalles}[5]{%
+  \begin{center}
+  \renewcommand{\arraystretch}{1.5}
+  \begin{tabularx}{\linewidth}{|>{\centering\arraybackslash}m{2.4cm}|*{5}{>{\centering\arraybackslash}X|}}
+    \hline
+    \textbf{Ensemble} & $I\cap J$ & $I\cup J$ & $J\cap K$ & $I\cup K$ & $I\cap L$ \\
+    \hline
+    \textbf{Résultat} & $#1$ & $#2$ & $#3$ & $#4$ & $#5$ \\
+    \hline
+  \end{tabularx}
+  \end{center}
+}
+
+\begin{document}
+
+% =====================================================================
+%                              SUJET A
+% =====================================================================
+\entete{A}
+
+\exo{1}{Question de cours}{2}
+\begin{enumerate}[label=\alph*), itemsep=0.2em, topsep=0.2em]
+  \item Un nombre rationnel est un nombre qui peut s'écrire sous la forme $\dfrac{a}{b}$ où $a \in \Z$ et $b \in \Z^*$.
+  \item Par exemple $\dfrac{1}{3}$ : c'est un rationnel, et on a démontré en cours qu'il n'est pas décimal.
+\end{enumerate}
+
+\exo{2}{Vrai ou Faux ?}{3}
+\begin{enumerate}[label=\alph*), itemsep=0.4em, topsep=0.2em]
+  \item \rep{Faux.} Contre-exemple : $\sqrt{2}$ est irrationnel, mais $\left(\sqrt{2}\right)^2 = 2$ n'est pas irrationnel.
+  \item \rep{Vrai.} Soient deux nombres décimaux $\dfrac{a}{10^n}$ et $\dfrac{b}{10^m}$, avec $a, b \in \Z$ et $n, m \in \N$. Alors
+  \[ \dfrac{a}{10^n} + \dfrac{b}{10^m} = \dfrac{a \times 10^m + b \times 10^n}{10^{n+m}}. \]
+  Or $a \times 10^m + b \times 10^n \in \Z$ et $n + m \in \N$ : la somme est donc un nombre décimal.
+\end{enumerate}
+
+\exo{3}{Intersections et réunions d'intervalles}{3}
+$I = [-3\,;\,5[$, \quad $J = \,]1\,;\,8]$, \quad $K = \,]-\infty\,;\,2]$ \quad et \quad $L = [6\,;\,+\infty[$.
+\tableauintervalles{]1\,;\,5[}{[-3\,;\,8]}{]1\,;\,2]}{]-\infty\,;\,5[}{\varnothing}
+$I \cap L = \varnothing$ car tous les éléments de $I$ sont strictement inférieurs à $5$, alors que ceux de $L$ sont supérieurs ou égaux à $6$.
+
+\exo{4}{Résoudre dans $\R$}{4}
+\begin{minipage}[t]{0.31\linewidth}
+\rep{a)} $\dfrac{3x-1}{4} - \dfrac{x+2}{3} = \dfrac{1}{2}$
+
+On multiplie par $12$ :
+\begin{align*}
+3(3x-1) - 4(x+2) &= 6\\
+9x - 3 - 4x - 8 &= 6\\
+5x - 11 &= 6\\
+5x &= 17\\
+x &= \dfrac{17}{5}
+\end{align*}
+$\S = \left\{\dfrac{17}{5}\right\}$
+
+\end{minipage}\hfill
+\begin{minipage}[t]{0.31\linewidth}
+\rep{b)} $5x - 3 \leqslant 2x + 9$
+\begin{align*}
+5x - 2x &\leqslant 9 + 3\\
+3x &\leqslant 12\\
+x &\leqslant 4
+\end{align*}
+$\S = \,]-\infty\,;\,4]$
+
+\end{minipage}\hfill
+\begin{minipage}[t]{0.31\linewidth}
+\rep{c)} $\dfrac{1-2x}{3} - \dfrac{x+1}{4} \geqslant \dfrac{x}{2}$
+
+On multiplie par $12$ (positif) :
+\begin{align*}
+4(1-2x) - 3(x+1) &\geqslant 6x\\
+4 - 8x - 3x - 3 &\geqslant 6x\\
+1 - 11x &\geqslant 6x\\
+1 &\geqslant 17x\\
+x &\leqslant \dfrac{1}{17}
+\end{align*}
+$\S = \left]-\infty\,;\,\dfrac{1}{17}\right]$
+\end{minipage}
+
+\exo{5}{Valeur absolue : résoudre dans $\R$}{4}
+\begin{minipage}[t]{0.47\linewidth}
+\rep{a)} $|x - 4| = 7$ : la distance entre $x$ et $4$ vaut $7$.
+
+Donc $x = 4 + 7 = 11$ ou $x = 4 - 7 = -3$.
+
+$\S = \{-3\,;\,11\}$
+
+\medskip
+\rep{b)} $|5 - 2x| = 3$
+\[ 5 - 2x = 3 \quad\text{ou}\quad 5 - 2x = -3 \]
+\[ -2x = -2 \quad\text{ou}\quad -2x = -8 \]
+\[ x = 1 \quad\text{ou}\quad x = 4 \]
+$\S = \{1\,;\,4\}$
+
+\end{minipage}\hfill
+\begin{minipage}[t]{0.47\linewidth}
+\rep{c)} $|x + 2| < 5$, c'est-à-dire $|x - (-2)| < 5$ : la distance entre $x$ et $-2$ est strictement inférieure à $5$.
+
+Donc $-2 - 5 < x < -2 + 5$, soit $-7 < x < 3$.
+
+$\S = \,]-7\,;\,3[$
+
+\medskip
+\rep{d)} $|2x - 1| \geqslant 7$
+\[ 2x - 1 \geqslant 7 \quad\text{ou}\quad 2x - 1 \leqslant -7 \]
+\[ 2x \geqslant 8 \quad\text{ou}\quad 2x \leqslant -6 \]
+\[ x \geqslant 4 \quad\text{ou}\quad x \leqslant -3 \]
+$\S = \,]-\infty\,;\,-3] \cup [4\,;\,+\infty[$
+\end{minipage}
+
+\exo{6}{Problème}{4}
+\begin{enumerate}[leftmargin=1.6em, itemsep=0.4em, topsep=0.2em]
+  \item[\rep{1.}] $M$ est un point du segment $[AB]$ et $AB = 10$, donc $x \in [0\,;\,10]$.
+  \item[\rep{2.}] Le triangle $AMD$ est rectangle en $A$ :
+  $\mathcal{A}_{AMD} = \dfrac{AM \times AD}{2} = \dfrac{x \times 6}{2} = 3x$.
+
+  L'aire du rectangle est $10 \times 6 = 60$, donc $\mathcal{A}_{MBCD} = 60 - 3x$.
+  \item[\rep{3.}] On résout $\mathcal{A}_{MBCD} \geqslant 2 \times \mathcal{A}_{AMD}$ :
+  \[ 60 - 3x \geqslant 2 \times 3x \iff 60 - 3x \geqslant 6x \iff 60 \geqslant 9x \iff x \leqslant \dfrac{60}{9} \iff x \leqslant \dfrac{20}{3}. \]
+  Comme $x \in [0\,;\,10]$, l'aire du trapèze est supérieure ou égale au double de celle du triangle lorsque $x \in \left[0\,;\,\dfrac{20}{3}\right]$.
+\end{enumerate}
+
+\newpage
+% =====================================================================
+%                              SUJET B
+% =====================================================================
+\entete{B}
+
+\exo{1}{Question de cours}{2}
+\begin{enumerate}[label=\alph*), itemsep=0.2em, topsep=0.2em]
+  \item Un nombre décimal est un nombre qui peut s'écrire avec un nombre fini de chiffres après la virgule, c'est-à-dire sous la forme $\dfrac{a}{10^n}$ où $a \in \Z$ et $n \in \N$.
+  \item Par exemple $\sqrt{2}$ (ou $\pi$) : c'est un nombre réel irrationnel.
+\end{enumerate}
+
+\exo{2}{Vrai ou Faux ?}{3}
+\begin{enumerate}[label=\alph*), itemsep=0.4em, topsep=0.2em]
+  \item \rep{Vrai.} Soient deux nombres décimaux $\dfrac{a}{10^n}$ et $\dfrac{b}{10^m}$, avec $a, b \in \Z$ et $n, m \in \N$. Alors
+  \[ \dfrac{a}{10^n} \times \dfrac{b}{10^m} = \dfrac{a \times b}{10^{n+m}}. \]
+  Or $a \times b \in \Z$ et $n + m \in \N$ : le produit est donc un nombre décimal.
+  \item \rep{Faux.} Contre-exemple : $\sqrt{2}$ et $-\sqrt{2}$ sont irrationnels, mais $\sqrt{2} + \left(-\sqrt{2}\right) = 0$ n'est pas irrationnel.
+\end{enumerate}
+
+\exo{3}{Intersections et réunions d'intervalles}{3}
+$I = \,]-4\,;\,3]$, \quad $J = [0\,;\,7[$, \quad $K = [-1\,;\,+\infty[$ \quad et \quad $L = \,]-\infty\,;\,-5[$.
+\tableauintervalles{[0\,;\,3]}{]-4\,;\,7[}{[0\,;\,7[}{]-4\,;\,+\infty[}{\varnothing}
+$J \cap K = J$ car tous les éléments de $J$ appartiennent à $K$. \quad
+$I \cap L = \varnothing$ car tous les éléments de $I$ sont strictement supérieurs à $-4$, alors que ceux de $L$ sont strictement inférieurs à $-5$.
+
+\exo{4}{Résoudre dans $\R$}{4}
+\begin{minipage}[t]{0.31\linewidth}
+\rep{a)} $\dfrac{2x+1}{3} - \dfrac{x-3}{4} = \dfrac{5}{6}$
+
+On multiplie par $12$ :
+\begin{align*}
+4(2x+1) - 3(x-3) &= 10\\
+8x + 4 - 3x + 9 &= 10\\
+5x + 13 &= 10\\
+5x &= -3\\
+x &= -\dfrac{3}{5}
+\end{align*}
+$\S = \left\{-\dfrac{3}{5}\right\}$
+
+\end{minipage}\hfill
+\begin{minipage}[t]{0.31\linewidth}
+\rep{b)} $7x + 2 > 3x - 10$
+\begin{align*}
+7x - 3x &> -10 - 2\\
+4x &> -12\\
+x &> -3
+\end{align*}
+$\S = \,]-3\,;\,+\infty[$
+
+\end{minipage}\hfill
+\begin{minipage}[t]{0.31\linewidth}
+\rep{c)} $\dfrac{3-x}{2} - \dfrac{2x+1}{5} \leqslant \dfrac{x}{10}$
+
+On multiplie par $10$ (positif) :
+\begin{align*}
+5(3-x) - 2(2x+1) &\leqslant x\\
+15 - 5x - 4x - 2 &\leqslant x\\
+13 - 9x &\leqslant x\\
+13 &\leqslant 10x\\
+x &\geqslant \dfrac{13}{10}
+\end{align*}
+$\S = \left[\dfrac{13}{10}\,;\,+\infty\right[$
+\end{minipage}
+
+\exo{5}{Valeur absolue : résoudre dans $\R$}{4}
+\begin{minipage}[t]{0.47\linewidth}
+\rep{a)} $|x + 3| = 6$, c'est-à-dire $|x - (-3)| = 6$ : la distance entre $x$ et $-3$ vaut $6$.
+
+Donc $x = -3 + 6 = 3$ ou $x = -3 - 6 = -9$.
+
+$\S = \{-9\,;\,3\}$
+
+\medskip
+\rep{b)} $|7 - 2x| = 5$
+\[ 7 - 2x = 5 \quad\text{ou}\quad 7 - 2x = -5 \]
+\[ -2x = -2 \quad\text{ou}\quad -2x = -12 \]
+\[ x = 1 \quad\text{ou}\quad x = 6 \]
+$\S = \{1\,;\,6\}$
+
+\end{minipage}\hfill
+\begin{minipage}[t]{0.47\linewidth}
+\rep{c)} $|x - 1| \leqslant 4$ : la distance entre $x$ et $1$ est inférieure ou égale à $4$.
+
+Donc $1 - 4 \leqslant x \leqslant 1 + 4$, soit $-3 \leqslant x \leqslant 5$.
+
+$\S = [-3\,;\,5]$
+
+\medskip
+\rep{d)} $|3x + 3| > 6$
+\[ 3x + 3 > 6 \quad\text{ou}\quad 3x + 3 < -6 \]
+\[ 3x > 3 \quad\text{ou}\quad 3x < -9 \]
+\[ x > 1 \quad\text{ou}\quad x < -3 \]
+$\S = \,]-\infty\,;\,-3[ \;\cup\; ]1\,;\,+\infty[$
+\end{minipage}
+
+\exo{6}{Problème}{4}
+\begin{enumerate}[leftmargin=1.6em, itemsep=0.4em, topsep=0.2em]
+  \item[\rep{1.}] $M$ est un point du segment $[DC]$ et $DC = AB = 12$, donc $x \in [0\,;\,12]$.
+  \item[\rep{2.}] Le triangle $ADM$ est rectangle en $D$ :
+  $\mathcal{A}_{ADM} = \dfrac{AD \times DM}{2} = \dfrac{5 \times x}{2} = \dfrac{5x}{2}$.
+
+  L'aire du rectangle est $12 \times 5 = 60$, donc $\mathcal{A}_{ABCM} = 60 - \dfrac{5x}{2}$.
+  \item[\rep{3.}] On résout $\mathcal{A}_{ABCM} \geqslant 3 \times \mathcal{A}_{ADM}$ :
+  \[ 60 - \dfrac{5x}{2} \geqslant 3 \times \dfrac{5x}{2} \iff 60 \geqslant \dfrac{15x}{2} + \dfrac{5x}{2} \iff 60 \geqslant 10x \iff x \leqslant 6. \]
+  Comme $x \in [0\,;\,12]$, l'aire du trapèze est supérieure ou égale au triple de celle du triangle lorsque $x \in [0\,;\,6]$.
+\end{enumerate}
+
+\end{document}
