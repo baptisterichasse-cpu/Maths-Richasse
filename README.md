@@ -26,7 +26,7 @@ Tout se modifie directement sur github.com : ouvrez le fichier, cliquez sur le c
 | `textes/annonces.md` | Le cahier de texte (les entrées les plus récentes en haut) |
 | `documents/seconde/_progression.md` | La progression de l'année pour une classe |
 
-**Cahier de texte** : une entrée commence par une ligne `### 20 octobre 2026`, suivie du texte. `**texte**` met en gras.
+**Cahier de texte** : une entrée commence par une ligne `### 20 octobre 2026`, suivie du texte. `**texte**` met en gras. Pour réserver une entrée à une classe, ajouter `@ Seconde 5` après la date (`### 12 novembre 2026 @ Seconde 5`, plusieurs classes séparées par des virgules) ; sans `@`, l'entrée s'adresse à toutes les classes. Chaque élève ne voit que les entrées de sa classe, d'après son code d'accès ; sans code, rien n'est affiché.
 
 **Progression** : `- [x]` = chapitre traité, `- [~]` = en cours, `- [ ]` = à venir.
 

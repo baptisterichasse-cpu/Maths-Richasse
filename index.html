@@ -730,7 +730,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       : '';
     html += '<div class="grille-2">' +
       '<section class="carte bloc annonces" aria-labelledby="titre-annonces"><h2 id="titre-annonces">Cahier de texte</h2>' +
-        '<div class="prose">' + (D.textes.annonces.trim() ? md(D.textes.annonces.replace(/^#{1,2}(?!#)/gm, '###')) : '<p>Rien d’inscrit pour le moment.</p>') + '</div></section>' +
+        '<div class="prose">' + cahierDeTexte() + '</div></section>' +
       blocNouveautes + '</div>';
 
     if (r.email) {
@@ -742,6 +742,27 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       '</section>';
     }
     return { tete: t, corps: html, haute: true };
+  }
+
+  /* Cahier de texte : une entrée commence par « ### 12 novembre 2026 @ Seconde 5 » (sans @ : toutes les classes).
+     Chaque élève ne voit que les entrées de sa classe ; sans code d'accès, rien n'est affiché. */
+  function cahierDeTexte() {
+    var texte = D.textes.annonces.replace(/^#{1,2}(?!#)/gm, '###'), filtrer = !!D.reglages.envoi;
+    if (filtrer && !codeEleve()) return '<p>Saisir son code d’accès pour voir le cahier de texte de sa classe.</p><p><button class="bouton" type="button" data-action="ident-ouvrir">Saisir mon code d’accès</button></p>';
+    var classe = norm(lire('eleve:classe') || ''), entrees = [], courante = null;
+    texte.split(/\r?\n/).forEach(function (ligne) {
+      var m = /^###\s*(.*)$/.exec(ligne);
+      if (m) {
+        var parts = m[1].split('@'), pour = (parts[1] || '').split(',').map(function (x) { return norm(x).trim(); }).filter(Boolean);
+        courante = { titre: parts[0].trim(), pour: pour, corps: [] };
+        entrees.push(courante);
+      } else if (courante) courante.corps.push(ligne);
+    });
+    var visibles = entrees.filter(function (e) {
+      return !filtrer || !e.pour.length || e.pour.some(function (p) { return classe === p || classe.indexOf(p + ' ') === 0; });
+    });
+    if (!visibles.length) return '<p>Rien d’inscrit pour le moment.</p>';
+    return md(visibles.map(function (e) { return '### ' + e.titre + '\n' + e.corps.join('\n'); }).join('\n'));
   }
 
   function vueOngletRevisions(c) {
