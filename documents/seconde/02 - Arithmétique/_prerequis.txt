@@ -1,5 +1,6 @@
 # Notions à maîtriser avant de commencer (un thème de révision par ligne)
 Multiples, diviseurs et critères de divisibilité
+Nombres premiers et décomposition
 Réduire une expression
 Développement
 Factorisation
