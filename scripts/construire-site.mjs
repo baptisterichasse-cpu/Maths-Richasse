@@ -259,7 +259,7 @@ async function main() {
           continue;
         }
 
-        if ((info.ext === 'csv' || info.ext === 'txt') && nf.startsWith('revision')) {
+        if ((info.ext === 'csv' || info.ext === 'txt') && (nf.startsWith('revision') || nf.startsWith('competence'))) {
           const exercices = lireRevision(await readFile(source, 'utf8'), f);
           // « revision - 2 - Réduire une expression » : le numéro fixe l'ordre d'affichage
           const brut = titreApresTiret(info.base, 'Révisions'), num = brut.match(/^(\d+)\s*[-–.)]\s*(.+)$/);

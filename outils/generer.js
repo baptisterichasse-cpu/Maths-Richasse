@@ -275,7 +275,7 @@ const lot = require(path.resolve(process.argv[2]));
 const sortie = path.join(__dirname, 'sortie-lots');
 lot.forEach((th) => {
   const vus = new Set(), lignes = [['consigne', 'énoncé', 'réponse', 'vérification', 'correction']];
-  if (th.exercices.length !== 30) { ici = th.titre; ko(th.exercices.length + ' exercices au lieu de 30'); }
+  if (th.exercices.length !== (th.nb || 30)) { ici = th.titre; ko(th.exercices.length + ' exercices au lieu de ' + (th.nb || 30)); }
   th.exercices.forEach((brut, k) => {
     ici = th.titre + ' n°' + (k + 1);
     try {

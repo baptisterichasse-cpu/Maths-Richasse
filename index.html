@@ -1756,7 +1756,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     var x = t.exercices[e.i], s = m[idExo(x)], resolu = e.verdict && e.verdict.etat === 'juste';
 
     var tt = filAriane([['Accueil', ''], [c.nom, c.dossier], [ch.titre, cleChap], [t.titre]]) +
-      '<span class="surtitre">Révisions · ' + pluriel(n, 'exercice') + '</span><h1>' + esc(t.titre) + '</h1>';
+      '<span class="surtitre">' + (ch.domaine ? 'Révisions' : 'Compétence') + ' · ' + pluriel(n, 'exercice') + '</span><h1>' + esc(t.titre) + '</h1>';
 
     var grille = t.exercices.map(function (y, k) {
       var st = m[idExo(y)], cls = st ? (st.s === 'ok' ? ' ok' : ' ko') : '';
@@ -2094,7 +2094,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       }
       if (t === 'revision') {
         if (!ch.revisions.length) return;
-        html += '<section class="groupe" data-type="revision"><h2 class="groupe-titre"><span class="pastille" aria-hidden="true"></span>Révisions</h2>' +
+        html += '<section class="groupe" data-type="revision"><h2 class="groupe-titre"><span class="pastille" aria-hidden="true"></span>' + (ch.domaine ? 'Révisions' : 'S’entraîner par compétence') + '</h2>' +
           '<div class="themes">' + ch.revisions.map(function (th) { return carteTheme(c, ch, th); }).join('') + '</div></section>';
         return;
       }
@@ -2177,7 +2177,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
 
     var titre = D.reglages.titre || D.reglages.matiere, r;
     if (q.length >= 2) r = vueRecherche(q);
-    else if (c && ch && th) { r = vueRevision(c, ch, th); titre = th.titre + ' · Révisions · ' + c.nom; }
+    else if (c && ch && th) { r = vueRevision(c, ch, th); titre = th.titre + ' · ' + c.nom; }
     else if (c && ch) { r = vueChapitre(c, ch); titre = ch.titre + ' · ' + c.nom; }
     else if (c) { r = vueClasse(c); titre = c.nom + ' · ' + D.reglages.matiere; }
     else if (vue === 'methodologie' && D.textes.methodologie.trim()) { r = vueMethodologie(); titre = 'Méthodologie · ' + D.reglages.matiere; }
