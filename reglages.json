@@ -3,7 +3,7 @@
   "etablissement": "Lycée Charlemagne",
   "email": "",
   "professeur": "M. Richasse",
-  "envoi_progression": "",
+  "envoi_progression": "https://script.google.com/macros/s/AKfycbwu2eqEAcoRufAzyzzm6PzVdLXNwP9btgkYZ-67cHQoD34Wfpli-9dBG0uPCzt4venEmg/exec",
   "classes": [
     { "dossier": "seconde", "nom": "Seconde", "description": "Seconde générale et technologique" },
     { "dossier": "terminale", "nom": "Terminale", "description": "Spécialité mathématiques" },
