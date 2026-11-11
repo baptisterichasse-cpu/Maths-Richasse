@@ -23,10 +23,10 @@ Tout se modifie directement sur github.com : ouvrez le fichier, cliquez sur le c
 |---|---|
 | `reglages.json` | Matière, nom de l'établissement, adresse mail, liste des classes |
 | `textes/presentation.md` | Le mot de présentation de la page d'accueil |
-| `textes/annonces.md` | Les annonces (les plus récentes en haut) |
+| `textes/annonces.md` | Le cahier de texte (les entrées les plus récentes en haut) |
 | `documents/seconde/_progression.md` | La progression de l'année pour une classe |
 
-**Annonces** : une annonce commence par une ligne `### 20 octobre 2026`, suivie du texte. `**texte**` met en gras.
+**Cahier de texte** : une entrée commence par une ligne `### 20 octobre 2026`, suivie du texte. `**texte**` met en gras.
 
 **Progression** : `- [x]` = chapitre traité, `- [~]` = en cours, `- [ ]` = à venir.
 

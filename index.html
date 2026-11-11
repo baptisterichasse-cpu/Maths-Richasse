@@ -729,8 +729,8 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
         }).join('') + '</ul></section>'
       : '';
     html += '<div class="grille-2">' +
-      '<section class="carte bloc annonces" aria-labelledby="titre-annonces"><h2 id="titre-annonces">Annonces</h2>' +
-        '<div class="prose">' + (D.textes.annonces.trim() ? md(D.textes.annonces.replace(/^#{1,2}(?!#)/gm, '###')) : '<p>Aucune annonce pour le moment.</p>') + '</div></section>' +
+      '<section class="carte bloc annonces" aria-labelledby="titre-annonces"><h2 id="titre-annonces">Cahier de texte</h2>' +
+        '<div class="prose">' + (D.textes.annonces.trim() ? md(D.textes.annonces.replace(/^#{1,2}(?!#)/gm, '###')) : '<p>Rien d’inscrit pour le moment.</p>') + '</div></section>' +
       blocNouveautes + '</div>';
 
     if (r.email) {
