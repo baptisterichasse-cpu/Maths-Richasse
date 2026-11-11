@@ -146,6 +146,21 @@ function lirePrerequis(texte) {
   return String(texte || '').split(/\r?\n/).map((l) => l.replace(/^[-*•]\s*/, '').trim()).filter((l) => l && !l.startsWith('#'));
 }
 
+// Progression de l'année : « - [x] Ch. 2 · Titre ». Renvoie le numéro du dernier chapitre visible
+// (le chapitre qui suit le dernier chapitre coché [x] ou en cours [~]), ou null si rien n'est coché.
+function numeroDeLigne(ligne) {
+  const m = ligne.match(/^\s*[-*]\s*\[[ xX~]\]\s*(?:Ch(?:apitre|\.)?\s*)?(\d+)/);
+  return m ? Number(m[1]) : null;
+}
+function dernierChapitreVisible(texte) {
+  let dernier = null;
+  for (const l of String(texte || '').split(/\r?\n/)) {
+    const n = numeroDeLigne(l);
+    if (n !== null && /\[[xX~]\]/.test(l)) dernier = Math.max(dernier ?? 0, n);
+  }
+  return dernier === null ? null : dernier + 1;
+}
+
 // Date d'ajout de chaque fichier, lue dans l'historique GitHub.
 function datesAjout() {
   const dates = new Map();
@@ -199,6 +214,7 @@ async function main() {
     classes: [],
   };
 
+  let nbChapitresCaches = 0;
   let nbPublies = 0, nbEnAttente = 0, nbCartes = 0, nbQcm = 0, nbRevisions = 0;
   for (const classe of reglages.classes) {
     const dossierClasse = path.join(RACINE, 'documents', classe.dossier);
@@ -207,10 +223,14 @@ async function main() {
       progression: await lireTexte(path.join(dossierClasse, '_progression.md')),
       chapitres: [],
     };
+    // Les élèves ne voient que les chapitres traités ([x]), le chapitre en cours ([~]) et le suivant.
+    const limite = dernierChapitreVisible(c.progression);
+    if (limite !== null) c.progression = c.progression.split(/\r?\n/).filter((l) => { const n = numeroDeLigne(l); return n === null || n <= limite; }).join('\n');
     const ids = new Set();
     for (const nomChap of await sousDossiers(dossierClasse)) {
       const m = reparer(nomChap).match(/^(\d+)\s*[-–._)]?\s*(.*)$/);
       const numero = m ? Number(m[1]) : null;
+      if (limite !== null && numero !== null && numero > limite) { nbChapitresCaches++; continue; }
       const titre = (m && m[2]) ? m[2].trim() : reparer(nomChap);
       let id = slug(reparer(nomChap));
       while (ids.has(id)) id += '-2';
@@ -272,7 +292,7 @@ async function main() {
 
   await copier(path.join(RACINE, 'index.html'), path.join(SORTIE, 'index.html'));
   await writeFile(path.join(SORTIE, 'donnees.json'), JSON.stringify(donnees));
-  console.log(`Site construit (${AUJOURDHUI}) : ${nbPublies} document(s) publié(s), ${nbEnAttente} corrigé(s) en attente, ${nbCartes} flashcard(s), ${nbQcm} QCM, ${nbRevisions} exercice(s) de révision.`);
+  console.log(`Site construit (${AUJOURDHUI}) : ${nbPublies} document(s) publié(s), ${nbEnAttente} corrigé(s) en attente, ${nbCartes} flashcard(s), ${nbQcm} QCM, ${nbRevisions} exercice(s) de révision, ${nbChapitresCaches} chapitre(s) à venir masqué(s).`);
 }
 
 main().catch((e) => { console.error('Erreur :', e.message); process.exit(1); });

@@ -98,3 +98,5 @@ Les formules entre `$...$` sont écrites en LaTeX et s'affichent proprement. Dan
 - Taille maximale d'un fichier envoyé par le site GitHub : 25 Mo. Compressez les diaporamas lourds ou exportez-les en PDF.
 - Mettez en ligne vos propres documents, pas des scans de manuels.
 - Les fichiers d'exemple (documents et flashcards) sont à supprimer ou remplacer par les vôtres.
+
+**Chapitres visibles** : les élèves ne voient que les chapitres cochés `[x]` dans `_progression.md`, le chapitre en cours `[~]` et le chapitre suivant. Les autres restent masqués jusqu'à ce que la progression avance.
