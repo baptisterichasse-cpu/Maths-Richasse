@@ -1926,9 +1926,32 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       '<div class="ident-form"><label class="cache" for="ident-code">Code d’accès</label>' +
       '<input id="ident-code" class="ident-code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="20" placeholder="Ex. A07-K4PZ" value="' + esc(val) + '">' +
       '<button class="bouton plein" type="button" data-action="ident-valider"' + (ident.statut === 'encours' ? ' disabled' : '') + '>Valider</button>' +
-      '<button class="bouton discret" type="button" data-action="ident-fermer">' + (actuel ? 'Annuler' : 'Plus tard') + '</button></div>' +
+      '<button class="bouton discret" type="button" data-action="ident-fermer">' + (actuel ? 'Annuler' : 'Plus tard') + '</button>' +
+      (actuel ? '<button class="bouton discret" type="button" data-action="ident-oublier">Me déconnecter</button>' : '') + '</div>' +
       (ident.message ? '<p class="envoi-msg ' + ident.statut + '" role="status">' + esc(ident.message) + '</p>' : '') +
       '</section>';
+  }
+  // Retire le code mémorisé sur l'appareil (déconnexion)
+  function oublierCode(msg) {
+    effacer('eleve:code'); effacer('eleve:classe');
+    ident = { ouvert: true, plusTard: false, statut: msg ? 'ok' : '', message: msg || '', saisie: '' };
+    envoiEtat = {};
+    majBoutonEleve();
+    rendre(true);
+  }
+  // À chaque visite : si le tableur ne reconnaît plus le code mémorisé, il est oublié.
+  // En cas d'erreur réseau, le code est gardé.
+  function verifierCodeMemorise() {
+    var code = codeEleve();
+    if (!code || !D.reglages.envoi) return;
+    fetch(D.reglages.envoi + (D.reglages.envoi.indexOf('?') === -1 ? '?' : '&') + 'code=' + encodeURIComponent(code))
+      .then(function (r) { return r.json(); })
+      .then(function (rep) {
+        if (!rep || codeEleve() !== code) return;
+        if (rep.ok) { if (rep.classe && rep.classe !== lire('eleve:classe')) { ecrire('eleve:classe', rep.classe); rendre(true); } return; }
+        if (!rep.erreur) oublierCode('Le code ' + code + ' n’existe plus. Saisir son nouveau code d’accès.');
+      })
+      .catch(function () {});
   }
   function majBoutonEleve() {
     var b = document.getElementById('bouton-eleve'), code = D && D.reglages.envoi ? codeEleve() : '';
@@ -1943,6 +1966,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       ident = { ouvert: false, plusTard: true, statut: '', message: '', saisie: null };
       rendre(true); return;
     }
+    if (action === 'ident-oublier') { oublierCode('Code retiré de cet appareil.'); return; }
     var code = normaliserCode(champCode ? champCode.value : '');
     if (!/^[A-Z0-9-]{3,20}$/.test(code)) {
       ident.statut = 'erreur'; ident.saisie = champCode ? champCode.value : ''; ident.message = 'Saisir le code tel qu’il a été donné, par exemple A07-K4PZ.';
@@ -2239,7 +2263,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     if (!b) return;
     var act = b.getAttribute('data-action');
     if (act === 'ident-ouvrir') { ouvrirIdent(); return; }
-    if (act === 'ident-valider' || act === 'ident-fermer') { actionIdent(act); return; }
+    if (act === 'ident-valider' || act === 'ident-fermer' || act === 'ident-oublier') { actionIdent(act); return; }
     var bloc = b.closest('[data-envoi]');
     if (bloc) { envoyer(bloc); return; }
     bloc = b.closest('[data-paquet]');
@@ -2274,6 +2298,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     vue = lireAdresse();
     rendre();
     majBoutonEleve();
+    verifierCodeMemorise();
   }
   document.getElementById('bouton-eleve').addEventListener('click', function () { ouvrirIdent(); });
 
