@@ -292,6 +292,10 @@ async function main() {
 
   await copier(path.join(RACINE, 'index.html'), path.join(SORTIE, 'index.html'));
   await writeFile(path.join(SORTIE, 'donnees.json'), JSON.stringify(donnees));
+  // Pour Google : plan du site et autorisation d'exploration.
+  const ADRESSE_SITE = 'https://baptisterichasse-cpu.github.io/Maths-Richasse/';
+  await writeFile(path.join(SORTIE, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${ADRESSE_SITE}sitemap.xml\n`);
+  await writeFile(path.join(SORTIE, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${ADRESSE_SITE}</loc><lastmod>${AUJOURDHUI}</lastmod></url>\n</urlset>\n`);
   console.log(`Site construit (${AUJOURDHUI}) : ${nbPublies} document(s) publié(s), ${nbEnAttente} corrigé(s) en attente, ${nbCartes} flashcard(s), ${nbQcm} QCM, ${nbRevisions} exercice(s) de révision, ${nbChapitresCaches} chapitre(s) à venir masqué(s).`);
 }
 
