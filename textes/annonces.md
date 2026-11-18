@@ -1,3 +1,6 @@
+### 18 novembre 2026 @ Seconde
+**Travail à faire :** exercices 3, 4 et 5 de la feuille d'exercices n°2.
+
 ### 12 novembre 2026 @ Seconde 5
 Correction de la feuille d'exercices n°1.
 
