@@ -18,6 +18,7 @@
  *   La question affichée est le texte de la colonne « Question » : il peut être reformulé avant de répondre.
  *   Sans réponse, la question reste invisible sur le site.
  *   Formules : écrire entre $…$, comme dans les fiches (ex. $\dfrac{3}{4}$).
+ *   À chaque nouvelle question, un courriel est envoyé au propriétaire du tableur (voir ALERTE_COURRIEL).
  *
  * Seuls les codes présents dans un onglet de classe sont acceptés par le site.
  * Un élève qui travaille sur plusieurs appareils utilise le même code partout :
@@ -35,6 +36,10 @@ var PREMIERE_LIGNE = 3; // première ligne d'élève
 var COL_FIXES = 3;      // Numéro, Nom, Code
 var QUESTIONS_PAR_JOUR = 3;      // nombre maximal de questions par élève et par jour
 var LONGUEUR_QUESTION = 1000;    // nombre maximal de caractères d'une question
+// Courriel à chaque nouvelle question : true pour l'activer, false pour l'arrêter.
+var ALERTE_COURRIEL = true;
+// Adresse qui reçoit les alertes. Vide : l'adresse du compte Google propriétaire du tableur.
+var ADRESSE_ALERTE = '';
 var ENTETES_QUESTIONS = ['Date', 'Classe', 'Nom', 'Code', 'Chapitre', 'Question', 'Réponse', 'Repère (ne pas modifier)'];
 
 /* ---------- Menu du tableur ---------- */
@@ -198,7 +203,27 @@ function recevoirQuestion(d, code) {
   // Une apostrophe devant un texte qui commence par = + - @ empêche le tableur d'y voir une formule
   var sur = function (t) { return /^[=+\-@]/.test(t) ? "'" + t : t; };
   f.appendRow([maintenant, eleve.classe, eleve.nom, code, chapitre, sur(question), '', repere]);
+  alerterQuestion(classeur, eleve, chapitre, question);
   return repondre({ ok: true, restant: restant - 1 });
+}
+
+// Une panne de l'envoi du courriel n'empêche jamais d'enregistrer la question.
+function alerterQuestion(classeur, eleve, chapitre, question) {
+  if (!ALERTE_COURRIEL) return;
+  try {
+    var adresse = ADRESSE_ALERTE || Session.getEffectiveUser().getEmail();
+    if (!adresse) return;
+    var lien = classeur.getUrl() + '#gid=' + classeur.getSheetByName('Questions').getSheetId();
+    MailApp.sendEmail({
+      to: adresse,
+      subject: 'Nouvelle question sur le site : ' + eleve.nom + ' (' + eleve.classe + ')',
+      body: 'Élève : ' + eleve.nom + ' (' + eleve.classe + ')\n' +
+        'Chapitre : ' + chapitre + '\n\n' +
+        'Question :\n' + question + '\n\n' +
+        'Pour la publier, écrire la réponse dans la colonne « Réponse » de l’onglet Questions :\n' + lien + '\n\n' +
+        '(Pour ne plus recevoir ces courriels : mettre ALERTE_COURRIEL à false dans le programme du tableur.)'
+    });
+  } catch (err) {}
 }
 
 function feuilleQuestions(classeur) {
