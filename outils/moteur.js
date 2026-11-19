@@ -358,6 +358,7 @@ var Algebre = (function () {
     factorise: 'Factoriser l’expression.',
     egal: 'Calculer.',
     nombre: 'Calculer et donner le résultat sous la forme d’un seul nombre.',
+    choix: 'Choisir la bonne réponse.',
     decomposition: 'Décomposer en produit de facteurs premiers.',
     puissance: 'Écrire sous la forme d’une seule puissance.',
     scientifique: 'Donner l’écriture scientifique.',
@@ -498,7 +499,15 @@ var Algebre = (function () {
     if (lu.min >= 60) return presque('La durée est juste, mais il reste à convertir : $60$ min $= 1$ h.');
     return JUSTE;
   }
-  var SPECIAUX = { liste: verifierListe(true), ensemble: verifierListe(false), inequation: verifierIneq, duree: verifierDuree };
+  // Question à choix : l'élève tape (ou clique) la lettre de la bonne réponse
+  function lettre(s) { var m = String(s == null ? '' : s).toUpperCase().match(/[A-F]/g); return m && m.length === 1 ? m[0] : (m ? m.join('') : ''); }
+  function verifierChoix(saisie, attendu) {
+    var l = lettre(saisie);
+    if (!l) return { etat: 'illisible', message: 'Choisir une réponse : A, B ou C.' };
+    if (l.length > 1) return { etat: 'illisible', message: 'Une seule réponse est attendue.' };
+    return l === lettre(attendu) ? JUSTE : { etat: 'faux', message: 'Ce n’est pas la bonne réponse.' };
+  }
+  var SPECIAUX = { liste: verifierListe(true), ensemble: verifierListe(false), inequation: verifierIneq, duree: verifierDuree, choix: verifierChoix };
 
   function verifier(type, saisie, attendu, enonce) {
     if (SPECIAUX[type]) return SPECIAUX[type](saisie, attendu, enonce);
@@ -639,6 +648,7 @@ var Algebre = (function () {
   }
 
   function apercu(saisie, type) {
+    if (type === 'choix') { var l = lettre(saisie); return l.length === 1 ? { ok: true, latex: '\\text{' + l + '}' } : { ok: false, erreur: l ? 'Une seule réponse est attendue.' : '' }; }
     if (type === 'liste' || type === 'ensemble') {
       var l = lireListe(saisie);
       if (!l.ok) return l;

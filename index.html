@@ -308,6 +308,10 @@ a.doc:hover { border-color: var(--c); }
 .rev-tab table { border-collapse: collapse; background: var(--carte); font-size: 19px; }
 .rev-tab th, .rev-tab td { border: 1px solid var(--bord-fort); padding: 8px 14px; text-align: center; font-weight: 500; white-space: nowrap; }
 .rev-tab th { background: var(--fond); }
+.rev-enonce.choix { font-size: clamp(17px, 2.4vw, 20px); text-align: left; align-items: stretch; line-height: 1.45; }
+.rev-choix { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.rev-choix li { display: flex; gap: 12px; align-items: baseline; padding: 10px 14px; border-radius: 10px; background: var(--carte); border: 1px solid var(--bord); }
+.rev-choix b { font-family: var(--f-mono); color: var(--t-rev); flex: none; }
 .rev-enonce.long { font-size: clamp(17px, 2.6vw, 21px); line-height: 1.5; }
 .rev-libelle { font-size: 14px; font-weight: 700; color: var(--encre-2); margin-bottom: -10px; }
 .rev-champ { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -1356,6 +1360,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       factorise: 'Factoriser l’expression.',
       egal: 'Calculer.',
       nombre: 'Calculer et donner le résultat sous la forme d’un seul nombre.',
+      choix: 'Choisir la bonne réponse.',
       decomposition: 'Décomposer en produit de facteurs premiers.',
       puissance: 'Écrire sous la forme d’une seule puissance.',
       scientifique: 'Donner l’écriture scientifique.',
@@ -1496,7 +1501,15 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       if (lu.min >= 60) return presque('La durée est juste, mais il reste à convertir : $60$ min $= 1$ h.');
       return JUSTE;
     }
-    var SPECIAUX = { liste: verifierListe(true), ensemble: verifierListe(false), inequation: verifierIneq, duree: verifierDuree };
+    // Question à choix : l'élève tape (ou clique) la lettre de la bonne réponse
+    function lettre(s) { var m = String(s == null ? '' : s).toUpperCase().match(/[A-F]/g); return m && m.length === 1 ? m[0] : (m ? m.join('') : ''); }
+    function verifierChoix(saisie, attendu) {
+      var l = lettre(saisie);
+      if (!l) return { etat: 'illisible', message: 'Choisir une réponse : A, B ou C.' };
+      if (l.length > 1) return { etat: 'illisible', message: 'Une seule réponse est attendue.' };
+      return l === lettre(attendu) ? JUSTE : { etat: 'faux', message: 'Ce n’est pas la bonne réponse.' };
+    }
+    var SPECIAUX = { liste: verifierListe(true), ensemble: verifierListe(false), inequation: verifierIneq, duree: verifierDuree, choix: verifierChoix };
 
     function verifier(type, saisie, attendu, enonce) {
       if (SPECIAUX[type]) return SPECIAUX[type](saisie, attendu, enonce);
@@ -1637,6 +1650,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     }
 
     function apercu(saisie, type) {
+      if (type === 'choix') { var l = lettre(saisie); return l.length === 1 ? { ok: true, latex: '\\text{' + l + '}' } : { ok: false, erreur: l ? 'Une seule réponse est attendue.' : '' }; }
       if (type === 'liste' || type === 'ensemble') {
         var l = lireListe(saisie);
         if (!l.ok) return l;
@@ -1656,7 +1670,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
   })();
 
   /* ---------- Révisions : exercices corrigés automatiquement ---------- */
-  var EXEMPLES = { fraction: '7/12', developpe: '3x^2-5x+2', factorise: '(x+1)(x-3)', egal: '', nombre: '-7 ou 3/4 ou 2,5', decomposition: '2^3*3*5', puissance: '2^7', scientifique: '5,2*10^-4', racine: '5√2', liste: '1,5 ; 2 ; 3,7', ensemble: '3 ; -3', inequation: 'x < 3', duree: '2h15' };
+  var EXEMPLES = { fraction: '7/12', developpe: '3x^2-5x+2', factorise: '(x+1)(x-3)', egal: '', nombre: '-7 ou 3/4 ou 2,5', decomposition: '2^3*3*5', puissance: '2^7', scientifique: '5,2*10^-4', racine: '5√2', liste: '1,5 ; 2 ; 3,7', ensemble: '3 ; -3', inequation: 'x < 3', duree: '2h15', choix: 'B' };
   var TOUCHES = {
     fraction: [['/', '/'], ['−', '-'], ['(', '('], [')', ')']],
     developpe: [['x', 'x'], ['x²', '^2'], ['(', '('], [')', ')']],
@@ -1670,7 +1684,8 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     liste: [[';', ';'], ['−', '-'], ['/', '/'], [',', ',']],
     ensemble: [[';', ';'], ['−', '-'], ['/', '/'], ['√', '√'], ['aucune', 'aucune']],
     inequation: [['<', '<'], ['>', '>'], ['≤', '≤'], ['≥', '≥'], ['−', '-'], ['/', '/']],
-    duree: [['h', 'h'], ['min', 'min']]
+    duree: [['h', 'h'], ['min', 'min']],
+    choix: [['A', 'A'], ['B', 'B'], ['C', 'C']]
   };
   var AIDES = {
     fraction: 'Écrire 7/12 pour la fraction sept douzièmes.',
@@ -1685,7 +1700,8 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     liste: 'Séparer les valeurs par des points-virgules.',
     ensemble: 'Séparer les valeurs par des points-virgules, ou répondre « aucune ».',
     inequation: 'Écrire x <= 3 pour x ≤ 3.',
-    duree: 'Écrire 2h15 ou 45min.'
+    duree: 'Écrire 2h15 ou 45min.',
+    choix: 'Cliquer sur la lettre de la bonne réponse, ou la taper.'
   };
   var revs = {};
   function idTheme(t) { return 'r-' + hachage(t.titre); }
@@ -1729,9 +1745,13 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
   var VERDICTS = { juste: ['ok', 'Bonne réponse !'], presque: ['presque', 'Presque !'], faux: ['ko', 'Pas tout à fait.'], illisible: ['ko', 'Réponse illisible'] };
   /* Énoncés avec figure : [[courbe:-4,1 -2,3 0,-1]] ou [[tableau:$x$;$1$;$2$|$f(x)$;$5$;?]] */
   function enonceHtml(texte) {
-    return String(texte).split(/(\[\[(?:courbe|tableau):.*?\]\])/).map(function (m) {
-      var g = /^\[\[(courbe|tableau):(.*)\]\]$/.exec(m);
+    return String(texte).split(/(\[\[(?:courbe|tableau|choix):.*?\]\])/).map(function (m) {
+      var g = /^\[\[(courbe|tableau|choix):(.*)\]\]$/.exec(m);
       if (!g) return m.trim() ? '<span class="rev-texte">' + formules(m.trim()) + '</span>' : '';
+      if (g[1] === 'choix') return '<ul class="rev-choix">' + g[2].split('|').map(function (o) {
+        var p = /^\s*([A-F])\)\s*(.*)$/.exec(o);
+        return '<li>' + (p ? '<b>' + p[1] + '</b><span>' + formules(p[2]) + '</span>' : formules(o)) + '</li>';
+      }).join('') + '</ul>';
       return g[1] === 'courbe' ? svgCourbe(g[2]) : htmlTableau(g[2]);
     }).join('');
   }
@@ -1797,7 +1817,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       '<div class="paquet-haut"><span class="qcm-num" id="rev-titre">Exercice ' + (e.i + 1) + ' / ' + n + '</span>' +
         (s ? '<span class="etat-carte ' + (s.s === 'ok' ? 'sue' : 'revoir') + '" style="position:static">' + (s.s === 'ok' ? 'Déjà réussi' : 'À retravailler') + '</span>' : '') + '</div>' +
       '<div class="rev-consigne">' + formules(x.consigne || Algebre.CONSIGNES[x.type] || '') + '</div>' +
-      '<div class="rev-enonce' + (x.enonce.replace(/\$[^$]*\$|\[\[.*?\]\]/g, '').length > 40 ? ' long' : '') + (/\[\[/.test(x.enonce) ? ' figure' : '') + '">' + enonceHtml(x.enonce) + '</div>' +
+      '<div class="rev-enonce' + (x.enonce.replace(/\$[^$]*\$|\[\[.*?\]\]/g, '').length > 40 ? ' long' : '') + (/\[\[/.test(x.enonce) ? ' figure' : '') + (x.type === 'choix' ? ' choix' : '') + '">' + enonceHtml(x.enonce) + '</div>' +
       '<label class="rev-libelle" for="rev-saisie">Réponse</label>' +
       '<div class="rev-champ"><input id="rev-saisie" class="rev-saisie" type="text" inputmode="text" enterkeyhint="done" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"' +
         (EXEMPLES[x.type] ? ' placeholder="Exemple : ' + esc(EXEMPLES[x.type]) + '"' : '') + ' value="' + esc(e.saisie) + '"' + (resolu ? ' readonly' : '') + '>' +
@@ -1841,6 +1861,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     if (action === 'inserer') {
       if (!champSaisie || champSaisie.readOnly) return;
       var txt = bouton.getAttribute('data-texte'), a = champSaisie.selectionStart, z = champSaisie.selectionEnd;
+      if (x.type === 'choix') { a = 0; z = champSaisie.value.length; }
       if (a == null) { a = z = champSaisie.value.length; }
       champSaisie.value = champSaisie.value.slice(0, a) + txt + champSaisie.value.slice(z);
       champSaisie.focus();

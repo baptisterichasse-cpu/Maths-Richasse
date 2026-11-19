@@ -1,0 +1,67 @@
+// Compétences « disjonction de cas » et « raisonnement par l'absurde » (chapitre 2 de Seconde)
+const D = 'seconde/02 - Arithmétique';
+const Q = (t, opts, r, c) => ({ t: t + ' [[choix:' + opts.map((o, i) => 'ABC'[i] + ') ' + o).join('|') + ']]', r, type: 'choix', consigne: 'Choisir la bonne réponse.', c });
+const DEV = (t, r, c) => ({ t, r, type: 'developpe', consigne: 'Développer et réduire.', c });
+const FAC = (t, r, c) => ({ t, r, type: 'factorise', consigne: 'Factoriser.', c });
+
+module.exports = [
+  {
+    dossier: D, nb: 10, ordre: 7, libre: true, titre: 'Raisonner par disjonction de cas',
+    exercices: [
+      Q('On veut démontrer que, pour tout entier $n$, le nombre $n(n+1)$ est pair. Quels cas faut-il distinguer ?',
+        ['$n$ pair ou $n$ impair', '$n$ positif ou $n$ négatif', '$n = 0$ ou $n \\neq 0$'], 'A',
+        'La propriété porte sur la parité : on traite le cas « $n$ pair » ($n = 2k$), puis le cas « $n$ impair » ($n = 2k + 1$).'),
+      DEV('Cas « $n$ pair » : $n = 2k$ avec $k \\in \\mathbb{Z}$. Exprimer $n^2 + n$ en fonction de $k$.', '4k^2+2k',
+        '$n^2 + n = (2k)^2 + 2k = 4k^2 + 2k = 2(2k^2 + k)$ : dans ce cas, $n^2 + n$ est pair.'),
+      DEV('Cas « $n$ impair » : $n = 2k + 1$ avec $k \\in \\mathbb{Z}$. Exprimer $n^2 + n$ en fonction de $k$.', '4k^2+6k+2',
+        '$n^2 + n = (2k+1)^2 + 2k + 1 = 4k^2 + 4k + 1 + 2k + 1 = 4k^2 + 6k + 2 = 2(2k^2 + 3k + 1)$ : dans ce cas aussi, $n^2 + n$ est pair.'),
+      Q('On a obtenu : si $n$ est pair, $n^2 + n = 2(2k^2 + k)$ ; si $n$ est impair, $n^2 + n = 2(2k^2 + 3k + 1)$. Que peut-on conclure ?',
+        ['$n^2 + n$ est pair seulement lorsque $n$ est pair', 'On ne peut rien conclure', '$n^2 + n$ est pair pour tout entier $n$'], 'C',
+        'Les deux cas couvrent tous les entiers, et dans chacun $n^2 + n$ est le double d’un entier : on conclut « dans tous les cas, $n^2 + n$ est pair ».'),
+      DEV('Cas « $n$ pair » : $n = 2k$ avec $k \\in \\mathbb{Z}$. Exprimer $n^2 - n$ en fonction de $k$.', '4k^2-2k',
+        '$n^2 - n = (2k)^2 - 2k = 4k^2 - 2k = 2(2k^2 - k)$ : dans ce cas, $n^2 - n$ est pair.'),
+      FAC('Cas « $n$ impair » : $n = 2k + 1$. On obtient $5n + 1 = 10k + 6$. Factoriser $10k + 6$ par $2$.', '2(5k+3)',
+        '$10k + 6 = 2(5k + 3)$ avec $5k + 3 \\in \\mathbb{Z}$ : dans ce cas, $5n + 1$ est pair.'),
+      { t: 'Pour étudier un entier $n$ selon son reste dans la division par $3$, combien de cas faut-il distinguer ?', r: '3', type: 'nombre', consigne: 'Répondre par un nombre.',
+        c: 'Le reste vaut $0$, $1$ ou $2$ : on étudie les cas $n = 3k$, $n = 3k + 1$ et $n = 3k + 2$.' },
+      DEV('Cas $n = 3k + 1$ avec $k \\in \\mathbb{Z}$. Exprimer $n^2$ en fonction de $k$.', '9k^2+6k+1',
+        '$n^2 = (3k + 1)^2 = 9k^2 + 6k + 1 = 3(3k^2 + 2k) + 1$ : dans ce cas, $n^2$ n’est pas un multiple de $3$.'),
+      DEV('Cas $n = 3k + 2$ avec $k \\in \\mathbb{Z}$. Exprimer $n^2 + 1$ en fonction de $k$.', '9k^2+12k+5',
+        '$n^2 + 1 = (3k + 2)^2 + 1 = 9k^2 + 12k + 4 + 1 = 9k^2 + 12k + 5 = 3(3k^2 + 4k + 1) + 2$ : dans ce cas, $n^2 + 1$ n’est pas un multiple de $3$.'),
+      Q('On veut démontrer que, pour tout entier $n$, le nombre $n(n+1)(n+2)$ est un multiple de $3$. Quels cas faut-il distinguer ?',
+        ['$n$ pair ou $n$ impair', '$n = 3k$, $n = 3k + 1$ ou $n = 3k + 2$', '$n < 3$ ou $n \\geqslant 3$'], 'B',
+        'La propriété porte sur la divisibilité par $3$ : on distingue les trois restes possibles dans la division par $3$.'),
+    ],
+  },
+  {
+    dossier: D, nb: 10, ordre: 8, libre: true, titre: "Raisonner par l'absurde",
+    exercices: [
+      Q('Une démonstration par l’absurde commence par :',
+        ['supposer le contraire de ce que l’on veut démontrer', 'un exemple bien choisi', 'écrire la conclusion'], 'A',
+        'On suppose le contraire de ce que l’on veut démontrer, puis on raisonne jusqu’à obtenir une contradiction.'),
+      Q('Une démonstration par l’absurde se termine par :',
+        ['un contre-exemple', 'un cas particulier', 'une contradiction'], 'C',
+        'On aboutit à une contradiction : l’hypothèse de départ (le contraire de ce que l’on voulait) est donc fausse.'),
+      Q('On veut démontrer par l’absurde qu’un entier $n$ est impair. Que suppose-t-on ?',
+        ['$n$ est impair', '$n$ est pair', '$n^2$ est impair'], 'B',
+        'Le contraire de « $n$ est impair » est « $n$ est pair » : c’est ce que l’on suppose.'),
+      Q('On veut démontrer par l’absurde qu’il n’existe pas d’entiers $a$ et $b$ tels que $6a + 9b = 10$. Que suppose-t-on ?',
+        ['Pour tous entiers $a$ et $b$, $6a + 9b \\neq 10$', '$a$ et $b$ ne sont pas des entiers', 'Il existe des entiers $a$ et $b$ tels que $6a + 9b = 10$'], 'C',
+        'Le contraire de « il n’existe pas » est « il existe » : on suppose qu’il existe des entiers $a$ et $b$ tels que $6a + 9b = 10$.'),
+      FAC('On suppose qu’il existe des entiers $a$ et $b$ tels que $6a + 9b = 10$. Factoriser $6a + 9b$ par $3$.', '3(2a+3b)',
+        '$6a + 9b = 3(2a + 3b)$, donc $10 = 3(2a + 3b)$ avec $2a + 3b \\in \\mathbb{Z}$.'),
+      Q('On a obtenu $10 = 3(2a + 3b)$ avec $2a + 3b$ entier. Où est la contradiction ?',
+        ['$10$ serait un multiple de $3$, ce qui est faux', '$10$ est un nombre pair', '$a$ et $b$ seraient négatifs'], 'A',
+        '$10$ serait un multiple de $3$, or $1 + 0 = 1$ n’est pas divisible par $3$ : c’est la contradiction.'),
+      FAC('On suppose qu’il existe un plus grand nombre pair $N$, avec $N = 2k$ et $k \\in \\mathbb{Z}$. Factoriser $N + 2 = 2k + 2$ par $2$.', '2(k+1)',
+        '$N + 2 = 2k + 2 = 2(k + 1)$ : $N + 2$ est pair et plus grand que $N$. C’est une contradiction : il n’existe pas de plus grand nombre pair.'),
+      DEV('On veut démontrer que si $3n + 5$ est pair, alors $n$ est impair. On suppose par l’absurde que $n$ est pair : $n = 2k$. Exprimer $3n + 5$ en fonction de $k$.', '6k+5',
+        '$3n + 5 = 6k + 5 = 2(3k + 2) + 1$ est impair : c’est en contradiction avec l’hypothèse « $3n + 5$ est pair ». Donc $n$ est impair.'),
+      FAC('On suppose qu’il existe des entiers $a$ et $b$ tels que $4a + 10b = 15$. Factoriser $4a + 10b$ par $2$.', '2(2a+5b)',
+        '$4a + 10b = 2(2a + 5b)$, donc $15 = 2(2a + 5b)$ serait pair. Or $15$ est impair : c’est une contradiction.'),
+      Q('Pour démontrer par l’absurde que $\\sqrt{2}$ est irrationnel, que suppose-t-on ?',
+        ['$\\sqrt{2} = \\dfrac{a}{b}$ avec $\\dfrac{a}{b}$ fraction irréductible', '$\\sqrt{2}$ n’est pas un nombre rationnel', '$\\sqrt{2} \\approx 1{,}414$'], 'A',
+        'Le contraire de « $\\sqrt{2}$ est irrationnel » est « $\\sqrt{2}$ est rationnel » : on suppose qu’il s’écrit sous forme de fraction irréductible.'),
+    ],
+  },
+];
