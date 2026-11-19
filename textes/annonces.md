@@ -1,8 +1,6 @@
 ### 19 novembre 2026 @ Seconde
 **Contrôle le jeudi 26 novembre.**
 
-Visio de 13 h à 16 h pour celles et ceux qui le souhaitent.
-
 **Travail à faire :**
 - Terminer la feuille d'exercices n°3.
 - S'entraîner sur le site et publier ses résultats.

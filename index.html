@@ -775,6 +775,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
 
   /* Cahier de texte : une entrée commence par « ### 12 novembre 2026 @ Seconde 5 » (sans @ : toutes les classes).
      Chaque élève ne voit que les entrées de sa classe ; sans code d'accès, rien n'est affiché. */
+  var ANNONCES_MAX = 3;
   function cahierDeTexte() {
     var texte = D.textes.annonces.replace(/^#{1,2}(?!#)/gm, '###'), filtrer = !!D.reglages.envoi;
     if (filtrer && !codeEleve()) return '<p>Saisir son code d’accès pour voir le cahier de texte de sa classe.</p><p><button class="bouton" type="button" data-action="ident-ouvrir">Saisir mon code d’accès</button></p>';
@@ -791,6 +792,8 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       return !filtrer || !e.pour.length || e.pour.some(function (p) { return classe === p || classe.indexOf(p + ' ') === 0; });
     });
     if (!visibles.length) return '<p>Rien d’inscrit pour le moment.</p>';
+    // Seules les 3 entrées les plus récentes (en haut du fichier) sont affichées
+    visibles = visibles.slice(0, ANNONCES_MAX);
     return md(visibles.map(function (e) { return '### ' + e.titre + '\n' + e.corps.join('\n'); }).join('\n'));
   }
 
