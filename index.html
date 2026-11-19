@@ -376,6 +376,22 @@ a.prereq:hover { border-color: var(--t-rev); }
 .envoi-msg { margin: 0; font-size: 14px; color: var(--encre-2); }
 .envoi-msg.ok { color: var(--vert); font-weight: 700; }
 .envoi-msg.erreur { color: var(--rouge-texte); font-weight: 700; }
+.questions { padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+.questions > p { margin: 0; font-size: 15px; color: var(--encre-2); }
+.qr-liste { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.qr { border: 1px solid var(--bord); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.qr-q { margin: 0; font-weight: 700; }
+.qr-r { border-left: 3px solid var(--rouge); padding-left: 12px; }
+.qr-r p { margin: 0 0 6px; }
+.qr-r p:last-child { margin-bottom: 0; }
+.qr-etiquette { font: 500 12px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--encre-2); display: block; margin-bottom: 2px; }
+.qr-form { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--bord); padding-top: 14px; }
+.qr-form label { font-weight: 700; }
+.qr-saisie { font: 16px var(--f-texte); min-height: 96px; resize: vertical; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--bord-fort); background: var(--carte); color: var(--encre); }
+.qr-saisie:focus { outline: none; border-color: var(--rouge); box-shadow: 0 0 0 3px var(--rouge-doux); }
+.qr-bas { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.qr-note { margin: 0; font-size: 14px; color: var(--encre-2); }
+.qr-bas .bouton { margin: 0; }
 
 /* Recherche */
 .resultats { display: flex; flex-direction: column; gap: 10px; }
@@ -2095,6 +2111,102 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
       });
   }
 
+  /* ---------- Questions des élèves ----------
+     Envoyées au tableur avec le code (le professeur sait qui pose quelle question).
+     Le tableur ne renvoie que les questions qui ont une réponse, sans nom, classe ni code. */
+  var QR_LIMITE = 3;
+  var qr = { statut: '', liste: null, restant: null, code: '', charge: 0, saisie: {}, envoi: {} };
+  function adresseQuestions(code) { return D.reglages.envoi + (D.reglages.envoi.indexOf('?') === -1 ? '?' : '&') + 'questions=1&code=' + encodeURIComponent(code); }
+  function chargerQuestions(forcer) {
+    var code = codeEleve();
+    if (!code || !D.reglages.envoi || qr.statut === 'chargement') return;
+    if (!forcer && qr.code === code && qr.liste && Date.now() - qr.charge < 300000) return;
+    if (!forcer && qr.code === code && qr.statut && qr.statut !== 'pret' && Date.now() - qr.charge < 60000) return;
+    qr.statut = 'chargement'; qr.code = code; qr.charge = Date.now();
+    fetch(adresseQuestions(code))
+      .then(function (r) { return r.json(); })
+      .then(function (rep) {
+        if (codeEleve() !== code) { qr.statut = ''; return; }
+        if (rep && rep.ok && rep.questions) { qr.liste = rep.questions; qr.restant = typeof rep.restant === 'number' ? rep.restant : null; qr.statut = 'pret'; }
+        else qr.statut = rep && rep.ok ? 'ferme' : 'erreur';
+        qr.charge = Date.now();
+        rendre(true);
+      })
+      .catch(function () { qr.statut = 'erreur'; qr.charge = Date.now(); rendre(true); });
+  }
+  function texteQuestion(t) { return String(t).split('\n').map(function (l) { return formules(l); }).join('<br>'); }
+  function blocQuestions(c, ch) {
+    if (!D.reglages.envoi || c.type === 'revisions' || ch.domaine) return '';
+    var cle = c.dossier + '~' + ch.id, code = codeEleve();
+    var tete = '<h2 class="groupe-titre"><span class="pastille" aria-hidden="true"></span>Questions des élèves</h2>';
+    if (!code) {
+      return '<section class="groupe" data-type="chapitre">' + tete + '<div class="carte questions">' +
+        '<p>Les questions posées par les élèves et les réponses de ' + esc(nomProf()) + ' sont visibles avec son code d’accès.</p>' +
+        '<p><button class="bouton plein" type="button" data-action="ident-ouvrir">Saisir mon code d’accès</button></p></div></section>';
+    }
+    if (qr.code !== code) { qr.liste = null; qr.restant = null; qr.statut = ''; }
+    chargerQuestions();
+    var corps;
+    if (qr.statut === 'ferme') {
+      return '<section class="groupe" data-type="chapitre">' + tete + '<div class="carte questions"><p>L’espace questions ouvre bientôt.</p></div></section>';
+    }
+    if (qr.liste) {
+      var miennes = qr.liste.filter(function (x) { return x.repere === cle; });
+      corps = miennes.length
+        ? '<ul class="qr-liste">' + miennes.map(function (x) {
+            return '<li class="qr"><p class="qr-q"><span class="qr-etiquette">Question' + (x.date ? ' · ' + esc(dateCourte(x.date)) : '') + '</span>' + texteQuestion(x.question) + '</p>' +
+              '<div class="qr-r"><span class="qr-etiquette">Réponse de ' + esc(nomProf()) + '</span>' + md(x.reponse) + '</div></li>';
+          }).join('') + '</ul>'
+        : '<p>Aucune question publiée pour ce chapitre pour l’instant.</p>';
+    } else if (qr.statut === 'erreur') {
+      corps = '<p>Les questions n’ont pas pu être chargées. Vérifier la connexion internet. <button class="lien-bouton" type="button" data-action="question-recharger">Réessayer</button></p>';
+    } else corps = '<p>Chargement des questions…</p>';
+    var e = qr.envoi[cle] || {}, plein = qr.restant === 0;
+    var form = '<div class="qr-form"><label for="question-saisie">Poser une question sur ce chapitre</label>' +
+      '<textarea id="question-saisie" class="qr-saisie" maxlength="1000" placeholder="Écrire sa question le plus précisément possible (exercice, étape qui pose problème…)"' + (plein ? ' disabled' : '') + '>' + esc(qr.saisie[cle] || '') + '</textarea>' +
+      '<p class="qr-note">La question est transmise à ' + esc(nomProf()) + ' avec le nom de l’élève. Si elle reçoit une réponse, la question et la réponse sont publiées ici, sans aucun nom. Au plus ' + QR_LIMITE + ' questions par jour.</p>' +
+      '<div class="qr-bas"><button class="bouton plein" type="button" data-action="question-envoyer"' + (plein || e.statut === 'encours' ? ' disabled' : '') + '>Envoyer ma question</button>' +
+      (plein && !e.message ? '<p class="envoi-msg">Limite de ' + QR_LIMITE + ' questions atteinte pour aujourd’hui. Revenir demain.</p>' : '') +
+      (e.message ? '<p class="envoi-msg ' + (e.statut || '') + '" role="status">' + esc(e.message) + (plein && e.statut === 'ok' ? ' C’était la dernière question possible aujourd’hui.' : '') + '</p>' : '') + '</div></div>';
+    return '<section class="groupe" data-type="chapitre">' + tete + '<div class="carte questions" data-questions="' + esc(cle) + '">' + corps + form + '</div></section>';
+  }
+  function envoyerQuestion(bloc) {
+    var cle = bloc.getAttribute('data-questions'), parts = cle.split('~'), c = trouverClasse(parts[0]), ch = c && trouverChapitre(c, parts[1]), code = codeEleve();
+    if (!ch) return;
+    if (!code) { ouvrirIdent(); return; }
+    var champQ = document.getElementById('question-saisie'), texte = String(champQ ? champQ.value : qr.saisie[cle] || '').trim();
+    qr.saisie[cle] = champQ ? champQ.value : qr.saisie[cle];
+    if (texte.length < 5) { qr.envoi[cle] = { statut: 'erreur', message: 'Écrire la question avant de l’envoyer.' }; rendre(true); return; }
+    qr.envoi[cle] = { statut: 'encours', message: 'Envoi en cours…' };
+    rendre(true);
+    var donnees = { type: 'question', code: code, repere: cle, chapitre: c.nom + ' · ' + nomChapitre(ch) + ' · ' + ch.titre, question: texte };
+    fetch(D.reglages.envoi, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(donnees) })
+      .then(function (r) { return r.json(); })
+      .then(function (rep) {
+        if (rep && rep.ok) {
+          qr.saisie[cle] = '';
+          if (typeof rep.restant === 'number') qr.restant = rep.restant;
+          qr.envoi[cle] = { statut: 'ok', message: 'Question envoyée à ' + nomProf() + '. Si elle reçoit une réponse, elle apparaîtra ici, sans nom.' };
+        } else if (rep && rep.erreur === 'limite') {
+          qr.restant = 0;
+          qr.envoi[cle] = { statut: 'erreur', message: 'Limite de ' + QR_LIMITE + ' questions atteinte pour aujourd’hui. Revenir demain.' };
+        } else if (rep && rep.erreur === 'code inconnu') {
+          qr.envoi[cle] = { statut: 'erreur', message: 'Le code ' + code + ' n’est pas reconnu. Le corriger en cliquant sur le code en haut de la page.' };
+        } else if (rep && rep.erreur === 'Envoi incomplet') {
+          qr.envoi[cle] = { statut: 'erreur', message: 'L’espace questions n’est pas encore ouvert.' };
+        } else throw new Error('refus');
+        rendre(true);
+      })
+      .catch(function () {
+        qr.envoi[cle] = { statut: 'erreur', message: 'L’envoi n’a pas abouti. Vérifier la connexion internet, puis réessayer.' };
+        rendre(true);
+      });
+  }
+  function actionQuestion(bloc, action) {
+    if (action === 'question-envoyer') envoyerQuestion(bloc);
+    else if (action === 'question-recharger') chargerQuestions(true);
+  }
+
   /* ---------- Impression ---------- */
   var zoneImpression = document.getElementById('impression');
   function imprimer(html) {
@@ -2177,6 +2289,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
         '<div class="docs">' + groupes[t].map(carteDoc).join('') + '</div></section>';
     });
     if (!ch.documents.length && !ch.paquets.length && !ch.qcms.length && !ch.revisions.length) html += '<p class="carte vide">Les documents de ce chapitre arrivent bientôt.</p>';
+    html += blocQuestions(c, ch);
     return { tete: t, corps: html + '</div>' };
   }
 
@@ -2255,7 +2368,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     else r = vueAccueil();
 
     var y = window.scrollY, actif = document.activeElement, curseur = null;
-    var idActif = actif && (actif.id === 'rev-saisie' || actif.id === 'ident-code') ? actif.id : null;
+    var idActif = actif && (actif.id === 'rev-saisie' || actif.id === 'ident-code' || actif.id === 'question-saisie') ? actif.id : null;
     if (idActif) { try { curseur = actif.selectionStart; } catch (e) {} }
     tete.innerHTML = r.tete;
     tete.className = 'enveloppe tete' + (r.haute ? ' haute' : '');
@@ -2286,7 +2399,9 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     var act = b.getAttribute('data-action');
     if (act === 'ident-ouvrir') { ouvrirIdent(); return; }
     if (act === 'ident-valider' || act === 'ident-fermer' || act === 'ident-oublier') { actionIdent(act); return; }
-    var bloc = b.closest('[data-envoi]');
+    var bloc = b.closest('[data-questions]');
+    if (bloc) { actionQuestion(bloc, act); return; }
+    bloc = b.closest('[data-envoi]');
     if (bloc) { envoyer(bloc); return; }
     bloc = b.closest('[data-paquet]');
     if (bloc) { actionPaquet(bloc, b.getAttribute('data-action')); return; }
@@ -2298,6 +2413,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
   contenu.addEventListener('input', function (e) {
     if (e.target.id === 'rev-saisie') saisieRev(e.target);
     if (e.target.id === 'ident-code') ident.saisie = e.target.value;
+    if (e.target.id === 'question-saisie') { var bq = e.target.closest('[data-questions]'); if (bq) qr.saisie[bq.getAttribute('data-questions')] = e.target.value; }
   });
   contenu.addEventListener('keydown', function (e) {
     if (e.target.id === 'ident-code' && e.key === 'Enter') { e.preventDefault(); actionIdent('ident-valider'); return; }

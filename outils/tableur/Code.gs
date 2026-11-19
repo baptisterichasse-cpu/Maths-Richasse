@@ -11,6 +11,13 @@
  *     gris   = pas encore commencé
  *   Ne rien écrire à la main à partir de la colonne D : c'est effacé à chaque mise à jour.
  * Onglet « Envois » : la trace de chaque envoi (ne pas le modifier).
+ * Onglet « Questions » : les questions posées par les élèves sur le site (créé au premier envoi).
+ *   Colonnes : Date, Classe, Nom, Code, Chapitre, Question, Réponse.
+ *   Pour publier une question : écrire la réponse dans la colonne « Réponse ».
+ *   Le site affiche alors la question et la réponse, SANS le nom, la classe ni le code.
+ *   La question affichée est le texte de la colonne « Question » : il peut être reformulé avant de répondre.
+ *   Sans réponse, la question reste invisible sur le site.
+ *   Formules : écrire entre $…$, comme dans les fiches (ex. $\dfrac{3}{4}$).
  *
  * Seuls les codes présents dans un onglet de classe sont acceptés par le site.
  * Un élève qui travaille sur plusieurs appareils utilise le même code partout :
@@ -26,6 +33,9 @@ var COULEURS = { vert: '#c6ebd4', orange: '#fde2b3', gris: '#eeeff2', blanc: '#f
 var LETTRES_CODE = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // sans I, L, O, 0, 1 pour éviter les confusions
 var PREMIERE_LIGNE = 3; // première ligne d'élève
 var COL_FIXES = 3;      // Numéro, Nom, Code
+var QUESTIONS_PAR_JOUR = 3;      // nombre maximal de questions par élève et par jour
+var LONGUEUR_QUESTION = 1000;    // nombre maximal de caractères d'une question
+var ENTETES_QUESTIONS = ['Date', 'Classe', 'Nom', 'Code', 'Chapitre', 'Question', 'Réponse', 'Repère (ne pas modifier)'];
 
 /* ---------- Menu du tableur ---------- */
 
@@ -111,14 +121,30 @@ function lireCodes(classeur) {
   return codes;
 }
 
+// Tous les élèves : { CODE: { classe, nom } }
+function lireEleves(classeur) {
+  var eleves = {};
+  ongletsClasses(classeur).forEach(function (f) {
+    lignesEleves(f).forEach(function (l) { var c = normaliserCode(l[2]); if (c) eleves[c] = { classe: f.getName(), nom: String(l[1]).trim() }; });
+  });
+  return eleves;
+}
+
 /* ---------- Réception ---------- */
 
 // Vérification d'un code par le site : ?code=A07-K4PZ
 function doGet(e) {
   var code = normaliserCode(e && e.parameter && e.parameter.code);
   if (!code) return ContentService.createTextOutput('La boîte aux lettres fonctionne. Les élèves peuvent envoyer leur progression.');
-  var classe = lireCodes(SpreadsheetApp.getActiveSpreadsheet())[code];
-  return repondre(classe ? { ok: true, classe: classe } : { ok: false });
+  var classeur = SpreadsheetApp.getActiveSpreadsheet(), classe = lireCodes(classeur)[code];
+  if (!classe) return repondre({ ok: false });
+  // Questions publiées (?code=…&questions=1) : jamais de nom, de classe ni de code dans la réponse
+  if (e.parameter.questions) {
+    var f = classeur.getSheetByName('Questions');
+    var lignes = f && f.getLastRow() > 1 ? f.getRange(2, 1, f.getLastRow() - 1, ENTETES_QUESTIONS.length).getValues() : [];
+    return repondre({ ok: true, questions: questionsPubliees(lignes, Session.getScriptTimeZone()), restant: restantAujourdhui(lignes, code, new Date(), Session.getScriptTimeZone()) });
+  }
+  return repondre({ ok: true, classe: classe });
 }
 
 function doPost(e) {
@@ -127,6 +153,7 @@ function doPost(e) {
   try {
     var d = JSON.parse(e.postData.contents);
     var code = normaliserCode(d && d.code);
+    if (d && d.type === 'question') return recevoirQuestion(d, code);
     if (!code || !d.progression) throw new Error('Envoi incomplet');
     var classeur = SpreadsheetApp.getActiveSpreadsheet(), classe = lireCodes(classeur)[code];
     if (!classe) return repondre({ ok: false, erreur: 'code inconnu' });
@@ -154,6 +181,66 @@ function feuilleEnvois(classeur) {
   f.getRange(1, 1, 1, 5).setFontWeight('bold');
   f.setFrozenRows(1);
   return f;
+}
+
+/* ---------- Questions des élèves ---------- */
+
+function recevoirQuestion(d, code) {
+  var classeur = SpreadsheetApp.getActiveSpreadsheet(), eleve = lireEleves(classeur)[code];
+  if (!eleve) return repondre({ ok: false, erreur: 'code inconnu' });
+  var question = String(d.question || '').replace(/\r/g, '').trim().slice(0, LONGUEUR_QUESTION);
+  var repere = String(d.repere || '').slice(0, 200), chapitre = String(d.chapitre || '').slice(0, 200);
+  if (!question || !repere) return repondre({ ok: false, erreur: 'question vide' });
+  var f = feuilleQuestions(classeur), fuseau = Session.getScriptTimeZone(), maintenant = new Date();
+  var lignes = f.getLastRow() > 1 ? f.getRange(2, 1, f.getLastRow() - 1, ENTETES_QUESTIONS.length).getValues() : [];
+  var restant = restantAujourdhui(lignes, code, maintenant, fuseau);
+  if (restant <= 0) return repondre({ ok: false, erreur: 'limite', restant: 0 });
+  // Une apostrophe devant un texte qui commence par = + - @ empêche le tableur d'y voir une formule
+  var sur = function (t) { return /^[=+\-@]/.test(t) ? "'" + t : t; };
+  f.appendRow([maintenant, eleve.classe, eleve.nom, code, chapitre, sur(question), '', repere]);
+  return repondre({ ok: true, restant: restant - 1 });
+}
+
+function feuilleQuestions(classeur) {
+  var f = classeur.getSheetByName('Questions');
+  if (f) return f;
+  f = classeur.insertSheet('Questions', classeur.getNumSheets());
+  f.appendRow(ENTETES_QUESTIONS);
+  f.getRange('A:A').setNumberFormat('dd/mm/yyyy hh:mm');
+  f.getRange('D:D').setNumberFormat('@');
+  f.getRange('F:G').setNumberFormat('@').setWrap(true);
+  f.getRange('A:H').setVerticalAlignment('top');
+  f.getRange(1, 1, 1, ENTETES_QUESTIONS.length).setFontWeight('bold').setBackground(COULEURS.entete).setFontColor(COULEURS.texteEntete);
+  f.getRange(1, 7).setBackground('#1f7a4d').setNote('Écrire ici la réponse : la question et la réponse apparaîtront alors sur le site, sans le nom de l’élève.');
+  f.setFrozenRows(1);
+  [120, 90, 160, 100, 200, 380, 380, 120].forEach(function (l, k) { f.setColumnWidth(k + 1, l); });
+  f.hideColumns(8);
+  return f;
+}
+
+/* ---------- Calcul des questions (sans Google, testable) ---------- */
+
+function jourDe(date, fuseau) {
+  if (typeof Utilities !== 'undefined') return Utilities.formatDate(date, fuseau, 'yyyy-MM-dd');
+  return date.toISOString().slice(0, 10);
+}
+
+// Lignes de l'onglet Questions → questions avec réponse, les plus récentes d'abord
+function questionsPubliees(lignes, fuseau) {
+  var res = [];
+  lignes.forEach(function (l) {
+    var question = String(l[5] || '').replace(/^'/, '').trim(), reponse = String(l[6] || '').trim(), repere = String(l[7] || '').trim();
+    if (!question || !reponse || !repere) return;
+    var date = l[0] instanceof Date ? jourDe(l[0], fuseau) : '';
+    res.push({ repere: repere, question: question, reponse: reponse, date: date });
+  });
+  return res.reverse();
+}
+
+function restantAujourdhui(lignes, code, maintenant, fuseau) {
+  var jour = jourDe(maintenant, fuseau), n = 0;
+  lignes.forEach(function (l) { if (normaliserCode(l[3]) === code && l[0] instanceof Date && jourDe(l[0], fuseau) === jour) n++; });
+  return Math.max(0, QUESTIONS_PAR_JOUR - n);
 }
 
 /* ---------- Mise à jour des onglets de classe ---------- */
@@ -300,4 +387,4 @@ function cellule(genre, x) {
   return { texte: texte, couleur: !fait ? 'gris' : (part >= SEUIL ? 'vert' : 'orange') };
 }
 
-if (typeof module !== 'undefined') module.exports = { calculerClasse: calculerClasse, cellule: cellule, nouveauCode: nouveauCode, normaliserCode: normaliserCode };
+if (typeof module !== 'undefined') module.exports = { questionsPubliees: questionsPubliees, restantAujourdhui: restantAujourdhui, calculerClasse: calculerClasse, cellule: cellule, nouveauCode: nouveauCode, normaliserCode: normaliserCode };
