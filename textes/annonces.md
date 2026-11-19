@@ -1,3 +1,10 @@
+### 19 novembre 2026 @ Seconde
+Visio de 13 h à 16 h pour celles et ceux qui le souhaitent.
+
+**Travail à faire :**
+- Terminer la feuille d'exercices n°3.
+- S'entraîner sur le site et publier ses résultats.
+
 ### 18 novembre 2026 @ Seconde
 **Travail à faire :** exercices 3, 4 et 5 de la feuille d'exercices n°2.
 
