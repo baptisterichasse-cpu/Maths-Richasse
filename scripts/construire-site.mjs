@@ -146,6 +146,21 @@ function lirePrerequis(texte) {
   return String(texte || '').split(/\r?\n/).map((l) => l.replace(/^[-*•]\s*/, '').trim()).filter((l) => l && !l.startsWith('#'));
 }
 
+// Questions publiées à la main : « ## Question (19/11/2026) », le texte, puis « ## Réponse » et le texte
+function lireQuestions(texte) {
+  const res = [];
+  String(texte || '').replace(/\r/g, '').split(/^## Question/m).slice(1).forEach((bloc) => {
+    const [tete, ...reste] = bloc.split('\n');
+    const corps = reste.join('\n'), i = corps.search(/^## Réponse/m);
+    if (i === -1) return;
+    const question = corps.slice(0, i).trim(), reponse = corps.slice(i).replace(/^## Réponse[^\n]*\n?/, '').trim();
+    const d = tete.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    const date = d ? d[3] + '-' + d[2].padStart(2, '0') + '-' + d[1].padStart(2, '0') : '';
+    if (question && reponse) res.push({ question, reponse, date });
+  });
+  return res;
+}
+
 // Progression de l'année : « - [x] Ch. 2 · Titre ». Renvoie le numéro du dernier chapitre visible
 // (le chapitre qui suit le dernier chapitre coché [x] ou en cours [~]), ou null si rien n'est coché.
 function numeroDeLigne(ligne) {
@@ -237,7 +252,8 @@ async function main() {
       ids.add(id);
       const dossierChap = path.join(dossierClasse, nomChap);
       const ch = { id, numero, titre, essentiel: await lireTexte(path.join(dossierChap, '_essentiel.md')), documents: [], paquets: [], qcms: [], revisions: [],
-        domaine: classe.type === 'revisions', prerequis: lirePrerequis(await lireTexte(path.join(dossierChap, '_prerequis.txt'))) };
+        domaine: classe.type === 'revisions', prerequis: lirePrerequis(await lireTexte(path.join(dossierChap, '_prerequis.txt'))),
+        questions: lireQuestions(await lireTexte(path.join(dossierChap, '_questions.md'))) };
 
       for (const f of await fichiers(dossierChap)) {
         const source = path.join(dossierChap, f);

@@ -2146,18 +2146,18 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     }
     if (qr.code !== code) { qr.liste = null; qr.restant = null; qr.statut = ''; }
     chargerQuestions();
-    var corps;
-    if (qr.statut === 'ferme') {
-      return '<section class="groupe" data-type="chapitre">' + tete + '<div class="carte questions"><p>L’espace questions ouvre bientôt.</p></div></section>';
-    }
-    if (qr.liste) {
-      var miennes = qr.liste.filter(function (x) { return x.repere === cle; });
+    var corps, fixes = ch.questions || [];
+    if (qr.liste || fixes.length || qr.statut === 'ferme') {
+      var miennes = (qr.liste || []).filter(function (x) { return x.repere === cle; }).concat(fixes)
+        .sort(function (a, b) { return (b.date || '') < (a.date || '') ? -1 : (b.date || '') > (a.date || '') ? 1 : 0; });
       corps = miennes.length
         ? '<ul class="qr-liste">' + miennes.map(function (x) {
             return '<li class="qr"><p class="qr-q"><span class="qr-etiquette">Question' + (x.date ? ' · ' + esc(dateCourte(x.date)) : '') + '</span>' + texteQuestion(x.question) + '</p>' +
               '<div class="qr-r"><span class="qr-etiquette">Réponse de ' + esc(nomProf()) + '</span>' + md(x.reponse) + '</div></li>';
           }).join('') + '</ul>'
         : '<p>Aucune question publiée pour ce chapitre pour l’instant.</p>';
+      if (!qr.liste && qr.statut === 'erreur') corps += '<p>Les autres questions n’ont pas pu être chargées. <button class="lien-bouton" type="button" data-action="question-recharger">Réessayer</button></p>';
+      if (qr.statut === 'ferme') return '<section class="groupe" data-type="chapitre">' + tete + '<div class="carte questions">' + corps + '<p class="qr-note">L’envoi de questions ouvre très bientôt.</p></div></section>';
     } else if (qr.statut === 'erreur') {
       corps = '<p>Les questions n’ont pas pu être chargées. Vérifier la connexion internet. <button class="lien-bouton" type="button" data-action="question-recharger">Réessayer</button></p>';
     } else corps = '<p>Chargement des questions…</p>';
