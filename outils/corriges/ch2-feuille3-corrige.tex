@@ -1,0 +1,174 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1.6cm,top=1.8cm,bottom=1.6cm,headsep=0.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{array}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Seconde}
+\rhead{Chapitre 2 : Arithmétique dans $\mathbb{N}$ et $\mathbb{Z}$}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.3em}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\titleformat{\paragraph}{\normalfont\bfseries}{}{0em}{}
+\titlespacing*{\paragraph}{0pt}{0.9em}{0.3em}
+\newcommand{\exo}[1]{\paragraph{Exercice #1}}
+\newcommand{\rep}[1]{\textbf{#1}}
+\setlist{itemsep=0.35em, topsep=0.2em, leftmargin=1.8em}
+
+\begin{document}
+
+\begin{center}
+  {\Large\bfseries Corrigé de la feuille d'exercices n°3 -- Nombres premiers, fractions, problèmes}
+\end{center}
+
+\exo{1}
+\begin{itemize}
+  \item $87$ : $8 + 7 = 15$ est divisible par $3$, donc $87$ aussi : $87 = 3 \times 29$. \rep{$87$ n'est pas premier.}
+  \item $89$ : $89$ est impair ; $8 + 9 = 17$ n'est pas divisible par $3$ ; $89$ ne finit ni par $0$ ni par $5$ ;
+  $89 = 7 \times 12 + 5$, $89 = 11 \times 8 + 1$ et $89 = 13 \times 6 + 11$.
+  Aucun de ces nombres premiers ne divise $89$. \rep{$89$ est premier.}
+  \item $91 = 7 \times 13$. \rep{$91$ n'est pas premier.}
+  \item $101$ : $101$ est impair ; $1 + 0 + 1 = 2$ n'est pas divisible par $3$ ; $101$ ne finit ni par $0$ ni par $5$ ;
+  $101 = 7 \times 14 + 3$, $101 = 11 \times 9 + 2$ et $101 = 13 \times 7 + 10$.
+  Aucun de ces nombres premiers ne divise $101$. \rep{$101$ est premier.}
+  \item $119 = 7 \times 17$. \rep{$119$ n'est pas premier.}
+  \item $221$ : non divisible par $2$, $3$ ($2 + 2 + 1 = 5$), $5$, $7$ ($221 = 7 \times 31 + 4$), $11$ ($221 = 11 \times 20 + 1$), mais $221 = 13 \times 17$. \rep{$221$ n'est pas premier.}
+\end{itemize}
+\textit{Pourquoi s'arrêter à $13$ ?} Si $101$ n'était pas premier, il s'écrirait $101 = a \times b$ avec $2 \leq a \leq b$. Alors $a \times a \leq a \times b = 101$, donc $a \leq 10$ : $101$ aurait un diviseur premier inférieur ou égal à $10$, donc égal à $2$, $3$, $5$ ou $7$. Le même raisonnement vaut pour $89$.
+
+\exo{2}
+On divise par les nombres premiers successifs.
+\[
+\begin{array}{lll}
+72 = 2 \times 36 = 2 \times 2 \times 18 = 2^3 \times 9 = \mathbf{2^3 \times 3^2} &\qquad&
+150 = 2 \times 75 = 2 \times 3 \times 25 = \mathbf{2 \times 3 \times 5^2} \\[0.5em]
+252 = 2 \times 126 = 2^2 \times 63 = 2^2 \times 9 \times 7 = \mathbf{2^2 \times 3^2 \times 7} &&
+1\,001 = 7 \times 143 = \mathbf{7 \times 11 \times 13} \\[0.5em]
+1\,350 = 2 \times 675 = 2 \times 3^3 \times 25 = \mathbf{2 \times 3^3 \times 5^2} &&
+2\,025 = 25 \times 81 = \mathbf{3^4 \times 5^2}
+\end{array}
+\]
+
+\exo{3}
+\begin{enumerate}[label=\rep{\arabic*.}]
+  \item On regroupe les facteurs de la décomposition :
+  \[ N = (2 \times 5) \times (2 \times 3) = 10 \times 6, \qquad N = (2^2 \times 3) \times 5 = 12 \times 5, \qquad N = (3 \times 5) \times 2^2 = 15 \times 4. \]
+  Donc $10$, $12$ et $15$ divisent $N$.
+
+  \item $8 = 2^3$. Si $8$ divisait $N$, on aurait $N = 2^3 \times k$ avec $k \in \N$, et la décomposition de $N$ contiendrait au moins trois facteurs $2$. Or, par unicité de la décomposition, $N = 2^2 \times 3 \times 5$ n'en contient que deux. \rep{$8$ ne divise pas $N$.}
+
+  De même, $9 = 3^2$ et la décomposition de $N$ ne contient qu'un seul facteur $3$. \rep{$9$ ne divise pas $N$.}
+
+  (Vérification : $N = 60$, et $\dfrac{60}{8} = 7{,}5$, $\dfrac{60}{9} \approx 6{,}67$ ne sont pas entiers.)
+
+  \item Un diviseur positif de $N$ s'obtient en choisissant $1$, $2$ ou $2^2$, puis $1$ ou $3$, puis $1$ ou $5$, et en multipliant :
+  \[
+  \renewcommand{\arraystretch}{1.3}
+  \begin{array}{|c|c|c|c|c|}
+  \hline
+   & \times 1 & \times 3 & \times 5 & \times 3 \times 5 \\ \hline
+  1   & 1 & 3  & 5  & 15 \\ \hline
+  2   & 2 & 6  & 10 & 30 \\ \hline
+  2^2 & 4 & 12 & 20 & 60 \\ \hline
+  \end{array}
+  \]
+  Les diviseurs positifs de $N$ sont $1$, $2$, $3$, $4$, $5$, $6$, $10$, $12$, $15$, $20$, $30$, $60$. \rep{Il y en a $12$.}
+
+  \item $2\,025 = 3^4 \times 5^2$. Un diviseur positif s'obtient en choisissant $1$, $3$, $3^2$, $3^3$ ou $3^4$ ($5$ choix), puis $1$, $5$ ou $5^2$ ($3$ choix) :
+  \[
+  \renewcommand{\arraystretch}{1.3}
+  \begin{array}{|c|c|c|c|}
+  \hline
+   & \times 1 & \times 5 & \times 5^2 \\ \hline
+  1   & 1  & 5   & 25 \\ \hline
+  3   & 3  & 15  & 75 \\ \hline
+  3^2 & 9  & 45  & 225 \\ \hline
+  3^3 & 27 & 135 & 675 \\ \hline
+  3^4 & 81 & 405 & 2\,025 \\ \hline
+  \end{array}
+  \]
+  Le tableau a $5 \times 3 = 15$ cases : \rep{$2\,025$ a $15$ diviseurs positifs.}
+\end{enumerate}
+
+\exo{4}
+\begin{itemize}
+  \item $\dfrac{72}{150} = \dfrac{2^3 \times 3^2}{2 \times 3 \times 5^2} = \dfrac{2^2 \times 3}{5^2} = \mathbf{\dfrac{12}{25}}$
+  \item $\dfrac{252}{1\,350} = \dfrac{2^2 \times 3^2 \times 7}{2 \times 3^3 \times 5^2} = \dfrac{2 \times 7}{3 \times 5^2} = \mathbf{\dfrac{14}{75}}$
+  \item $\dfrac{1\,001}{2\,025} = \dfrac{7 \times 11 \times 13}{3^4 \times 5^2}$ : aucun facteur premier commun, \rep{la fraction est déjà irréductible.}
+  \item $\dfrac{2\,016}{2\,100} = \dfrac{2^5 \times 3^2 \times 7}{2^2 \times 3 \times 5^2 \times 7} = \dfrac{2^3 \times 3}{5^2} = \mathbf{\dfrac{24}{25}}$
+\end{itemize}
+
+\exo{5}
+Le plus petit dénominateur commun contient chaque facteur premier des deux dénominateurs, avec la plus grande puissance.
+\begin{itemize}
+  \item $72 = 2^3 \times 3^2$ et $150 = 2 \times 3 \times 5^2$ : dénominateur commun $2^3 \times 3^2 \times 5^2 = 1\,800$. Or $1\,800 = 72 \times 25 = 150 \times 12$.
+  \[ A = \frac{1 \times 25}{72 \times 25} + \frac{1 \times 12}{150 \times 12} = \frac{25}{1\,800} + \frac{12}{1\,800} = \mathbf{\frac{37}{1\,800}} \]
+  $37$ est premier et ne divise pas $1\,800 = 2^3 \times 3^2 \times 5^2$ : la fraction est irréductible.
+
+  \item $12 = 2^2 \times 3$ et $18 = 2 \times 3^2$ : dénominateur commun $2^2 \times 3^2 = 36 = 12 \times 3 = 18 \times 2$.
+  \[ B = \frac{5 \times 3}{12 \times 3} - \frac{7 \times 2}{18 \times 2} = \frac{15}{36} - \frac{14}{36} = \mathbf{\frac{1}{36}} \]
+
+  \item $60 = 2^2 \times 3 \times 5$ et $72 = 2^3 \times 3^2$ : dénominateur commun $2^3 \times 3^2 \times 5 = 360 = 60 \times 6 = 72 \times 5$.
+  \[ C = \frac{7 \times 6}{60 \times 6} + \frac{11 \times 5}{72 \times 5} = \frac{42}{360} + \frac{55}{360} = \mathbf{\frac{97}{360}} \]
+  $97$ est premier (non divisible par $2$, $3$, $5$, $7$) et ne divise pas $360$ : la fraction est irréductible.
+\end{itemize}
+
+\exo{6}
+\begin{enumerate}[label=\rep{\arabic*.}]
+  \item $6{,}30$ m $= 630$ cm et $4{,}20$ m $= 420$ cm. On note $c$ le côté d'une dalle, en cm. Sans découpe, une rangée dans la longueur contient un nombre entier $p$ de dalles : $630 = c \times p$, donc $c$ divise $630$. De même, dans la largeur, $420 = c \times q$ avec $q$ entier, donc $c$ divise $420$. Le côté $c$ est donc un diviseur commun de $630$ et de $420$.
+
+  \item $630 = 2 \times 315 = 2 \times 3^2 \times 35 = \mathbf{2 \times 3^2 \times 5 \times 7}$ \qquad et \qquad $420 = 2^2 \times 105 = \mathbf{2^2 \times 3 \times 5 \times 7}$.
+
+  \item Un diviseur commun de $630$ et $420$ ne peut contenir que les facteurs premiers communs, au plus avec la plus petite puissance : au plus un $2$, un $3$, un $5$ et un $7$. Le plus grand diviseur commun est donc
+  \[ 2 \times 3 \times 5 \times 7 = 210. \]
+  \rep{Les dalles mesurent $210$ cm de côté, soit $2{,}10$ m.}
+
+  Dans la longueur : $630 : 210 = 3$ dalles ; dans la largeur : $420 : 210 = 2$ dalles. \rep{Il faut $3 \times 2 = 6$ dalles.}
+\end{enumerate}
+
+\exo{7}
+\begin{enumerate}[label=\rep{\arabic*.}]
+  \item $40 = 2^3 \times 5$. Ses diviseurs positifs sont $1$, $2$, $4$, $5$, $8$, $10$, $20$, $40$.
+
+  \item $n = 0$ ne convient pas, car $0 \times 3 = 0 \neq 40$. Si $n$ est solution, alors $n \geq 1$ et $40 = n \times (n+3)$ : $n$ et $n + 3$ sont deux diviseurs positifs de $40$ dont le produit vaut $40$ et qui diffèrent de $3$.
+
+  Les produits de deux diviseurs égaux à $40$ sont : $1 \times 40$, $2 \times 20$, $4 \times 10$, $5 \times 8$. Les écarts sont $39$, $18$, $6$ et $3$. Seul $5 \times 8$ convient, avec $n = 5$ et $n + 3 = 8$.
+
+  Vérification : $5 \times (5 + 3) = 5 \times 8 = 40$. \rep{La seule solution est $n = 5$.}
+\end{enumerate}
+
+\exo{8}
+On a $360 = 2^3 \times 3^2 \times 5$.
+\begin{enumerate}[label=\rep{\arabic*.}]
+  \item $360 \times a = 2^3 \times 3^2 \times 5 \times a$. Un entier est un carré parfait lorsque tous les exposants de sa décomposition sont pairs (voir question 3). La décomposition de $a$ doit apporter au moins un facteur $2$ (pour passer de $2^3$ à $2^4$) et au moins un facteur $5$. Donc $2 \times 5 = 10$ divise $a$, et $a \geq 10$.
+
+  Pour $a = 10$ : $360 \times 10 = 2^4 \times 3^2 \times 5^2 = (2^2 \times 3 \times 5)^2 = 60^2$.
+  \rep{Le plus petit entier est $a = 10$ : $360 \times 10 = 3\,600 = 60^2$.}
+
+  \item Un cube $m^3 = m \times m \times m$ a, par le même raisonnement, tous les exposants de sa décomposition multiples de $3$. Dans $360 \times b = 2^3 \times 3^2 \times 5 \times b$, la décomposition de $b$ doit apporter au moins un facteur $3$ (pour obtenir $3^3$) et au moins deux facteurs $5$ (pour obtenir $5^3$). Donc $3 \times 5^2 = 75$ divise $b$, et $b \geq 75$.
+
+  Pour $b = 75$ : $360 \times 75 = 2^3 \times 3^3 \times 5^3 = (2 \times 3 \times 5)^3 = 30^3$.
+  \rep{Le plus petit entier est $b = 75$ : $360 \times 75 = 27\,000 = 30^3$.}
+  \item Soit $n \geq 2$ un entier.
+  \begin{itemize}
+    \item Si $n$ est un carré parfait : $n = m^2$ avec $m \geq 2$. On décompose $m = p_1^{a_1} \times \dots \times p_k^{a_k}$. Alors
+    \[ n = m \times m = p_1^{2a_1} \times \dots \times p_k^{2a_k}. \]
+    Par unicité de la décomposition, c'est la décomposition de $n$ : tous les exposants $2a_1, \dots, 2a_k$ sont pairs.
+    \item Réciproquement, si $n = p_1^{2a_1} \times \dots \times p_k^{2a_k}$ (exposants pairs), alors
+    \[ n = \big(p_1^{a_1} \times \dots \times p_k^{a_k}\big)^2, \]
+    donc $n$ est le carré d'un entier.
+  \end{itemize}
+\end{enumerate}
+
+\end{document}
