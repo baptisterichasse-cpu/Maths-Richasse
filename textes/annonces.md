@@ -1,3 +1,6 @@
+### 25 novembre 2026 @ code:test
+Pierre quitte ce site, c'est trop tard pour réviser les cours de seconde
+
 ### 19 novembre 2026 @ Seconde
 **Contrôle le jeudi 26 novembre.**
 

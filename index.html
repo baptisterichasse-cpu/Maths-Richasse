@@ -773,7 +773,7 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
     return { tete: t, corps: html, haute: true };
   }
 
-  /* Cahier de texte : une entrée commence par « ### 12 novembre 2026 @ Seconde 5 » (sans @ : toutes les classes).
+  /* Cahier de texte : une entrée commence par « ### 12 novembre 2026 @ Seconde 5 » (sans @ : toutes les classes ; « @ code:XXXX » : un seul code).
      Chaque élève ne voit que les entrées de sa classe ; sans code d'accès, rien n'est affiché. */
   var ANNONCES_MAX = 3;
   function cahierDeTexte() {
@@ -788,7 +788,11 @@ mark { background: var(--rouge-doux); color: var(--rouge-texte); border-radius: 
         entrees.push(courante);
       } else if (courante) courante.corps.push(ligne);
     });
+    // « @ code:XXXX » : entrée réservée à un seul code d'accès (jamais affichée aux autres)
+    var monCode = norm(normaliserCode(codeEleve()));
     var visibles = entrees.filter(function (e) {
+      var codes = e.pour.filter(function (p) { return p.indexOf('code:') === 0; }).map(function (p) { return norm(normaliserCode(p.slice(5))); });
+      if (codes.length) return !!monCode && codes.indexOf(monCode) !== -1;
       return !filtrer || !e.pour.length || e.pour.some(function (p) { return classe === p || classe.indexOf(p + ' ') === 0; });
     });
     if (!visibles.length) return '<p>Rien d’inscrit pour le moment.</p>';
