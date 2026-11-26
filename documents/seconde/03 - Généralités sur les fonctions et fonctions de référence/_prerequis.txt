@@ -1,0 +1,6 @@
+# Notions à maîtriser avant de commencer (un thème de révision par ligne)
+Image et antécédent
+Tableau de valeurs
+Lecture graphique d'images et d'antécédents
+Calculer la valeur d'une expression
+Racines carrées
